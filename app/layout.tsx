@@ -1,22 +1,61 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 
 import AuthProvider from "@/components/providers/AuthProvider";
 import IdleLogout from "@/components/IdleLogout";
+import ServiceWorker from "@/components/ServiceWorker";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "WashFlow Pro",
-  description:
-    "Professional Multi-Branch Carwash Management System",
+
+  description: "Professional Multi-Branch Carwash Management System",
+
+  manifest: "/manifest",
+
+  applicationName: "WashFlow Pro",
+
+  keywords: [
+    "Carwash",
+    "POS",
+    "WashFlow",
+    "Inventory",
+    "Subscriptions",
+    "Carwash Management",
+  ],
+
+  themeColor: "#06b6d4",
+
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WashFlow Pro",
+  },
+
+  icons: {
+    icon: [
+      {
+        url: "/icons/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/icons/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export default function RootLayout({
@@ -28,10 +67,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "dark scroll-smooth",
-        geist.variable
-      )}
+      className={cn("dark scroll-smooth", inter.className)}
     >
       <body
         className={cn(
@@ -40,16 +76,14 @@ export default function RootLayout({
           "text-white",
           "overflow-x-hidden",
           "font-sans",
-          "antialiased"
+          "antialiased",
         )}
       >
-        {/* AUTO LOGOUT */}
+        <ServiceWorker />
+
         <IdleLogout />
 
-        {/* GLOBAL AUTH PROVIDER */}
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

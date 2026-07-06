@@ -29,61 +29,43 @@ type Service = {
   }[];
 };
 
-
 export default function BookingPage() {
-
-  const {
-    activeBranch,
-    isReady,
-  } = useActiveBranch();
+  const { activeBranch, isReady } = useActiveBranch();
 
   const [loading, setLoading] = useState(true);
 
   const [vehicles, setVehicles] = useState<any[]>([]);
 
-  const [services, setServices] =
-    useState<Service[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
 
-  const [selectedVehicle, setSelectedVehicle] =
-    useState<any>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
 
-  const [selectedService, setSelectedService] =
-    useState<any>(null);
+  const [selectedService, setSelectedService] = useState<any>(null);
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
-  const [customerName, setCustomerName] =
-    useState("");
+  const [customerName, setCustomerName] = useState("");
 
-  const [phone, setPhone] =
-    useState("");
+  const [phone, setPhone] = useState("");
 
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
 
-  const [vehicle, setVehicle] =
-    useState("");
+  const [vehicle, setVehicle] = useState("");
 
-  const [plate, setPlate] =
-    useState("");
+  const [plate, setPlate] = useState("");
 
-  const [vehicleColor, setVehicleColor] =
-    useState("");
+  const [vehicleColor, setVehicleColor] = useState("");
 
-  const [notes, setNotes] =
-    useState("");
+  const [notes, setNotes] = useState("");
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
   const router = useRouter();
 
-  const [customerId, setCustomerId] =
-    useState<string | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
 
-  const [selectedPrice, setSelectedPrice] =
-    useState<number>(0);
+  const [selectedPrice, setSelectedPrice] = useState<number>(0);
 
   const [appointments, setAppointments] = useState<any[]>([]);
 
@@ -99,10 +81,7 @@ export default function BookingPage() {
 
       if (!user) return;
 
-      const {
-        data: customer,
-        error: customerError,
-      } = await supabase
+      const { data: customer, error: customerError } = await supabase
         .from("customers")
         .select("id")
         .eq("profile_id", user.id)
@@ -121,10 +100,7 @@ export default function BookingPage() {
 
       setVehicleTypes(vehicleTypesData || []);
 
-      const {
-        data: vehiclesData,
-        error: vehiclesError,
-      } = await supabase
+      const { data: vehiclesData, error: vehiclesError } = await supabase
         .from("vehicles")
         .select("*")
         .eq("customer_id", customer.id)
@@ -138,12 +114,10 @@ export default function BookingPage() {
         return;
       }
 
-      const {
-        data: servicesData,
-        error,
-      } = await supabase
+      const { data: servicesData, error } = await supabase
         .from("services")
-        .select(`
+        .select(
+          `
         id,
         name,
         description,
@@ -153,7 +127,8 @@ export default function BookingPage() {
           vehicle_type_id,
           price
         )
-      `)
+      `,
+        )
         .eq("branch_id", activeBranch.id)
         .eq("status", "active");
 
@@ -182,22 +157,17 @@ export default function BookingPage() {
 
   const createBooking = async () => {
     try {
-      if (
-        !selectedService ||
-        !date ||
-        !time
-      ) {
+      if (!selectedService || !date || !time) {
         alert("Complete booking details");
         return;
       }
 
-      const { data: existing } =
-        await supabase
-          .from("appointments")
-          .select("id")
-          .eq("branch_id", activeBranch?.id)
-          .eq("appointment_date", date)
-          .eq("appointment_time", time);
+      const { data: existing } = await supabase
+        .from("appointments")
+        .select("id")
+        .eq("branch_id", activeBranch?.id)
+        .eq("appointment_date", date)
+        .eq("appointment_time", time);
 
       if (existing?.length) {
         alert("Time slot already booked");
@@ -209,54 +179,45 @@ export default function BookingPage() {
         return;
       }
 
-      const { error } =
-        await supabase
-          .from("appointments")
-          .insert({
-            customer_id: customerId,
+      const { error } = await supabase.from("appointments").insert({
+        customer_id: customerId,
 
-            customer: customerName,
-            phone,
-            email,
+        customer: customerName,
+        phone,
+        email,
 
-            vehicle,
-            plate,
+        vehicle,
+        plate,
 
-            vehicle_color: vehicleColor,
+        vehicle_color: vehicleColor,
 
-            service: selectedService.name,
+        service: selectedService.name,
 
-            appointment_date: date,
-            appointment_time: time,
+        appointment_date: date,
+        appointment_time: time,
 
-            estimated_duration:
-              selectedService.duration_minutes,
+        estimated_duration: selectedService.duration_minutes,
 
-            notes,
+        notes,
 
-            status: "pending",
+        status: "pending",
 
-            priority: "normal",
+        priority: "normal",
 
-            branch_id: activeBranch?.id,
-            branch_name: activeBranch?.name,
+        branch_id: activeBranch?.id,
+        branch_name: activeBranch?.name,
 
-            carwash_id:
-              selectedService.carwash_id,
-          });
+        carwash_id: selectedService.carwash_id,
+      });
 
       if (error) throw error;
 
       alert("Booking created");
 
-      router.push(
-        "/customer/bookings"
-      );
+      router.push("/customer/bookings");
     } catch (error) {
       console.error(error);
-      alert(
-        "Failed to create booking"
-      );
+      alert("Failed to create booking");
     }
   };
 
@@ -312,15 +273,11 @@ export default function BookingPage() {
     }
   };
 
-
   const getVehicleTypeId = (vehicleName: string) => {
     return vehicleTypes.find(
-      (v) =>
-        v.name.toLowerCase() ===
-        vehicleName?.toLowerCase()
+      (v) => v.name.toLowerCase() === vehicleName?.toLowerCase(),
     )?.id;
   };
-
 
   if (loading) {
     return (
@@ -332,7 +289,6 @@ export default function BookingPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
-
       {/* HERO */}
       <div
         className="
@@ -347,21 +303,16 @@ export default function BookingPage() {
       "
       >
         <div className="flex items-center justify-between">
-
           <div>
             <p className="text-cyan-400 font-semibold uppercase tracking-[4px]">
               Appointment Booking
             </p>
 
-            <h1 className="text-5xl font-black mt-2">
-              Book Your Wash
-            </h1>
+            <h1 className="text-5xl font-black mt-2">Book Your Wash</h1>
 
             <p className="text-slate-400 mt-3 text-lg">
               Schedule a professional wash at{" "}
-              <span className="text-cyan-400">
-                {activeBranch?.name}
-              </span>
+              <span className="text-cyan-400">{activeBranch?.name}</span>
             </p>
           </div>
 
@@ -377,15 +328,12 @@ export default function BookingPage() {
           >
             <Calendar className="h-12 w-12 text-cyan-400" />
           </div>
-
         </div>
       </div>
 
       <div className="grid xl:grid-cols-[1fr_420px] gap-6">
-
         {/* LEFT SIDE */}
         <div className="space-y-6">
-
           {/* VEHICLES */}
           <Card
             className="
@@ -395,23 +343,17 @@ export default function BookingPage() {
             text-white"
           >
             <CardContent className="p-7">
-
               <div className="flex items-center gap-3 mb-6">
                 <Car className="h-6 w-6 text-cyan-400" />
 
-                <h2 className="text-2xl font-bold">
-                  Choose Vehicle
-                </h2>
+                <h2 className="text-2xl font-bold">Choose Vehicle</h2>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-
                 {vehicles.map((vehicle) => (
                   <button
                     key={vehicle.id}
                     onClick={() => {
-
-
                       setSelectedVehicle(vehicle);
 
                       setVehicle(vehicle.type);
@@ -425,13 +367,14 @@ export default function BookingPage() {
                       p-5
                       text-white
                       
-                      ${selectedVehicle?.id === vehicle.id
-                        ? `
+                      ${
+                        selectedVehicle?.id === vehicle.id
+                          ? `
       border-cyan-400
       bg-cyan-500/15
       shadow-[0_0_30px_rgba(6,182,212,0.25)]
     `
-                        : `
+                          : `
       border-[#1A2D4D]
       bg-[#091A34]
       hover:border-cyan-500/30
@@ -440,7 +383,6 @@ export default function BookingPage() {
                       `}
                   >
                     <div className="flex justify-between">
-
                       <div>
                         <h3 className="font-bold text-lg text-white">
                           {vehicle.plate_number}
@@ -458,20 +400,16 @@ export default function BookingPage() {
                       {selectedVehicle?.id === vehicle.id && (
                         <CheckCircle2 className="text-cyan-400" />
                       )}
-
                     </div>
                   </button>
                 ))}
-
               </div>
-
             </CardContent>
           </Card>
 
           {/* SERVICES */}
           <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
             <CardContent className="p-7">
-
               <div className="flex items-center gap-3 mb-6">
                 <Sparkles className="h-6 w-6 text-cyan-400" />
 
@@ -481,35 +419,21 @@ export default function BookingPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-
                 {!selectedVehicle ? (
                   <div className="col-span-2 text-center py-10 text-slate-400">
                     Select a vehicle first
                   </div>
                 ) : (
                   services.map((service) => {
-
                     const vehicleTypeId = getVehicleTypeId(
-                      selectedVehicle?.type
+                      selectedVehicle?.type,
                     );
 
-                    const vehiclePrice =
-                      service.service_prices?.find(
-                        (p) =>
-                          p.vehicle_type_id === vehicleTypeId
-                      );
+                    const vehiclePrice = service.service_prices?.find(
+                      (p) => p.vehicle_type_id === vehicleTypeId,
+                    );
 
                     if (!vehiclePrice) return null;
-
-                    console.log(
-                      "Selected Vehicle:",
-                      selectedVehicle
-                    );
-
-                    console.log(
-                      "Services:",
-                      services
-                    );
 
                     return (
                       <button
@@ -518,14 +442,12 @@ export default function BookingPage() {
                           setSelectedService(service);
 
                           const vehicleTypeId = getVehicleTypeId(
-                            selectedVehicle?.type
+                            selectedVehicle?.type,
                           );
 
-                          const vehiclePrice =
-                            service.service_prices?.find(
-                              (p) =>
-                                p.vehicle_type_id === vehicleTypeId
-                            );
+                          const vehiclePrice = service.service_prices?.find(
+                            (p) => p.vehicle_type_id === vehicleTypeId,
+                          );
 
                           setSelectedPrice(vehiclePrice?.price || 0);
                         }}
@@ -536,14 +458,14 @@ export default function BookingPage() {
                     p-6
                     transition-all
 
-                    ${selectedService?.id === service.id
-                            ? "border-cyan-500 bg-cyan-500/10"
-                            : "border-white/10 bg-white/[0.02]"
-                          }
+                    ${
+                      selectedService?.id === service.id
+                        ? "border-cyan-500 bg-cyan-500/10"
+                        : "border-white/10 bg-white/[0.02]"
+                    }
                   `}
                       >
                         <div className="flex justify-between items-start">
-
                           <div>
                             <h3 className="font-bold text-xl text-white">
                               {service.name}
@@ -557,11 +479,9 @@ export default function BookingPage() {
                           {selectedService?.id === service.id && (
                             <CheckCircle2 className="text-cyan-400" />
                           )}
-
                         </div>
 
                         <div className="mt-6 flex items-center justify-between">
-
                           <div>
                             <p className="text-slate-500 text-sm">
                               Starting From
@@ -582,31 +502,24 @@ export default function BookingPage() {
                           >
                             {service.duration_minutes} mins
                           </div>
-
                         </div>
                       </button>
                     );
                   })
                 )}
               </div>
-
             </CardContent>
           </Card>
 
           {/* DATE + TIME */}
           <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
             <CardContent className="p-7">
-
-              <h2 className="text-2xl font-bold mb-6">
-                Select Date & Time
-              </h2>
+              <h2 className="text-2xl font-bold mb-6">Select Date & Time</h2>
 
               <input
                 type="date"
                 value={date}
-                onChange={(e) =>
-                  setDate(e.target.value)
-                }
+                onChange={(e) => setDate(e.target.value)}
                 className="
                 w-full
                 h-16
@@ -619,7 +532,6 @@ export default function BookingPage() {
               />
 
               <div className="grid grid-cols-4 gap-3 mt-5">
-
                 {[
                   "08:00",
                   "09:00",
@@ -643,27 +555,24 @@ export default function BookingPage() {
                     gap-2
                     transition-all
 
-                    ${time === slot
+                    ${
+                      time === slot
                         ? "bg-cyan-500 text-white border-cyan-500"
                         : "bg-slate-900 border-white/10 text-slate-300"
-                      }
+                    }
                   `}
                   >
                     <Clock3 size={16} />
                     {slot}
                   </button>
                 ))}
-
               </div>
-
             </CardContent>
           </Card>
-
         </div>
 
         {/* SUMMARY */}
         <div>
-
           <Card
             className="
             sticky top-6
@@ -673,17 +582,11 @@ export default function BookingPage() {
           "
           >
             <CardContent className="p-7">
-
-              <h2 className="text-3xl font-black mb-8">
-                Booking Summary
-              </h2>
+              <h2 className="text-3xl font-black mb-8">Booking Summary</h2>
 
               <div className="space-y-6">
-
                 <div>
-                  <p className="text-slate-500">
-                    Vehicle
-                  </p>
+                  <p className="text-slate-500">Vehicle</p>
 
                   <p className="font-semibold text-lg text-white">
                     {selectedVehicle?.plate_number || "Select vehicle"}
@@ -691,20 +594,15 @@ export default function BookingPage() {
                 </div>
 
                 <div>
-                  <p className="text-slate-500">
-                    Service
-                  </p>
+                  <p className="text-slate-500">Service</p>
 
                   <p className="font-semibold text-lg">
-                    {selectedService?.name ||
-                      "Select service"}
+                    {selectedService?.name || "Select service"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-slate-500">
-                    Schedule
-                  </p>
+                  <p className="text-slate-500">Schedule</p>
 
                   <p className="font-semibold">
                     {date || "--"} • {time || "--"}
@@ -712,23 +610,16 @@ export default function BookingPage() {
                 </div>
 
                 <div className="border-t border-white/10 pt-6">
-
-                  <p className="text-slate-500">
-                    Total Price
-                  </p>
+                  <p className="text-slate-500">Total Price</p>
 
                   <h3 className="text-5xl font-black text-cyan-400 mt-2">
                     KES{" "}
-                    {
-                      selectedService?.service_prices?.find(
-                        (p: any) =>
-                          p.vehicle_type_id === selectedVehicle?.vehicle_type_id
-                      )?.price || 0
-                    }
+                    {selectedService?.service_prices?.find(
+                      (p: any) =>
+                        p.vehicle_type_id === selectedVehicle?.vehicle_type_id,
+                    )?.price || 0}
                   </h3>
-
                 </div>
-
               </div>
 
               <Button
@@ -748,24 +639,15 @@ export default function BookingPage() {
               >
                 <CheckCircle2 className="mr-2 h-5 w-5" />
 
-                {saving
-                  ? "Creating Booking..."
-                  : "Confirm Booking"}
+                {saving ? "Creating Booking..." : "Confirm Booking"}
               </Button>
-
             </CardContent>
           </Card>
-
         </div>
-
       </div>
 
-
-
       <div className="mt-10">
-        <h2 className="text-3xl font-black text-white mb-6">
-          My Bookings
-        </h2>
+        <h2 className="text-3xl font-black text-white mb-6">My Bookings</h2>
 
         <div className="grid gap-6">
           {appointments.map((booking) => (
@@ -782,7 +664,6 @@ export default function BookingPage() {
                 <div className="border-t border-white/10 my-8" />
 
                 <div className="grid md:grid-cols-2 gap-5">
-
                   <div className="rounded-3xl border border-white/10 p-5">
                     <p className="text-slate-500 uppercase tracking-[4px] text-sm">
                       Vehicle
@@ -792,9 +673,7 @@ export default function BookingPage() {
                       {booking.vehicle}
                     </h3>
 
-                    <p className="text-slate-400">
-                      {booking.plate}
-                    </p>
+                    <p className="text-slate-400">{booking.plate}</p>
                   </div>
 
                   <div className="rounded-3xl border border-white/10 p-5">
@@ -802,9 +681,7 @@ export default function BookingPage() {
                       Phone
                     </p>
 
-                    <h3 className="text-2xl font-bold mt-2">
-                      {booking.phone}
-                    </h3>
+                    <h3 className="text-2xl font-bold mt-2">{booking.phone}</h3>
                   </div>
 
                   <div className="rounded-3xl border border-white/10 p-5">
@@ -816,9 +693,7 @@ export default function BookingPage() {
                       {booking.appointment_date}
                     </h3>
 
-                    <p className="text-slate-400">
-                      {booking.appointment_time}
-                    </p>
+                    <p className="text-slate-400">{booking.appointment_time}</p>
                   </div>
 
                   <div className="rounded-3xl border border-white/10 p-5">
@@ -830,7 +705,6 @@ export default function BookingPage() {
                       {booking.branch_name}
                     </h3>
                   </div>
-
                 </div>
               </CardContent>
             </Card>
@@ -838,6 +712,5 @@ export default function BookingPage() {
         </div>
       </div>
     </div>
-
   );
 }
