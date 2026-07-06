@@ -2,16 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  usePathname,
-  useRouter,
-} from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-import {
-  Menu,
-  X,
-  Loader2,
-} from "lucide-react";
+import { Menu, X, Loader2 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
 
@@ -25,13 +18,7 @@ type Profile = {
   role: string;
 };
 
-const allowedRoles = [
-  "admin",
-  "manager",
-  "cashier",
-  "washer",
-  "customer",
-];
+const allowedRoles = ["admin", "manager", "cashier", "washer", "customer"];
 
 export default function ClientLayout({
   children,
@@ -42,17 +29,13 @@ export default function ClientLayout({
 
   const router = useRouter();
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [session, setSession] =
-    useState<any>(null);
+  const [session, setSession] = useState<any>(null);
 
-  const [profile, setProfile] =
-    useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   /* =========================================
      PUBLIC ROUTES
@@ -66,8 +49,7 @@ export default function ClientLayout({
     "/customer-profiles/auth",
   ];
 
-  const isPublicRoute =
-    publicRoutes.includes(pathname);
+  const isPublicRoute = publicRoutes.includes(pathname);
 
   /* =========================================
      AUTH CHECK
@@ -96,19 +78,10 @@ export default function ClientLayout({
         const {
           data: { session },
           error,
-        } =
-          await supabase.auth.getSession();
-
-        console.log(
-          "SESSION:",
-          session
-        );
+        } = await supabase.auth.getSession();
 
         if (error) {
-          console.error(
-            "SESSION ERROR:",
-            error.message
-          );
+          console.error("SESSION ERROR:", error.message);
         }
 
         /* =====================================
@@ -129,28 +102,14 @@ export default function ClientLayout({
            GET PROFILE
         ===================================== */
 
-        const {
-          data: profileData,
-          error: profileError,
-        } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", session.user.id)
           .maybeSingle();
 
-        console.log(
-          "PROFILE:",
-          profileData
-        );
-
-        if (
-          profileError ||
-          !profileData
-        ) {
-          console.error(
-            "PROFILE ERROR:",
-            profileError
-          );
+        if (profileError || !profileData) {
+          console.error("PROFILE ERROR:", profileError);
 
           setLoading(false);
 
@@ -165,18 +124,9 @@ export default function ClientLayout({
            CUSTOMER REDIRECT
         ===================================== */
 
-        if (
-          profileData.role ===
-          "customer"
-        ) {
-          if (
-            !pathname.startsWith(
-              "/customer-profiles"
-            )
-          ) {
-            router.replace(
-              "/customer-profiles/dashboard"
-            );
+        if (profileData.role === "customer") {
+          if (!pathname.startsWith("/customer-profiles")) {
+            router.replace("/customer-profiles/dashboard");
           }
 
           return;
@@ -186,22 +136,13 @@ export default function ClientLayout({
            INVALID ROLE
         ===================================== */
 
-        if (
-          !allowedRoles.includes(
-            profileData.role
-          )
-        ) {
-          router.replace(
-            "/unauthorized"
-          );
+        if (!allowedRoles.includes(profileData.role)) {
+          router.replace("/unauthorized");
 
           return;
         }
       } catch (error) {
-        console.error(
-          "LAYOUT ERROR:",
-          error
-        );
+        console.error("LAYOUT ERROR:", error);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -217,38 +158,24 @@ export default function ClientLayout({
 
     const {
       data: { subscription },
-    } =
-      supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log(
-            "AUTH EVENT:",
-            event
-          );
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
 
-          setSession(session);
-
-          /* =====================================
+      /* =====================================
              SIGNED OUT
           ===================================== */
 
-          if (
-            event === "SIGNED_OUT"
-          ) {
-            router.replace("/auth");
-          }
-        }
-      );
+      if (event === "SIGNED_OUT") {
+        router.replace("/auth");
+      }
+    });
 
     return () => {
       mounted = false;
 
       subscription.unsubscribe();
     };
-  }, [
-    pathname,
-    router,
-    isPublicRoute,
-  ]);
+  }, [pathname, router, isPublicRoute]);
 
   /* =========================================
      LOADING SCREEN
@@ -260,9 +187,7 @@ export default function ClientLayout({
         <div className="flex items-center gap-3 text-white">
           <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
 
-          <span className="text-lg">
-            Loading application...
-          </span>
+          <span className="text-lg">Loading application...</span>
         </div>
       </div>
     );
@@ -295,9 +220,7 @@ export default function ClientLayout({
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/70 lg:hidden"
-          onClick={() =>
-            setSidebarOpen(false)
-          }
+          onClick={() => setSidebarOpen(false)}
         />
       )}
 
@@ -312,11 +235,7 @@ export default function ClientLayout({
           overflow-visible
           transition-transform duration-300
 
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
 
           lg:translate-x-0
         `}
@@ -325,9 +244,7 @@ export default function ClientLayout({
 
         <div className="flex items-center justify-end p-4 lg:hidden">
           <button
-            onClick={() =>
-              setSidebarOpen(false)
-            }
+            onClick={() => setSidebarOpen(false)}
             className="
               rounded-xl
               border border-white/10
@@ -350,9 +267,7 @@ export default function ClientLayout({
 
         <div className="flex items-center gap-3 border-b border-white/10 bg-[#020817] px-4 py-3 lg:hidden">
           <button
-            onClick={() =>
-              setSidebarOpen(true)
-            }
+            onClick={() => setSidebarOpen(true)}
             className="
               rounded-xl
               border border-white/10
@@ -365,13 +280,9 @@ export default function ClientLayout({
           </button>
 
           <div>
-            <h1 className="text-lg font-bold text-white">
-              WashPOS
-            </h1>
+            <h1 className="text-lg font-bold text-white">WashPOS</h1>
 
-            <p className="text-xs text-gray-400">
-              {profile?.role}
-            </p>
+            <p className="text-xs text-gray-400">{profile?.role}</p>
           </div>
         </div>
 

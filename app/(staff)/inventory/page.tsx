@@ -364,13 +364,11 @@ export default function InventoryPage() {
         .eq("carwash_id", profile?.carwash_id);
 
       if (error) {
-        console.log(error.message);
         return alert(error.message);
       }
 
       await loadAllData();
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -413,7 +411,6 @@ export default function InventoryPage() {
 
       await loadAllData();
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -459,7 +456,6 @@ export default function InventoryPage() {
       ]);
 
       if (error) {
-        console.log(error.message);
         return alert(error.message);
       }
 
@@ -480,7 +476,6 @@ export default function InventoryPage() {
 
       await loadAllData();
     } catch (err) {
-      console.log(err);
     }
   };
 

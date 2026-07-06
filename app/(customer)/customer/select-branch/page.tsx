@@ -20,10 +20,6 @@ export default function SelectCarWashPage() {
   const router = useRouter();
 
   const { activeBranch, setActiveBranch, isReady } = useActiveBranch();
-  console.log("Provider State:", {
-    isReady,
-    activeBranch,
-  });
 
   const [loading, setLoading] = useState(true);
   const [branches, setBranches] = useState<ActiveBranch[]>([]);

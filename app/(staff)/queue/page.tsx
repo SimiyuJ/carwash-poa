@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
 
@@ -45,11 +40,7 @@ type QueueStatus =
   | "quality"
   | "completed";
 
-type QueuePriority =
-  | "VIP"
-  | "Express"
-  | "Fleet"
-  | "Normal";
+type QueuePriority = "VIP" | "Express" | "Fleet" | "Normal";
 
 type QueueVehicle = {
   id: string | number;
@@ -84,9 +75,7 @@ type QueueVehicle = {
 
   priority?: QueuePriority;
 
-  payment:
-  | "Paid"
-  | "Pending";
+  payment: "Paid" | "Pending";
 
   status: QueueStatus;
 
@@ -141,47 +130,37 @@ export default function QueuePage() {
      STATES
   ========================================================= */
 
-  const [vehicles, setVehicles] =
-    useState<QueueVehicle[]>([]);
+  const [vehicles, setVehicles] = useState<QueueVehicle[]>([]);
 
-  const [staff, setStaff] =
-    useState<Staff[]>([]);
+  const [staff, setStaff] = useState<Staff[]>([]);
 
-  const [branches, setBranches] =
-    useState<Branch[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
   const [bays, setBays] = useState<Bay[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [selectedBranch, setSelectedBranch] =
-    useState("all");
+  const [selectedBranch, setSelectedBranch] = useState("all");
 
-  const [selectedPriority, setSelectedPriority] =
-    useState("all");
+  const [selectedPriority, setSelectedPriority] = useState("all");
 
-  const [selectedBay, setSelectedBay] =
-    useState("all");
+  const [selectedBay, setSelectedBay] = useState("all");
 
-  const [assigningVehicle, setAssigningVehicle] =
-    useState<QueueVehicle | null>(null);
+  const [assigningVehicle, setAssigningVehicle] = useState<QueueVehicle | null>(
+    null,
+  );
 
   const [movingVehicleId, setMovingVehicleId] = useState<
     string | number | null
   >(null);
 
-  const [staffName, setStaffName] =
-    useState("");
+  const [staffName, setStaffName] = useState("");
 
-  const [bayName, setBayName] =
-    useState("");
+  const [bayName, setBayName] = useState("");
 
-  const [assignLoading, setAssignLoading] =
-    useState(false);
+  const [assignLoading, setAssignLoading] = useState(false);
 
   /* =========================================================
      LOAD DATA
@@ -197,17 +176,15 @@ export default function QueuePage() {
 
       if (!user) return;
 
-
       /* =========================================================
          PROFILE
       ========================================================= */
 
-      const { data: profile, error: profileError } =
-        await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
       if (profileError || !profile) {
         console.error(profileError);
@@ -227,15 +204,13 @@ export default function QueuePage() {
          BRANCHES
       ========================================================= */
 
-      const { data: branchData } =
-        await supabase
-          .from("branches")
-          .select("*")
-          .eq("carwash_id", carwashId)
-          .order("name");
+      const { data: branchData } = await supabase
+        .from("branches")
+        .select("*")
+        .eq("carwash_id", carwashId)
+        .order("name");
 
       setBranches(branchData || []);
-
 
       /* =========================================================
          STAFF
@@ -247,18 +222,10 @@ export default function QueuePage() {
         .eq("carwash_id", carwashId);
 
       if (profile.role !== "admin") {
-        staffQuery = staffQuery.eq(
-          "branch_id",
-          branchId
-        );
+        staffQuery = staffQuery.eq("branch_id", branchId);
       }
 
-      console.log("PROFILE:", profile);
-      console.log("CARWASH ID:", carwashId);
-      console.log("BRANCH ID:", branchId);
-
-      const { data: staffData, error: staffError } =
-        await staffQuery;
+      const { data: staffData, error: staffError } = await staffQuery;
 
       setStaff(
         (staffData || []).map((s) => ({
@@ -266,7 +233,7 @@ export default function QueuePage() {
           name: s.name,
           role: s.role,
           branch_id: s.branch_id,
-        }))
+        })),
       );
 
       /* =========================================================
@@ -275,7 +242,8 @@ export default function QueuePage() {
 
       let query = supabase
         .from("queue_vehicles")
-        .select(`
+        .select(
+          `
           *,
           invoices:invoice_id (
           id,
@@ -283,48 +251,31 @@ export default function QueuePage() {
           payment_method,
           paid_at
           )
-          `)
+          `,
+        )
         .eq("carwash_id", carwashId);
 
+      query = query.order("created_at", {
+        ascending: true,
+      });
 
-      query = query.order(
-        "created_at",
-        {
-          ascending: true,
-        }
-      );
-
-      if (
-        selectedBranch !== "all"
-      ) {
-        query = query.eq(
-          "branch_id",
-          selectedBranch
-        );
+      if (selectedBranch !== "all") {
+        query = query.eq("branch_id", selectedBranch);
       }
 
-      const { data } =
-        await query;
+      const { data } = await query;
 
       const formatted =
         data?.map((item: any) => ({
           ...item,
 
-          check_in:
-            item.check_in ||
-            item.checkin,
+          check_in: item.check_in || item.checkin,
 
-          assigned_staff:
-            item.assigned_staff ||
-            item.staff ||
-            "",
+          assigned_staff: item.assigned_staff || item.staff || "",
 
-          bay:
-            item.bay || "",
+          bay: item.bay || "",
 
-          eta:
-            item.eta ||
-            "Pending",
+          eta: item.eta || "Pending",
         })) || [];
 
       setVehicles(formatted);
@@ -358,9 +309,8 @@ export default function QueuePage() {
           table: "queue_vehicles",
         },
         (payload) => {
-          console.log("REALTIME EVENT:", payload);
           loadData();
-        }
+        },
       )
       .subscribe();
 
@@ -373,102 +323,42 @@ export default function QueuePage() {
      FILTERED VEHICLES
   ========================================================= */
 
-  const filteredVehicles =
-    useMemo(() => {
-      return vehicles.filter(
-        (vehicle) => {
-          const matchesSearch =
-            vehicle.plate
-              ?.toLowerCase()
-              .includes(
-                search.toLowerCase()
-              ) ||
-            vehicle.customer
-              ?.toLowerCase()
-              .includes(
-                search.toLowerCase()
-              ) ||
-            vehicle.vehicle
-              ?.toLowerCase()
-              .includes(
-                search.toLowerCase()
-              ) ||
-            vehicle.ticket
-              ?.toLowerCase()
-              .includes(
-                search.toLowerCase()
-              );
+  const filteredVehicles = useMemo(() => {
+    return vehicles.filter((vehicle) => {
+      const matchesSearch =
+        vehicle.plate?.toLowerCase().includes(search.toLowerCase()) ||
+        vehicle.customer?.toLowerCase().includes(search.toLowerCase()) ||
+        vehicle.vehicle?.toLowerCase().includes(search.toLowerCase()) ||
+        vehicle.ticket?.toLowerCase().includes(search.toLowerCase());
 
-          const matchesPriority =
-            selectedPriority ===
-            "all" ||
-            vehicle.priority ===
-            selectedPriority;
+      const matchesPriority =
+        selectedPriority === "all" || vehicle.priority === selectedPriority;
 
-          const matchesBay =
-            selectedBay === "all" ||
-            vehicle.bay === selectedBay;
+      const matchesBay = selectedBay === "all" || vehicle.bay === selectedBay;
 
-          return (
-            matchesSearch &&
-            matchesPriority &&
-            matchesBay
-          );
-        }
-      );
-    }, [
-      vehicles,
-      search,
-      selectedPriority,
-      selectedBay,
-    ]);
+      return matchesSearch && matchesPriority && matchesBay;
+    });
+  }, [vehicles, search, selectedPriority, selectedBay]);
 
   /* =========================================================
      QUEUE STATS
   ========================================================= */
 
-  const queueStats =
-    useMemo(() => {
-      return {
-        total:
-          vehicles.length,
+  const queueStats = useMemo(() => {
+    return {
+      total: vehicles.length,
 
-        waiting:
-          vehicles.filter(
-            (v) =>
-              v.status ===
-              "waiting"
-          ).length,
+      waiting: vehicles.filter((v) => v.status === "waiting").length,
 
-        washing:
-          vehicles.filter(
-            (v) =>
-              v.status ===
-              "washing"
-          ).length,
+      washing: vehicles.filter((v) => v.status === "washing").length,
 
-        completed:
-          vehicles.filter(
-            (v) =>
-              v.status ===
-              "completed"
-          ).length,
+      completed: vehicles.filter((v) => v.status === "completed").length,
 
-        vip:
-          vehicles.filter(
-            (v) =>
-              v.priority ===
-              "VIP"
-          ).length,
+      vip: vehicles.filter((v) => v.priority === "VIP").length,
 
-        express:
-          vehicles.filter(
-            (v) =>
-              v.priority ===
-              "Express"
-          ).length,
-      };
-    }, [vehicles]);
+      express: vehicles.filter((v) => v.priority === "Express").length,
+    };
+  }, [vehicles]);
 
   /* =========================================================
      MOVE VEHICLE
@@ -476,7 +366,7 @@ export default function QueuePage() {
 
   const moveVehicle = async (
     id: string | number,
-    currentStatus: QueueStatus
+    currentStatus: QueueStatus,
   ) => {
     try {
       setMovingVehicleId(id);
@@ -508,7 +398,6 @@ export default function QueuePage() {
     }
   };
 
-
   /* =========================================================
      ASSIGN STAFF
   ========================================================= */
@@ -528,7 +417,6 @@ export default function QueuePage() {
         .eq("id", assigningVehicle.id)
         .select();
 
-
       if (error) {
         throw error;
       }
@@ -538,7 +426,6 @@ export default function QueuePage() {
       setAssigningVehicle(null);
       setStaffName("");
       setBayName("");
-
     } catch (err) {
       console.error("ASSIGN ERROR:", err);
     } finally {
@@ -558,8 +445,7 @@ export default function QueuePage() {
 
       icon: Clock3,
 
-      color:
-        "text-yellow-400",
+      color: "text-yellow-400",
     },
 
     {
@@ -569,8 +455,7 @@ export default function QueuePage() {
 
       icon: Car,
 
-      color:
-        "text-cyan-400",
+      color: "text-cyan-400",
     },
 
     {
@@ -580,33 +465,27 @@ export default function QueuePage() {
 
       icon: Sparkles,
 
-      color:
-        "text-purple-400",
+      color: "text-purple-400",
     },
 
     {
       key: "quality",
 
-      title:
-        "Quality Check",
+      title: "Quality Check",
 
       icon: ShieldCheck,
 
-      color:
-        "text-orange-400",
+      color: "text-orange-400",
     },
 
     {
       key: "completed",
 
-      title:
-        "Completed",
+      title: "Completed",
 
-      icon:
-        CheckCircle2,
+      icon: CheckCircle2,
 
-      color:
-        "text-emerald-400",
+      color: "text-emerald-400",
     },
   ];
 
@@ -616,19 +495,16 @@ export default function QueuePage() {
 
   return (
     <div className="min-h-screen bg-[#020817] text-white p-4 md:p-6 space-y-6 overflow-x-hidden">
-
       {/* =========================================================
          HEADER
       ========================================================= */}
 
       <div className="flex flex-col 2xl:flex-row 2xl:items-center 2xl:justify-between gap-5">
-
         <div>
           <h1 className="text-4xl font-black flex items-center gap-3">
             <div className="p-3 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
               <Car className="w-7 h-7" />
             </div>
-
             Queue Management
           </h1>
 
@@ -638,33 +514,19 @@ export default function QueuePage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-
           <select
             value={selectedBranch}
-            onChange={(e) =>
-              setSelectedBranch(
-                e.target.value
-              )
-            }
+            onChange={(e) => setSelectedBranch(e.target.value)}
             className="h-12 rounded-2xl border border-white/10 bg-[#0B1220] px-4"
           >
-            <option value="all">
-              All Branches
-            </option>
+            <option value="all">All Branches</option>
 
-            {branches.map(
-              (branch) => (
-                <option
-                  key={branch.id}
-                  value={branch.id}
-                >
-                  {branch.name}
-                </option>
-              )
-            )}
+            {branches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.name}
+              </option>
+            ))}
           </select>
-
-
         </div>
       </div>
 
@@ -673,7 +535,6 @@ export default function QueuePage() {
       ========================================================= */}
       <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#061127] to-[#040B18] p-4">
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
-
           {[
             {
               title: "Total",
@@ -723,10 +584,7 @@ export default function QueuePage() {
             rounded-3xl
             px-4 py-5
             transition-all duration-300
-            ${card.active
-                    ? "bg-white/5 shadow-lg"
-                    : "hover:bg-white/[0.03]"
-                  }
+            ${card.active ? "bg-white/5 shadow-lg" : "hover:bg-white/[0.03]"}
           `}
               >
                 <div
@@ -758,14 +616,12 @@ export default function QueuePage() {
         </div>
       </div>
 
-
       {/* =========================================================
       SEARCH + FILTERS
       ========================================================= */}
 
       <div className="rounded-3xl border border-white/10 bg-[#0B1220] p-5">
         <div className="grid gap-4 lg:grid-cols-4">
-
           {/* SEARCH */}
 
           <div className="relative">
@@ -783,50 +639,31 @@ export default function QueuePage() {
 
           <select
             value={selectedPriority}
-            onChange={(e) =>
-              setSelectedPriority(e.target.value)
-            }
+            onChange={(e) => setSelectedPriority(e.target.value)}
             className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4"
           >
-            <option value="all">
-              All Priorities
-            </option>
+            <option value="all">All Priorities</option>
 
-            <option value="VIP">
-              VIP
-            </option>
+            <option value="VIP">VIP</option>
 
-            <option value="Express">
-              Express
-            </option>
+            <option value="Express">Express</option>
 
-            <option value="Fleet">
-              Fleet
-            </option>
+            <option value="Fleet">Fleet</option>
 
-            <option value="Normal">
-              Normal
-            </option>
+            <option value="Normal">Normal</option>
           </select>
 
           {/* BAY */}
 
           <select
             value={selectedBay}
-            onChange={(e) =>
-              setSelectedBay(e.target.value)
-            }
+            onChange={(e) => setSelectedBay(e.target.value)}
             className="h-12 rounded-2xl border border-white/10 bg-black/30 px-4"
           >
-            <option value="all">
-              All Bays
-            </option>
+            <option value="all">All Bays</option>
 
             {bays.map((bay) => (
-              <option
-                key={bay.id}
-                value={bay.name}
-              >
+              <option key={bay.id} value={bay.name}>
                 {bay.name}
               </option>
             ))}
@@ -839,7 +676,6 @@ export default function QueuePage() {
               {filteredVehicles.length} Vehicles
             </span>
           </div>
-
         </div>
       </div>
 
@@ -848,13 +684,11 @@ export default function QueuePage() {
       ========================================================= */}
 
       <div className="grid gap-5 2xl:grid-cols-5 xl:grid-cols-3 md:grid-cols-2">
-
         {columns.map((column) => {
-          const Icon =
-            column.icon;
+          const Icon = column.icon;
 
           let items = filteredVehicles.filter(
-            (vehicle) => vehicle.status === column.key
+            (vehicle) => vehicle.status === column.key,
           );
 
           if (column.key === "completed") {
@@ -862,7 +696,7 @@ export default function QueuePage() {
               .sort(
                 (a, b) =>
                   new Date(b.created_at || "").getTime() -
-                  new Date(a.created_at || "").getTime()
+                  new Date(a.created_at || "").getTime(),
               )
               .slice(0, 1);
           }
@@ -875,19 +709,13 @@ export default function QueuePage() {
               {/* COLUMN HEADER */}
 
               <div className="mb-5 flex items-center justify-between">
-
                 <div className="flex items-center gap-3">
-
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/40">
-                    <Icon
-                      className={`h-5 w-5 ${column.color}`}
-                    />
+                    <Icon className={`h-5 w-5 ${column.color}`} />
                   </div>
 
                   <div>
-                    <h2
-                      className={`text-lg font-bold ${column.color}`}
-                    >
+                    <h2 className={`text-lg font-bold ${column.color}`}>
                       {column.title}
                     </h2>
 
@@ -895,14 +723,12 @@ export default function QueuePage() {
                       {items.length} Vehicles
                     </p>
                   </div>
-
                 </div>
               </div>
 
               {/* VEHICLES */}
 
               <div className="space-y-4">
-
                 {items.map((vehicle) => (
                   <div
                     key={vehicle.id}
@@ -912,9 +738,7 @@ export default function QueuePage() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-lg font-bold">
-                            {vehicle.plate}
-                          </h3>
+                          <h3 className="text-lg font-bold">{vehicle.plate}</h3>
 
                           {vehicle.priority && (
                             <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 text-xs text-cyan-300">
@@ -944,9 +768,7 @@ export default function QueuePage() {
                     <div className="mt-4 rounded-2xl border border-white/5 bg-[#0B1220] p-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-slate-500">
-                            Service
-                          </p>
+                          <p className="text-xs text-slate-500">Service</p>
 
                           <h4 className="mt-1 font-semibold">
                             {vehicle.service}
@@ -960,9 +782,7 @@ export default function QueuePage() {
                     {/* INFO */}
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       <div className="rounded-2xl bg-[#0B1220] p-3">
-                        <p className="text-xs text-slate-500">
-                          Bay
-                        </p>
+                        <p className="text-xs text-slate-500">Bay</p>
 
                         <h4 className="mt-1 font-semibold">
                           {vehicle.bay || "Waiting Bay"}
@@ -970,9 +790,7 @@ export default function QueuePage() {
                       </div>
 
                       <div className="rounded-2xl bg-[#0B1220] p-3">
-                        <p className="text-xs text-slate-500">
-                          ETA
-                        </p>
+                        <p className="text-xs text-slate-500">ETA</p>
 
                         <h4 className="mt-1 font-semibold">
                           {vehicle.eta || "Pending"}
@@ -991,10 +809,11 @@ export default function QueuePage() {
                       </div>
 
                       <span
-                        className={`rounded-full px-3 py-1 text-xs ${vehicle.payment === "Paid"
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-yellow-500/10 text-yellow-400"
-                          }`}
+                        className={`rounded-full px-3 py-1 text-xs ${
+                          vehicle.payment === "Paid"
+                            ? "bg-emerald-500/10 text-emerald-400"
+                            : "bg-yellow-500/10 text-yellow-400"
+                        }`}
                       >
                         {vehicle.payment || "Pending"}
                       </span>
@@ -1004,9 +823,7 @@ export default function QueuePage() {
                     <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
                       <span>Checked In</span>
 
-                      <span>
-                        {vehicle.check_in || "—"}
-                      </span>
+                      <span>{vehicle.check_in || "—"}</span>
                     </div>
 
                     {/* ACTIONS */}
@@ -1022,9 +839,7 @@ export default function QueuePage() {
                     {vehicle.status === "washing" && (
                       <button
                         disabled={movingVehicleId === vehicle.id}
-                        onClick={() =>
-                          moveVehicle(vehicle.id, vehicle.status)
-                        }
+                        onClick={() => moveVehicle(vehicle.id, vehicle.status)}
                         className="mt-4 w-full rounded-2xl bg-purple-500 py-3 font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                       >
                         {movingVehicleId === vehicle.id ? (
@@ -1041,9 +856,7 @@ export default function QueuePage() {
                     {vehicle.status === "detailing" && (
                       <button
                         disabled={movingVehicleId === vehicle.id}
-                        onClick={() =>
-                          moveVehicle(vehicle.id, vehicle.status)
-                        }
+                        onClick={() => moveVehicle(vehicle.id, vehicle.status)}
                         className="mt-4 w-full rounded-2xl bg-orange-500 py-3 font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                       >
                         {movingVehicleId === vehicle.id ? (
@@ -1059,12 +872,7 @@ export default function QueuePage() {
 
                     {vehicle.status === "quality" && (
                       <button
-                        onClick={() =>
-                          moveVehicle(
-                            vehicle.id,
-                            vehicle.status
-                          )
-                        }
+                        onClick={() => moveVehicle(vehicle.id, vehicle.status)}
                         className="mt-4 w-full rounded-2xl bg-emerald-500 py-3 font-semibold"
                       >
                         Complete Wash
@@ -1082,142 +890,78 @@ export default function QueuePage() {
          ASSIGN STAFF MODAL
       ========================================================= */}
 
-      {
-        assigningVehicle && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      {assigningVehicle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0B1220] p-6">
+            <h2 className="text-2xl font-bold">Assign Staff</h2>
 
-            <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0B1220] p-6">
+            <p className="mt-2 text-sm text-slate-400">
+              {assigningVehicle.plate}
+            </p>
 
-              <h2 className="text-2xl font-bold">
+            {/* STAFF */}
+
+            <div className="mt-5">
+              <label className="mb-2 block text-sm text-slate-400">
                 Assign Staff
-              </h2>
+              </label>
 
-              <p className="mt-2 text-sm text-slate-400">
-                {
-                  assigningVehicle.plate
-                }
-              </p>
+              <select
+                value={staffName}
+                onChange={(e) => setStaffName(e.target.value)}
+                className="h-12 w-full rounded-2xl border border-white/10 bg-black/40 px-4 outline-none"
+              >
+                <option value="">Select Staff</option>
 
-              {/* STAFF */}
-
-              <div className="mt-5">
-                <label className="mb-2 block text-sm text-slate-400">
-                  Assign Staff
-                </label>
-
-                <select
-                  value={
-                    staffName
-                  }
-                  onChange={(
-                    e
-                  ) =>
-                    setStaffName(
-                      e.target
-                        .value
-                    )
-                  }
-                  className="h-12 w-full rounded-2xl border border-white/10 bg-black/40 px-4 outline-none"
-                >
-                  <option value="">
-                    Select Staff
+                {staff.map((member) => (
+                  <option key={member.id} value={member.name}>
+                    {member.name}
                   </option>
+                ))}
+              </select>
+            </div>
 
-                  {staff.map(
-                    (
-                      member
-                    ) => (
-                      <option
-                        key={
-                          member.id
-                        }
-                        value={
-                          member.name
-                        }
-                      >
-                        {
-                          member.name
-                        }
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
+            {/* BAY */}
 
-              {/* BAY */}
+            <div className="mt-4">
+              <label className="mb-2 block text-sm text-slate-400">Bay</label>
 
-              <div className="mt-4">
-                <label className="mb-2 block text-sm text-slate-400">
-                  Bay
-                </label>
+              <select
+                value={bayName}
+                onChange={(e) => setBayName(e.target.value)}
+                className="h-12 w-full rounded-2xl border border-white/10 bg-black/40 px-4 outline-none"
+              >
+                <option value="">Select Bay</option>
 
-                <select
-                  value={bayName}
-                  onChange={(e) =>
-                    setBayName(
-                      e.target.value
-                    )
-                  }
-                  className="h-12 w-full rounded-2xl border border-white/10 bg-black/40 px-4 outline-none"
-                >
-                  <option value="">
-                    Select Bay
+                {bays.map((bay) => (
+                  <option key={bay.id} value={bay.name}>
+                    {bay.name}
                   </option>
+                ))}
+              </select>
+            </div>
 
-                  {bays.map(
-                    (bay) => (
-                      <option
-                        key={
-                          bay.id
-                        }
-                        value={
-                          bay.name
-                        }
-                      >
-                        {bay.name}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
+            {/* BUTTONS */}
 
-              {/* BUTTONS */}
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setAssigningVehicle(null)}
+                className="flex-1 rounded-2xl border border-white/10 py-3"
+              >
+                Cancel
+              </button>
 
-              <div className="mt-6 flex gap-3">
-
-                <button
-                  onClick={() =>
-                    setAssigningVehicle(
-                      null
-                    )
-                  }
-                  className="flex-1 rounded-2xl border border-white/10 py-3"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  disabled={
-                    assignLoading
-                  }
-                  onClick={
-                    assignStaff
-                  }
-                  className="flex-1 rounded-2xl bg-cyan-500 py-3 font-semibold text-white"
-                >
-                  {assignLoading ? (
-                    "Assigning..."
-                  ) : (
-                    "Assign & Start"
-                  )}
-                </button>
-
-              </div>
+              <button
+                disabled={assignLoading}
+                onClick={assignStaff}
+                className="flex-1 rounded-2xl bg-cyan-500 py-3 font-semibold text-white"
+              >
+                {assignLoading ? "Assigning..." : "Assign & Start"}
+              </button>
             </div>
           </div>
-        )
-      }
-
-    </div >
+        </div>
+      )}
+    </div>
   );
 }

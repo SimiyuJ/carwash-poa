@@ -211,8 +211,6 @@ export default function AuthPage() {
         return;
       }
 
-      console.log("SETUP RESULT:", result);
-
       // STEP 4: Success
       setSuccessMessage("Account created successfully.");
 

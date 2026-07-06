@@ -82,13 +82,9 @@ if (process.env.NODE_ENV !== "production") {
 ========================================= */
 
 if (typeof window !== "undefined") {
-  window.addEventListener("online", () => {
-    console.log("SUPABASE: Internet reconnected");
-  });
+  window.addEventListener("online", () => {});
 
-  window.addEventListener("offline", () => {
-    console.warn("SUPABASE: Internet disconnected");
-  });
+  window.addEventListener("offline", () => {});
 }
 
 /* =========================================
@@ -96,8 +92,6 @@ if (typeof window !== "undefined") {
 ========================================= */
 
 supabase.auth.onAuthStateChange(async (event) => {
-  console.log("AUTH EVENT:", event);
-
   if (event === "SIGNED_OUT") {
     try {
       localStorage.removeItem("carwash-management-auth");

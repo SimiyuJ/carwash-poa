@@ -433,8 +433,6 @@ export default function SubscriptionsPage() {
           color: plan.glow || "from-cyan-500 to-blue-600",
         })) || [];
 
-      console.log("Loaded plans:", formattedPlans);
-
       setSubscriptionPlans(formattedPlans);
     };
   }, [profile]);
@@ -473,8 +471,6 @@ export default function SubscriptionsPage() {
       )
       .eq("id", user.id)
       .single();
-
-    console.log("PROFILE:", data);
     setProfile(data);
   };
 
@@ -542,7 +538,6 @@ export default function SubscriptionsPage() {
       .order("id", { ascending: false });
 
     if (error) {
-      console.log(error);
       return;
     }
 
@@ -839,11 +834,8 @@ export default function SubscriptionsPage() {
       }
 
       if (!vehicle) {
-        console.log("Vehicle not found");
         return;
       }
-
-      console.log("VEHICLE FOUND:", vehicle);
 
       /* ----------------------------------------
          STEP 2: FIND CUSTOMER
@@ -925,13 +917,6 @@ export default function SubscriptionsPage() {
 
       setFoundMember(memberData);
 
-      console.log("Vehicle object:", vehicle);
-      console.log("Vehicle customer_id:", vehicle?.customer_id);
-
-      console.log("Found Member:", foundMember);
-
-      console.log("newMember.customer_id:", newMember.customer_id);
-
       /* ----------------------------------------
          STEP 5: AUTO FILL FORM
       ---------------------------------------- */
@@ -971,8 +956,6 @@ export default function SubscriptionsPage() {
         customer_id: vehicle?.customer_id ?? customer?.id ?? null,
         vehicle_id: vehicle?.id ?? null,
       });
-
-      console.log("✅ Form auto-filled");
     } catch (err) {
       console.error(err);
     } finally {
@@ -982,8 +965,6 @@ export default function SubscriptionsPage() {
 
   //edit plan
   const handleEditPlan = (plan: Plan) => {
-    console.log("Editing plan:", plan);
-
     // We'll implement editing later.
   };
 
@@ -1753,8 +1734,6 @@ export default function SubscriptionsPage() {
                               <Select
                                 value={String(newMember.plan_id || "")}
                                 onValueChange={(value) => {
-                                  console.log("SELECT VALUE:", value);
-
                                   const selectedPlan = subscriptionPlans.find(
                                     (p) => String(p.id) === String(value),
                                   );
@@ -2828,7 +2807,6 @@ border border-white/10
                       <Button
                         variant="outline"
                         onClick={() => {
-                          console.log("Renew clicked", member);
                           alert("Renew clicked");
                           handleRenewMembership(member);
                         }}
@@ -3131,7 +3109,6 @@ flex flex-col justify-between
                       variant="outline"
                       onClick={() => {
                         alert("Renew button clicked");
-                        console.log("Renew clicked");
                       }}
                       className="
     rounded-2xl

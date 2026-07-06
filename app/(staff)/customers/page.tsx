@@ -355,8 +355,6 @@ export default function CustomersPage() {
           setLoading(false);
           return;
         }
-
-        console.log("✅ VEHICLE SAVED:", vehicleData);
       }
 
       /* ================= SUCCESS ================= */

@@ -93,7 +93,6 @@ export default function AuthProvider({
         } = await supabase.auth.getSession();
 
         if (error) {
-          console.log(error);
           return;
         }
 
@@ -108,7 +107,6 @@ export default function AuthProvider({
 
         await loadProfile(session.user.id);
       } catch (err) {
-        console.log(err);
       } finally {
         setLoading(false);
       }

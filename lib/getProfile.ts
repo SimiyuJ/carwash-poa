@@ -6,12 +6,7 @@ import { supabase } from "@/lib/supabase";
    USER ROLES
 ========================================================= */
 
-export type UserRole =
-  | "admin"
-  | "manager"
-  | "cashier"
-  | "washer"
-  | "customer";
+export type UserRole = "admin" | "manager" | "cashier" | "washer" | "customer";
 
 /* =========================================================
    PROFILE TYPE
@@ -74,15 +69,8 @@ const VALID_ROLES: UserRole[] = [
    SAFE ROLE
 ========================================================= */
 
-function normalizeRole(
-  role?: string | null
-): UserRole {
-  if (
-    role &&
-    VALID_ROLES.includes(
-      role as UserRole
-    )
-  ) {
+function normalizeRole(role?: string | null): UserRole {
+  if (role && VALID_ROLES.includes(role as UserRole)) {
     return role as UserRole;
   }
 
@@ -93,21 +81,14 @@ function normalizeRole(
    NORMALIZE PROFILE
 ========================================================= */
 
-function normalizeProfile(
-  profile: any
-): Profile {
+function normalizeProfile(profile: any): Profile {
   const tenantId =
-    profile?.carwash_id ||
-    profile?.company_id ||
-    profile?.tenant_id ||
-    null;
+    profile?.carwash_id || profile?.company_id || profile?.tenant_id || null;
 
   return {
     ...profile,
 
-    role: normalizeRole(
-      profile?.role
-    ),
+    role: normalizeRole(profile?.role),
 
     /*
       FORCE ALL TENANT IDS
@@ -119,8 +100,7 @@ function normalizeProfile(
 
     tenant_id: tenantId,
 
-    branch_id:
-      profile?.branch_id || null,
+    branch_id: profile?.branch_id || null,
   };
 }
 
@@ -130,10 +110,6 @@ function normalizeProfile(
 
 export async function getProfile(): Promise<Profile | null> {
   try {
-    console.log(
-      "GET PROFILE START"
-    );
-
     /* =====================================================
        GET SESSION
     ===================================================== */
@@ -144,58 +120,38 @@ export async function getProfile(): Promise<Profile | null> {
     } = await supabase.auth.getSession();
 
     if (sessionError) {
-      console.error(
-        "SESSION ERROR:",
-        sessionError.message
-      );
+      console.error("SESSION ERROR:", sessionError.message);
 
       return null;
     }
 
     if (!session?.user) {
-      console.warn(
-        "NO ACTIVE SESSION"
-      );
+      console.warn("NO ACTIVE SESSION");
 
       return null;
     }
 
     const user = session.user;
 
-    const email =
-      user.email?.toLowerCase();
+    const email = user.email?.toLowerCase();
 
     if (!email) {
-      console.warn(
-        "USER EMAIL MISSING"
-      );
+      console.warn("USER EMAIL MISSING");
 
       return null;
     }
-
-    console.log(
-      "ACTIVE USER:",
-      email
-    );
-
     /* =====================================================
        FETCH PROFILE
     ===================================================== */
 
-    const {
-      data: existingProfile,
-      error: profileError,
-    } = await supabase
+    const { data: existingProfile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .maybeSingle();
 
     if (profileError) {
-      console.error(
-        "PROFILE FETCH ERROR:",
-        profileError.message
-      );
+      console.error("PROFILE FETCH ERROR:", profileError.message);
 
       return null;
     }
@@ -205,76 +161,47 @@ export async function getProfile(): Promise<Profile | null> {
     ===================================================== */
 
     if (existingProfile) {
-      console.log(
-        "PROFILE FOUND"
-      );
-
-      let profile =
-        normalizeProfile(
-          existingProfile
-        );
+      let profile = normalizeProfile(existingProfile);
 
       /*
         PROFILE MISSING TENANT
       */
 
       if (!profile.carwash_id) {
-        console.warn(
-          "PROFILE MISSING TENANT"
-        );
+        console.warn("PROFILE MISSING TENANT");
 
-        const {
-          data: invite,
-        } = await supabase
+        const { data: invite } = await supabase
           .from("invites")
           .select("*")
           .eq("email", email)
           .maybeSingle();
 
         if (invite?.carwash_id) {
-          const tenantId =
-            invite.carwash_id;
+          const tenantId = invite.carwash_id;
 
-          const {
-            data: fixedProfile,
-            error:
-              updateError,
-          } = await supabase
+          const { data: fixedProfile, error: updateError } = await supabase
             .from("profiles")
             .update({
-              carwash_id:
-                tenantId,
+              carwash_id: tenantId,
 
-              company_id:
-                tenantId,
+              company_id: tenantId,
 
-              tenant_id:
-                tenantId,
+              tenant_id: tenantId,
 
-              branch_id:
-                invite.branch_id ||
-                null,
+              branch_id: invite.branch_id || null,
 
-              role:
-                normalizeRole(
-                  invite.role
-                ),
+              role: normalizeRole(invite.role),
             })
             .eq("id", user.id)
             .select("*")
             .single();
 
           if (updateError) {
-            console.error(
-              updateError.message
-            );
+            console.error(updateError.message);
           }
 
           if (fixedProfile) {
-            profile =
-              normalizeProfile(
-                fixedProfile
-              );
+            profile = normalizeProfile(fixedProfile);
           }
         }
       }
@@ -283,59 +210,33 @@ export async function getProfile(): Promise<Profile | null> {
         STAFF AUTO BRANCH
       */
 
-      const isStaff =
-        profile.role !==
-        "customer";
+      const isStaff = profile.role !== "customer";
 
-      if (
-        isStaff &&
-        !profile.branch_id
-      ) {
-        console.warn(
-          "STAFF HAS NO BRANCH"
-        );
+      if (isStaff && !profile.branch_id) {
+        console.warn("STAFF HAS NO BRANCH");
 
-        const {
-          data: branch,
-        } = await supabase
+        const { data: branch } = await supabase
           .from("branches")
           .select("id")
-          .eq(
-            "company_id",
-            profile.carwash_id
-          )
+          .eq("company_id", profile.carwash_id)
           .limit(1)
           .maybeSingle();
 
         if (branch?.id) {
-          const {
-            data:
-              updatedBranchProfile,
-          } = await supabase
+          const { data: updatedBranchProfile } = await supabase
             .from("profiles")
             .update({
-              branch_id:
-                branch.id,
+              branch_id: branch.id,
             })
             .eq("id", user.id)
             .select("*")
             .single();
 
-          if (
-            updatedBranchProfile
-          ) {
-            profile =
-              normalizeProfile(
-                updatedBranchProfile
-              );
+          if (updatedBranchProfile) {
+            profile = normalizeProfile(updatedBranchProfile);
           }
         }
       }
-
-      console.log(
-        "FINAL PROFILE:",
-        profile
-      );
 
       return profile;
     }
@@ -344,45 +245,30 @@ export async function getProfile(): Promise<Profile | null> {
        NO PROFILE → CHECK INVITES
     ===================================================== */
 
-    console.warn(
-      "NO PROFILE FOUND"
-    );
+    console.warn("NO PROFILE FOUND");
 
-    const {
-      data: invite,
-      error: inviteError,
-    } = await supabase
+    const { data: invite, error: inviteError } = await supabase
       .from("invites")
       .select("*")
       .eq("email", email)
       .maybeSingle();
 
     if (inviteError) {
-      console.error(
-        "INVITE ERROR:",
-        inviteError.message
-      );
+      console.error("INVITE ERROR:", inviteError.message);
 
       return null;
     }
 
     if (!invite) {
-      console.warn(
-        "NO INVITE FOUND"
-      );
+      console.warn("NO INVITE FOUND");
 
       return null;
     }
 
-    const tenantId =
-      invite.carwash_id ||
-      invite.company_id ||
-      invite.tenant_id;
+    const tenantId = invite.carwash_id || invite.company_id || invite.tenant_id;
 
     if (!tenantId) {
-      console.error(
-        "INVITE HAS NO TENANT"
-      );
+      console.error("INVITE HAS NO TENANT");
 
       return null;
     }
@@ -397,47 +283,30 @@ export async function getProfile(): Promise<Profile | null> {
       email,
 
       full_name:
-        user.user_metadata
-          ?.full_name ||
-        user.user_metadata
-          ?.name ||
-        "",
+        user.user_metadata?.full_name || user.user_metadata?.name || "",
 
-      role: normalizeRole(
-        invite.role
-      ),
+      role: normalizeRole(invite.role),
 
       /*
         FORCE ALL IDS
       */
-      carwash_id:
-        tenantId,
+      carwash_id: tenantId,
 
-      company_id:
-        tenantId,
+      company_id: tenantId,
 
-      tenant_id:
-        tenantId,
+      tenant_id: tenantId,
 
-      branch_id:
-        invite.branch_id ||
-        null,
+      branch_id: invite.branch_id || null,
     };
 
-    const {
-      data: createdProfile,
-      error: createError,
-    } = await supabase
+    const { data: createdProfile, error: createError } = await supabase
       .from("profiles")
       .insert(profilePayload)
       .select("*")
       .single();
 
     if (createError) {
-      console.error(
-        "PROFILE CREATE ERROR:",
-        createError.message
-      );
+      console.error("PROFILE CREATE ERROR:", createError.message);
 
       return null;
     }
@@ -452,28 +321,14 @@ export async function getProfile(): Promise<Profile | null> {
         .update({
           used: true,
         })
-        .eq(
-          "id",
-          invite.id
-        );
+        .eq("id", invite.id);
     }
 
-    const normalized =
-      normalizeProfile(
-        createdProfile
-      );
-
-    console.log(
-      "PROFILE CREATED:",
-      normalized
-    );
+    const normalized = normalizeProfile(createdProfile);
 
     return normalized;
   } catch (error: any) {
-    console.error(
-      "GET PROFILE FATAL ERROR:",
-      error?.message || error
-    );
+    console.error("GET PROFILE FATAL ERROR:", error?.message || error);
 
     return null;
   }
@@ -483,81 +338,51 @@ export async function getProfile(): Promise<Profile | null> {
    ROLE HELPERS
 ========================================================= */
 
-export function isAdmin(
-  role?: string
-) {
+export function isAdmin(role?: string) {
   return role === "admin";
 }
 
-export function isManager(
-  role?: string
-) {
+export function isManager(role?: string) {
   return role === "manager";
 }
 
-export function isCashier(
-  role?: string
-) {
+export function isCashier(role?: string) {
   return role === "cashier";
 }
 
-export function isWasher(
-  role?: string
-) {
+export function isWasher(role?: string) {
   return role === "washer";
 }
 
-export function isCustomer(
-  role?: string
-) {
+export function isCustomer(role?: string) {
   return role === "customer";
 }
 
-export function isStaff(
-  role?: string
-) {
-  return [
-    "admin",
-    "manager",
-    "cashier",
-    "washer",
-  ].includes(role || "");
+export function isStaff(role?: string) {
+  return ["admin", "manager", "cashier", "washer"].includes(role || "");
 }
 
 /* =========================================================
    TENANT HELPERS
 ========================================================= */
 
-export function hasTenant(
-  profile?: Profile | null
-) {
-  return !!(
-    profile?.carwash_id ||
-    profile?.company_id ||
-    profile?.tenant_id
-  );
+export function hasTenant(profile?: Profile | null) {
+  return !!(profile?.carwash_id || profile?.company_id || profile?.tenant_id);
 }
 
-export function hasBranch(
-  profile?: Profile | null
-) {
+export function hasBranch(profile?: Profile | null) {
   return !!profile?.branch_id;
 }
 
 export function canAccessBranch(
   profile: Profile | null,
-  branchId?: string | null
+  branchId?: string | null,
 ) {
   if (!profile) return false;
 
-  if (
-    profile.role === "admin"
-  ) {
+  if (profile.role === "admin") {
     return true;
   }
 
-  return (
-    profile.branch_id ===
-    branchId
-  );
+  return profile.branch_id === branchId;
 }

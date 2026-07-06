@@ -57,7 +57,6 @@ interface VehicleType {
   name: string;
 }
 
-
 interface ServiceCategory {
   id: string;
   name: string;
@@ -78,7 +77,6 @@ interface ServicePrice {
     name?: string;
   };
 }
-
 
 interface Service {
   id: string;
@@ -281,12 +279,10 @@ export default function ServicesPage() {
         return;
       }
 
-      const { error } = await supabase
-        .from("vehicle_types")
-        .insert({
-          carwash_id: businessId,
-          name: newVehicleType,
-        });
+      const { error } = await supabase.from("vehicle_types").insert({
+        carwash_id: businessId,
+        name: newVehicleType,
+      });
 
       if (error) throw error;
 
@@ -341,8 +337,6 @@ export default function ServicesPage() {
         return;
       }
 
-      console.log("CATEGORIES:", data);
-
       setCategories(data || []);
     } catch (error) {
       console.error("CATEGORIES EXCEPTION:", error);
@@ -362,7 +356,8 @@ export default function ServicesPage() {
 
       let query = supabase
         .from("services")
-        .select(`
+        .select(
+          `
         id,
         carwash_id,
         branch_id,
@@ -396,7 +391,8 @@ export default function ServicesPage() {
             name
           )
         )
-      `)
+      `,
+        )
         .eq("carwash_id", businessFilter);
 
       if (selectedBranch !== "all") {
@@ -410,8 +406,6 @@ export default function ServicesPage() {
         return;
       }
 
-      console.log("SERVICES:", data);
-
       setServices((data as Service[]) || []);
     } catch (err) {
       console.error("FETCH SERVICES CRASH:", err);
@@ -419,7 +413,6 @@ export default function ServicesPage() {
       setStatsLoading(false);
     }
   }
-
 
   /* =========================================================
      RESET FORM
@@ -460,7 +453,7 @@ export default function ServicesPage() {
       service.service_prices?.map((price) => ({
         vehicle_type_id: price.vehicle_type_id,
         price: Number(price.price),
-      })) || []
+      })) || [],
     );
 
     setOpen(true);
@@ -544,9 +537,7 @@ export default function ServicesPage() {
             price: v.price,
           }));
 
-        await supabase
-          .from("service_prices")
-          .insert(payload);
+        await supabase.from("service_prices").insert(payload);
       }
 
       await fetchServices();
@@ -572,10 +563,7 @@ export default function ServicesPage() {
     if (!confirmDelete) return;
 
     try {
-      await supabase
-        .from("service_prices")
-        .delete()
-        .eq("service_id", id);
+      await supabase.from("service_prices").delete().eq("service_id", id);
 
       const { error } = await supabase
         .from("services")
@@ -603,12 +591,10 @@ export default function ServicesPage() {
         service.description?.toLowerCase().includes(search.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === "all" ||
-        service.category_id === selectedCategory;
+        selectedCategory === "all" || service.category_id === selectedCategory;
 
       const matchesBranch =
-        selectedBranch === "all" ||
-        service.branch_id === selectedBranch;
+        selectedBranch === "all" || service.branch_id === selectedBranch;
 
       return matchesSearch && matchesCategory && matchesBranch;
     });
@@ -659,7 +645,6 @@ export default function ServicesPage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1800px] p-4 md:p-6 space-y-6">
-
         {/* HERO HEADER */}
 
         <motion.div
@@ -684,7 +669,8 @@ export default function ServicesPage() {
               </h1>
 
               <p className="mt-4 max-w-3xl text-base md:text-lg text-slate-400">
-                Enterprise-ready multi-branch carwash services with branch pricing.
+                Enterprise-ready multi-branch carwash services with branch
+                pricing.
               </p>
             </div>
 
@@ -719,12 +705,12 @@ export default function ServicesPage() {
                       </DialogTitle>
 
                       <DialogDescription className="text-slate-400">
-                        Configure service details, vehicle pricing, and branch settings.
+                        Configure service details, vehicle pricing, and branch
+                        settings.
                       </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-8">
-
                       {/* FORM */}
 
                       <div className="grid gap-5 md:grid-cols-2">
@@ -813,21 +799,20 @@ export default function ServicesPage() {
                       {/* SERVICE PRICING MATRIX */}
 
                       <div className="space-y-6">
-
                         <div>
                           <h3 className="text-xl font-black text-white">
                             Service Pricing
                           </h3>
 
                           <p className="text-sm text-slate-400">
-                            Configure pricing for every vehicle type and extra service
+                            Configure pricing for every vehicle type and extra
+                            service
                           </p>
                         </div>
 
                         {/* VEHICLE TYPES */}
 
                         <div className="space-y-4">
-
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-bold uppercase tracking-wider text-cyan-400">
                               Vehicle Type Pricing
@@ -839,14 +824,12 @@ export default function ServicesPage() {
                           </div>
 
                           <div className="grid gap-4 md:grid-cols-2">
-
                             {vehicleTypes.map((vehicle) => {
-
                               const existingPrice =
                                 vehiclePrices.find(
                                   (v) =>
                                     String(v.vehicle_type_id) ===
-                                    String(vehicle.id)
+                                    String(vehicle.id),
                                 )?.price || "";
 
                               return (
@@ -854,9 +837,7 @@ export default function ServicesPage() {
                                   key={vehicle.id}
                                   className="rounded-3xl border border-white/10 bg-[#0B1220] p-5"
                                 >
-
                                   <div className="mb-4 flex items-center justify-between">
-
                                     <div>
                                       <h4 className="text-lg font-black text-white">
                                         {vehicle.name}
@@ -870,11 +851,9 @@ export default function ServicesPage() {
                                     <div className="rounded-2xl bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-300">
                                       VEHICLE
                                     </div>
-
                                   </div>
 
                                   <div className="flex items-center gap-3">
-
                                     <div className="rounded-2xl border border-white/10 bg-[#020617] px-4 py-3 text-sm text-slate-400">
                                       KES
                                     </div>
@@ -884,26 +863,24 @@ export default function ServicesPage() {
                                       placeholder="Enter price"
                                       value={existingPrice}
                                       onChange={(e) => {
-
                                         const value = Number(e.target.value);
 
                                         setVehiclePrices((prev) => {
-
                                           const exists = prev.find(
                                             (p) =>
                                               String(p.vehicle_type_id) ===
-                                              String(vehicle.id)
+                                              String(vehicle.id),
                                           );
 
                                           if (exists) {
                                             return prev.map((p) =>
                                               String(p.vehicle_type_id) ===
-                                                String(vehicle.id)
+                                              String(vehicle.id)
                                                 ? {
-                                                  ...p,
-                                                  price: value,
-                                                }
-                                                : p
+                                                    ...p,
+                                                    price: value,
+                                                  }
+                                                : p,
                                             );
                                           }
 
@@ -918,21 +895,16 @@ export default function ServicesPage() {
                                       }}
                                       className="h-14 rounded-2xl border-white/10 bg-[#020617] text-lg font-bold text-white"
                                     />
-
                                   </div>
-
                                 </div>
                               );
                             })}
-
                           </div>
-
                         </div>
 
                         {/* OTHER SERVICES */}
 
                         <div className="space-y-4">
-
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-bold uppercase tracking-wider text-purple-400">
                               Additional Services
@@ -944,9 +916,7 @@ export default function ServicesPage() {
                           </div>
 
                           <div className="rounded-3xl border border-dashed border-white/10 bg-[#0B1220] p-6">
-
                             <div className="flex items-start gap-4">
-
                               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10">
                                 <Sparkles className="h-5 w-5 text-purple-400" />
                               </div>
@@ -957,8 +927,9 @@ export default function ServicesPage() {
                                 </h4>
 
                                 <p className="mt-1 text-sm text-slate-400">
-                                  Add things like engine cleaning, perfume, polishing,
-                                  carpet treatment, detailing, or custom services.
+                                  Add things like engine cleaning, perfume,
+                                  polishing, carpet treatment, detailing, or
+                                  custom services.
                                 </p>
 
                                 <Button
@@ -969,25 +940,18 @@ export default function ServicesPage() {
                                   <Plus className="mr-2 h-4 w-4" />
                                   Add Other Service
                                 </Button>
-
                               </div>
-
                             </div>
-
                           </div>
 
                           {additionalServices.length > 0 && (
                             <div className="grid gap-4 md:grid-cols-2">
-
                               {additionalServices.map((addon) => (
-
                                 <div
                                   key={addon.id}
                                   className="rounded-3xl border border-purple-500/20 bg-purple-500/5 p-5"
                                 >
-
                                   <div className="flex items-start justify-between">
-
                                     <div>
                                       <h4 className="text-lg font-black text-white">
                                         {addon.name}
@@ -1001,35 +965,31 @@ export default function ServicesPage() {
                                     <Badge className="bg-purple-500/20 text-purple-200">
                                       ADDON
                                     </Badge>
-
                                   </div>
-
                                 </div>
-
                               ))}
-
                             </div>
                           )}
-
                         </div>
-
                       </div>
 
-                      <Dialog open={addonModalOpen} onOpenChange={setAddonModalOpen}>
+                      <Dialog
+                        open={addonModalOpen}
+                        onOpenChange={setAddonModalOpen}
+                      >
                         <DialogContent className="border-white/10 bg-[#07101F] text-white sm:max-w-2xl">
-
                           <DialogHeader>
                             <DialogTitle className="text-2xl font-black">
                               Add Additional Service
                             </DialogTitle>
 
                             <DialogDescription className="text-slate-400">
-                              Create addon services like polishing, engine cleaning, perfume, vacuum, etc.
+                              Create addon services like polishing, engine
+                              cleaning, perfume, vacuum, etc.
                             </DialogDescription>
                           </DialogHeader>
 
                           <div className="space-y-5">
-
                             <Input
                               placeholder="Addon Service Name"
                               value={addonForm.name}
@@ -1060,7 +1020,6 @@ export default function ServicesPage() {
                             >
                               Create Addon Service
                             </Button>
-
                           </div>
                         </DialogContent>
                       </Dialog>
@@ -1105,7 +1064,6 @@ export default function ServicesPage() {
           "
         >
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-
             <KPIItem
               icon={Droplets}
               value={stats.total}
@@ -1140,7 +1098,6 @@ export default function ServicesPage() {
               label="Categories"
               color="text-emerald-400"
             />
-
           </div>
         </div>
 
@@ -1156,7 +1113,8 @@ export default function ServicesPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: index * 0.03 }}
               >
-                <Card className="
+                <Card
+                  className="
 group
 relative
 overflow-hidden
@@ -1165,19 +1123,21 @@ border-white/10
 bg-[#0B1220]/90
 text-white
 backdrop-blur-xl
-">
+"
+                >
                   <CardContent className="p-6 space-y-5">
                     <div className="flex items-start justify-between">
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500" />
 
                       <div className="flex items-center gap-4">
-
-                        <div className="
+                        <div
+                          className="
                         flex h-14 w-14 items-center justify-center
                         rounded-2xl
                         bg-cyan-500/10
                         border border-cyan-500/20
-                        ">
+                        "
+                        >
                           <Droplets className="h-7 w-7 text-cyan-400" />
                         </div>
 
@@ -1190,7 +1150,6 @@ backdrop-blur-xl
                             {service.description}
                           </p>
                         </div>
-
                       </div>
 
                       <Badge
@@ -1202,7 +1161,6 @@ backdrop-blur-xl
                       >
                         {service.status}
                       </Badge>
-
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -1227,9 +1185,7 @@ backdrop-blur-xl
                       <div className="col-span-2 rounded-2xl border border-white/5 bg-[#020617] p-4">
                         <div className="flex items-center gap-2 text-slate-500">
                           <DollarSign className="h-4 w-4 text-cyan-400" />
-                          <span className="text-xs">
-                            Vehicle Pricing
-                            </span>
+                          <span className="text-xs">Vehicle Pricing</span>
                         </div>
 
                         <div className="mt-3 space-y-2">
@@ -1340,7 +1296,6 @@ function KPIItem({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-white/[0.02] p-3">
-
       <div
         className="
     flex
@@ -1359,18 +1314,11 @@ function KPIItem({
         <Icon className={`h-6 w-6 ${color}`} />
       </div>
 
-
-
       <div>
-        <h3 className={`text-2xl md:text-3xl font-black ${color}`}>
-          {value}
-        </h3>
+        <h3 className={`text-2xl md:text-3xl font-black ${color}`}>{value}</h3>
 
-        <p className="text-slate-400 text-sm">
-          {label}
-        </p>
+        <p className="text-slate-400 text-sm">{label}</p>
       </div>
-
     </div>
   );
 }
@@ -1379,11 +1327,7 @@ function KPIItem({
    INFO CARD
 ========================================================= */
 
-function InfoCard({
-  icon: Icon,
-  label,
-  value,
-}: any) {
+function InfoCard({ icon: Icon, label, value }: any) {
   return (
     <div className="rounded-2xl border border-white/5 bg-[#020617] p-4">
       <div className="flex items-center gap-2 text-slate-500">

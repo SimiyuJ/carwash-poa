@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 
-import {
-  getProfile,
-  type Profile,
-} from "@/lib/getProfile";
+import { getProfile, type Profile } from "@/lib/getProfile";
 
 /* =========================================================
    AUTH CONTEXT TYPE
@@ -61,37 +53,35 @@ type AuthContextType = {
    CONTEXT
 ========================================================= */
 
-const AuthContext =
-  createContext<AuthContextType>({
-    user: null,
+const AuthContext = createContext<AuthContextType>({
+  user: null,
 
-    profile: null,
+  profile: null,
 
-    currentBranch: null,
+  currentBranch: null,
 
-    currentCompany: null,
+  currentCompany: null,
 
-    role: null,
+  role: null,
 
-    isAdmin: false,
+  isAdmin: false,
 
-    isManager: false,
+  isManager: false,
 
-    isCashier: false,
+  isCashier: false,
 
-    isWasher: false,
+  isWasher: false,
 
-    isCustomer: false,
+  isCustomer: false,
 
-    loading: true,
-  });
+  loading: true,
+});
 
 /* =========================================================
    HOOK
 ========================================================= */
 
-export const useAuth = () =>
-  useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext);
 
 /* =========================================================
    PROVIDER
@@ -105,50 +95,32 @@ export default function AuthProvider({
   /*
     AUTH USER
   */
-  const [user, setUser] =
-    useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
   /*
     PROFILE
   */
-  const [profile, setProfile] =
-    useState<Profile | null>(
-      null
-    );
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   /*
     ACTIVE BRANCH
   */
-  const [
-    currentBranch,
-    setCurrentBranch,
-  ] = useState<string | null>(
-    null
-  );
+  const [currentBranch, setCurrentBranch] = useState<string | null>(null);
 
   /*
     ACTIVE COMPANY
   */
-  const [
-    currentCompany,
-    setCurrentCompany,
-  ] = useState<string | null>(
-    null
-  );
+  const [currentCompany, setCurrentCompany] = useState<string | null>(null);
 
   /*
     USER ROLE
   */
-  const [role, setRole] =
-    useState<string | null>(
-      null
-    );
+  const [role, setRole] = useState<string | null>(null);
 
   /*
     LOADING
   */
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   /* =========================================================
      RESET AUTH STATE
@@ -170,69 +142,45 @@ export default function AuthProvider({
      LOAD PROFILE
   ========================================================= */
 
-  const loadProfile =
-    async () => {
-      try {
-        console.log(
-          "LOADING PROFILE..."
-        );
+  const loadProfile = async () => {
+    try {
+      const profileData = await getProfile();
 
-        const profileData =
-          await getProfile();
-
-        if (!profileData) {
-          console.warn(
-            "NO PROFILE FOUND"
-          );
-
-          resetAuth();
-
-          return;
-        }
-
-        console.log(
-          "PROFILE LOADED:",
-          profileData
-        );
-
-        /*
-          SAVE PROFILE
-        */
-        setProfile(profileData);
-
-        /*
-          ACTIVE BRANCH
-        */
-        setCurrentBranch(
-          profileData.branch_id ||
-            null
-        );
-
-        /*
-          ACTIVE COMPANY
-        */
-        setCurrentCompany(
-          profileData.carwash_id ||
-            profileData.company_id ||
-            null
-        );
-
-        /*
-          ROLE
-        */
-        setRole(
-          profileData.role ||
-            null
-        );
-      } catch (err) {
-        console.error(
-          "LOAD PROFILE FAILED:",
-          err
-        );
+      if (!profileData) {
+        console.warn("NO PROFILE FOUND");
 
         resetAuth();
+
+        return;
       }
-    };
+
+      /*
+          SAVE PROFILE
+        */
+      setProfile(profileData);
+
+      /*
+          ACTIVE BRANCH
+        */
+      setCurrentBranch(profileData.branch_id || null);
+
+      /*
+          ACTIVE COMPANY
+        */
+      setCurrentCompany(
+        profileData.carwash_id || profileData.company_id || null,
+      );
+
+      /*
+          ROLE
+        */
+      setRole(profileData.role || null);
+    } catch (err) {
+      console.error("LOAD PROFILE FAILED:", err);
+
+      resetAuth();
+    }
+  };
 
   /* =========================================================
      INITIALIZE SESSION
@@ -241,64 +189,49 @@ export default function AuthProvider({
   useEffect(() => {
     let mounted = true;
 
-    const initialize =
-      async () => {
-        try {
-          setLoading(true);
+    const initialize = async () => {
+      try {
+        setLoading(true);
 
-          const {
-            data: { session },
-            error,
-          } =
-            await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-          if (error) {
-            console.error(
-              "SESSION ERROR:",
-              error
-            );
+        if (error) {
+          console.error("SESSION ERROR:", error);
 
-            return;
-          }
+          return;
+        }
 
-          console.log(
-            "INITIAL SESSION:",
-            session
-          );
-
-          /*
+        /*
             NO SESSION
           */
-          if (!session?.user) {
-            resetAuth();
+        if (!session?.user) {
+          resetAuth();
 
-            return;
-          }
+          return;
+        }
 
-          /*
+        /*
             SET USER
           */
-          if (mounted) {
-            setUser(
-              session.user
-            );
-          }
+        if (mounted) {
+          setUser(session.user);
+        }
 
-          /*
+        /*
             LOAD PROFILE
           */
-          await loadProfile();
-        } catch (err) {
-          console.error(
-            "INITIALIZE ERROR:",
-            err
-          );
-        } finally {
-          if (mounted) {
-            setLoading(false);
-          }
+        await loadProfile();
+      } catch (err) {
+        console.error("INITIALIZE ERROR:", err);
+      } finally {
+        if (mounted) {
+          setLoading(false);
         }
-      };
+      }
+    };
 
     initialize();
 
@@ -306,62 +239,40 @@ export default function AuthProvider({
        AUTH LISTENER
     ===================================================== */
 
-    const {
-      data: listener,
-    } =
-      supabase.auth.onAuthStateChange(
-        async (
-          event,
-          session
-        ) => {
-          console.log(
-            "AUTH EVENT:",
-            event
-          );
-
-          /*
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        /*
             SIGNED OUT
           */
-          if (
-            event ===
-              "SIGNED_OUT" ||
-            !session?.user
-          ) {
-            resetAuth();
+        if (event === "SIGNED_OUT" || !session?.user) {
+          resetAuth();
 
-            return;
-          }
+          return;
+        }
 
-          /*
+        /*
             SIGNED IN
             TOKEN REFRESH
           */
-          if (
-            event ===
-              "SIGNED_IN" ||
-            event ===
-              "TOKEN_REFRESHED" ||
-            event ===
-              "USER_UPDATED"
-          ) {
-            setLoading(true);
+        if (
+          event === "SIGNED_IN" ||
+          event === "TOKEN_REFRESHED" ||
+          event === "USER_UPDATED"
+        ) {
+          setLoading(true);
 
-            try {
-              setUser(
-                session.user
-              );
+          try {
+            setUser(session.user);
 
-              await loadProfile();
-            } catch (err) {
-              console.error(
-                err
-              );
-            } finally {
-              setLoading(false);
-            }
+            await loadProfile();
+          } catch (err) {
+            console.error(err);
+          } finally {
+            setLoading(false);
           }
         }
-      );
+      },
+    );
 
     return () => {
       mounted = false;
@@ -374,20 +285,15 @@ export default function AuthProvider({
      ROLE HELPERS
   ========================================================= */
 
-  const isAdmin =
-    role === "admin";
+  const isAdmin = role === "admin";
 
-  const isManager =
-    role === "manager";
+  const isManager = role === "manager";
 
-  const isCashier =
-    role === "cashier";
+  const isCashier = role === "cashier";
 
-  const isWasher =
-    role === "washer";
+  const isWasher = role === "washer";
 
-  const isCustomer =
-    role === "customer";
+  const isCustomer = role === "customer";
 
   /* =========================================================
      PROVIDER

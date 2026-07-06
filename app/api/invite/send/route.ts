@@ -5,88 +5,51 @@ import { Resend } from "resend";
 /* =========================================
    ENV VALIDATION
 ========================================= */
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-const serviceRoleKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const resendApiKey =
-  process.env.RESEND_API_KEY;
+const resendApiKey = process.env.RESEND_API_KEY;
 
-const appUrl =
-  process.env.NEXT_PUBLIC_APP_URL ||
-  "http://localhost:3000";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 if (!supabaseUrl) {
-  throw new Error(
-    "NEXT_PUBLIC_SUPABASE_URL is missing"
-  );
+  throw new Error("NEXT_PUBLIC_SUPABASE_URL is missing");
 }
 
 if (!serviceRoleKey) {
-  throw new Error(
-    "SUPABASE_SERVICE_ROLE_KEY is missing"
-  );
+  throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing");
 }
 
 if (!resendApiKey) {
-  throw new Error(
-    "RESEND_API_KEY is missing"
-  );
+  throw new Error("RESEND_API_KEY is missing");
 }
 
 /* =========================================
    SERVER CLIENTS
 ========================================= */
-const supabase = createClient(
-  supabaseUrl,
-  serviceRoleKey
-);
+const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-const resend = new Resend(
-  resendApiKey
-);
+const resend = new Resend(resendApiKey);
 
 /* =========================================
    EMAIL VALIDATION
 ========================================= */
-function isValidEmail(
-  email: string
-) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    email
-  );
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 /* =========================================
    SEND INVITE API
 ========================================= */
-export async function POST(
-  req: Request
-) {
+export async function POST(req: Request) {
   try {
-    console.log(
-      "INVITE API HIT"
-    );
-
     /* =========================================
        PARSE BODY
     ========================================= */
-    const body =
-      await req.json();
+    const body = await req.json();
 
-    const {
-      email,
-      carwash_id,
-      branch_id,
-      role,
-    } = body;
-
-    console.log(
-      "REQUEST BODY:",
-      body
-    );
+    const { email, carwash_id, branch_id, role } = body;
 
     /* =========================================
        VALIDATION
@@ -94,99 +57,75 @@ export async function POST(
     if (!email || !role) {
       return NextResponse.json(
         {
-          error:
-            "Email and role are required",
+          error: "Email and role are required",
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
     if (!carwash_id) {
       return NextResponse.json(
         {
-          error:
-            "Missing carwash_id",
+          error: "Missing carwash_id",
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
-    if (
-      !isValidEmail(email)
-    ) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
         {
-          error:
-            "Invalid email address",
+          error: "Invalid email address",
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
     /* =========================================
        NORMALIZE EMAIL
     ========================================= */
-    const normalizedEmail =
-      email
-        .toLowerCase()
-        .trim();
+    const normalizedEmail = email.toLowerCase().trim();
 
     /* =========================================
        CHECK EXISTING INVITE
     ========================================= */
-    const {
-      data: existingInvite,
-    } = await supabase
+    const { data: existingInvite } = await supabase
       .from("invites")
       .select("*")
-      .eq(
-        "email",
-        normalizedEmail
-      )
+      .eq("email", normalizedEmail)
       .eq("used", false)
       .maybeSingle();
 
     if (existingInvite) {
       return NextResponse.json(
         {
-          error:
-            "User already has a pending invite",
+          error: "User already has a pending invite",
         },
         {
           status: 400,
-        }
+        },
       );
     }
 
     /* =========================================
        GENERATE TOKEN
     ========================================= */
-    const token =
-      crypto.randomUUID();
-
-    console.log(
-      "GENERATED TOKEN:",
-      token
-    );
+    const token = crypto.randomUUID();
 
     /* =========================================
        INSERT INVITE
     ========================================= */
-    const {
-      data: invite,
-      error: insertError,
-    } = await supabase
+    const { data: invite, error: insertError } = await supabase
       .from("invites")
       .insert([
         {
-          email:
-            normalizedEmail,
+          email: normalizedEmail,
 
           role,
 
@@ -196,9 +135,7 @@ export async function POST(
 
           carwash_id,
 
-          branch_id:
-            branch_id ||
-            null,
+          branch_id: branch_id || null,
         },
       ])
       .select()
@@ -208,53 +145,38 @@ export async function POST(
        INSERT ERROR
     ========================================= */
     if (insertError) {
-      console.error(
-        "INVITE INSERT ERROR:",
-        insertError
-      );
+      console.error("INVITE INSERT ERROR:", insertError);
 
       return NextResponse.json(
         {
-          error:
-            insertError.message,
+          error: insertError.message,
 
-          details:
-            insertError.details,
+          details: insertError.details,
 
-          hint:
-            insertError.hint,
+          hint: insertError.hint,
         },
         {
           status: 500,
-        }
+        },
       );
     }
 
     /* =========================================
        INVITE LINK
     ========================================= */
-    const inviteLink =
-      `${appUrl}/admin/accept-invite/${token}`;
-
-    console.log(
-      "INVITE LINK:",
-      inviteLink
-    );
+    const inviteLink = `${appUrl}/admin/accept-invite/${token}`;
 
     /* =========================================
        SEND EMAIL
     ========================================= */
-    const emailResponse =
-      await resend.emails.send({
-        from:
-          "Carwash SaaS <onboarding@resend.dev>",
+    const emailResponse = await resend.emails.send({
+      from: "Carwash SaaS <onboarding@resend.dev>",
 
-        to: normalizedEmail,
+      to: normalizedEmail,
 
-        subject:
-          "You're invited to join Carwash SaaS",
+      subject: "You're invited to join Carwash SaaS",
 
-        html: `
+      html: `
           <div style="
             font-family: Arial, sans-serif;
             padding: 30px;
@@ -323,12 +245,7 @@ export async function POST(
 
           </div>
         `,
-      });
-
-    console.log(
-      "EMAIL RESPONSE:",
-      emailResponse
-    );
+    });
 
     /* =========================================
        SUCCESS RESPONSE
@@ -336,8 +253,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
 
-      message:
-        "Invite created and email sent successfully",
+      message: "Invite created and email sent successfully",
 
       invite,
 
@@ -345,25 +261,18 @@ export async function POST(
 
       emailResponse,
     });
-
   } catch (err: any) {
-    console.error(
-      "INVITE API CRASH:",
-      err
-    );
+    console.error("INVITE API CRASH:", err);
 
     return NextResponse.json(
       {
-        error:
-          "Internal Server Error",
+        error: "Internal Server Error",
 
-        message:
-          err?.message ||
-          "Unknown server error",
+        message: err?.message || "Unknown server error",
       },
       {
         status: 500,
-      }
+      },
     );
   }
 }

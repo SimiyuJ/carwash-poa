@@ -197,7 +197,6 @@ export default function POSPage() {
         });
 
       if (error) {
-        console.log(error);
         return;
       }
 
@@ -206,9 +205,7 @@ export default function POSPage() {
       const active = data?.find((b: any) => String(b.id) === String(branchId));
 
       setCurrentBranchData(active || data?.[0] || null);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   /* =========================================================
@@ -223,14 +220,11 @@ export default function POSPage() {
         .order("name");
 
       if (error) {
-        console.log(error);
         return;
       }
 
       setVehicleTypes(data || []);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   /* =========================================================
@@ -264,7 +258,6 @@ export default function POSPage() {
         });
 
       if (error) {
-        console.log(error);
         return;
       }
 
@@ -287,9 +280,7 @@ export default function POSPage() {
       }));
 
       setServices(normalized);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   /* =========================================================
@@ -427,8 +418,6 @@ SUBSCRIPTION SERVICES
             }))
             .filter((item) => item.name);
 
-          console.log("CART ITEMS:", cartItems);
-
           setCart(cartItems);
 
           if (cartItems.length > 0) {
@@ -536,8 +525,6 @@ SUBSCRIPTION SERVICES
       setNewVehicleType("");
       setNewVehicleColor("");
     } catch (err) {
-      console.log(err);
-
       alert("Failed to save vehicle");
     } finally {
       setSavingVehicle(false);
@@ -756,8 +743,6 @@ SUBSCRIPTION SERVICES
       setCustomerVehicleType("");
       setCustomerColor("");
     } catch (err) {
-      console.log(err);
-
       alert("Failed to save customer");
     }
   };
@@ -872,8 +857,6 @@ SUBSCRIPTION SERVICES
         .single();
 
       if (error) {
-        console.log(error);
-
         alert(error.message);
 
         return;
@@ -888,7 +871,6 @@ SUBSCRIPTION SERVICES
           })
           .eq("id", subscription.id)
           .select();
-        console.log(data, error);
       }
 
       if (isSubscribed) {
@@ -967,8 +949,6 @@ SUBSCRIPTION SERVICES
 
       alert(`Receipt generated successfully.\nVehicle added to queue.`);
     } catch (err) {
-      console.log(err);
-
       alert("Failed to process payment");
     } finally {
       setProcessingPayment(false);
