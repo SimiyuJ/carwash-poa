@@ -172,7 +172,7 @@ export default function SubscriptionsPage() {
     plan_id: null as number | string | null,
     plan_name: "",
     plan_price: 0,
-    plan_benefits: "",
+    plan_benefits: [] as string[],
 
     // IMPORTANT (derived from plan)
     limit: 0,
@@ -353,7 +353,7 @@ export default function SubscriptionsPage() {
         plan_name: "",
         plan_price: 0,
 
-        plan_benefits: [],
+        plan_benefits: selectedPlan?.description ?? [],
 
         tier: "Bronze",
         usage: 0,
@@ -366,6 +366,8 @@ export default function SubscriptionsPage() {
         sold_by: "",
 
         renewal: "",
+
+        vehicle_id: null,
 
         carwash_id: "",
         branch_id: "",
@@ -666,7 +668,7 @@ export default function SubscriptionsPage() {
 
         price: Number(data.price),
 
-        washes: String(data.wash_limit || 0),
+        washes: Number(data.wash_limit || 0),
 
         benefits: Array.isArray(data.description)
           ? data.description
@@ -857,7 +859,6 @@ export default function SubscriptionsPage() {
         console.error(customerError);
         return;
       }
-      
 
       if (!vehicle) {
         setSearchMessage(
@@ -951,7 +952,7 @@ export default function SubscriptionsPage() {
         plan_id: "",
         plan_name: "",
         plan_price: 0,
-        plan_benefits: "",
+        plan_benefits: [],
         renewal: "",
 
         tier: "Bronze",
@@ -977,6 +978,13 @@ export default function SubscriptionsPage() {
     } finally {
       setSearching(false);
     }
+  };
+
+  //edit plan
+  const handleEditPlan = (plan: Plan) => {
+    console.log("Editing plan:", plan);
+
+    // We'll implement editing later.
   };
 
   return (

@@ -2,17 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  usePathname,
-  useRouter,
-} from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Loader2 } from "lucide-react";
 
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "@/components/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/sidebar";
 
 import AppSidebar from "@/components/AppSidebar";
 
@@ -35,11 +29,9 @@ export default function DashboardLayout({
 
   const pathname = usePathname();
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [authorized, setAuthorized] =
-    useState(false);
+  const [authorized, setAuthorized] = useState(false);
 
   /* =========================================
      ROLE PROTECTION
@@ -50,8 +42,7 @@ export default function DashboardLayout({
       try {
         setLoading(true);
 
-        const profile =
-          await getProfile();
+        const profile = await getProfile();
 
         /* =========================================
            NOT LOGGED IN
@@ -66,53 +57,37 @@ export default function DashboardLayout({
            GET USER ROLE
         ========================================= */
 
-        const role =
-          (
-            profile.role || "customer"
-          ).toLowerCase() as keyof typeof permissions;
+        const role = (
+          profile.role || "customer"
+        ).toLowerCase() as keyof typeof permissions;
 
         /* =========================================
            SAFE FALLBACK
         ========================================= */
 
-        const allowedRoutes =
-          permissions[role] || [];
+        const allowedRoutes = permissions[role] || [];
 
         /* =========================================
            ROUTE CHECK
         ========================================= */
 
-        const allowed =
-          allowedRoutes.some((route) => {
-            /* ROOT ROUTE */
-
-            if (route === "/") {
-              return pathname === "/";
-            }
-
-            return pathname.startsWith(
-              route
-            );
-          });
+        const allowed = allowedRoutes.some((route) =>
+          pathname.startsWith(route),
+        );
 
         /* =========================================
            BLOCK ACCESS
         ========================================= */
 
         if (!allowed) {
-          router.replace(
-            "/unauthorized"
-          );
+          router.replace("/unauthorized");
 
           return;
         }
 
         setAuthorized(true);
       } catch (error) {
-        console.error(
-          "Dashboard Layout Error:",
-          error
-        );
+        console.error("Dashboard Layout Error:", error);
 
         router.replace("/auth");
       } finally {
@@ -133,9 +108,7 @@ export default function DashboardLayout({
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 animate-spin text-cyan-400" />
 
-          <p className="text-sm text-gray-400">
-            Loading dashboard...
-          </p>
+          <p className="text-sm text-gray-400">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -151,9 +124,7 @@ export default function DashboardLayout({
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
 
-          <p className="text-sm text-gray-400">
-            Checking permissions...
-          </p>
+          <p className="text-sm text-gray-400">Checking permissions...</p>
         </div>
       </div>
     );
@@ -190,9 +161,7 @@ export default function DashboardLayout({
         ========================================= */}
 
           <main className="flex-1 overflow-visible bg-[#0B1120] p-3 sm:p-4 md:p-6">
-            <div className="mx-auto w-full max-w-none">
-              {children}
-            </div>
+            <div className="mx-auto w-full max-w-none">{children}</div>
           </main>
         </SidebarInset>
       </div>

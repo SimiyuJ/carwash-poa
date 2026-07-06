@@ -24,22 +24,29 @@ function useSelect() {
 
 interface SelectProps {
   children: React.ReactNode;
+  value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
 }
 
 export function Select({
   children,
+  value,
   defaultValue = "",
   onValueChange,
 }: SelectProps) {
-  const [value, setValueState] = React.useState(defaultValue);
+  const [internalValue, setInternalValue] = React.useState(defaultValue);
+
+  const currentValue = value ?? internalValue;
   const [open, setOpen] = React.useState(false);
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   const setValue = (newValue: string) => {
-    setValueState(newValue);
+    if (value === undefined) {
+      setInternalValue(newValue);
+    }
+
     onValueChange?.(newValue);
     setOpen(false);
   };
@@ -64,7 +71,7 @@ export function Select({
   return (
     <SelectContext.Provider
       value={{
-        value,
+        value: currentValue,
         setValue,
         open,
         setOpen,
@@ -103,34 +110,20 @@ export function SelectTrigger({
   );
 }
 
-export function SelectValue({
-  placeholder,
-}: {
-  placeholder?: string;
-}) {
+export function SelectValue({ placeholder }: { placeholder?: string }) {
   const { value } = useSelect();
 
-  return (
-    <span className="text-white">
-      {value || placeholder || "Select"}
-    </span>
-  );
+  return <span className="text-white">{value || placeholder || "Select"}</span>;
 }
 
-export function SelectContent({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function SelectContent({ children }: { children: React.ReactNode }) {
   const { open } = useSelect();
 
   if (!open) return null;
 
   return (
     <div className="absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl animate-in fade-in zoom-in-95">
-      <div className="max-h-72 overflow-y-auto p-2">
-        {children}
-      </div>
+      <div className="max-h-72 overflow-y-auto p-2">{children}</div>
     </div>
   );
 }
