@@ -33,45 +33,34 @@ import {
 
 export default function AuthPage() {
   const [redirecting, setRedirecting] = useState(false);
-  const [mounted, setMounted] =
-    useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
 
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
 
-  const [password, setPassword] =
-    useState("");
+  const [password, setPassword] = useState("");
 
-  const [fullName, setFullName] =
-    useState("");
+  const [fullName, setFullName] = useState("");
 
-  const [carwashName, setCarwashName] =
-    useState("");
+  const [carwashName, setCarwashName] = useState("");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [isLogin, setIsLogin] =
-    useState(true);
+  const [isLogin, setIsLogin] = useState(true);
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [rememberMe, setRememberMe] =
-    useState(true);
+  const [rememberMe, setRememberMe] = useState(true);
 
-  const [errorMessage, setErrorMessage] =
-    useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const redirectingRef = useRef(false);
 
-  const [phone, setPhone] = useState("")
-  const [location, setLocation] = useState("")
+  const [phone, setPhone] = useState("");
+  const [location, setLocation] = useState("");
 
   /* =========================================
      PREVENT HYDRATION
@@ -117,7 +106,6 @@ export default function AuthPage() {
       if (role === "washer") router.replace("/queue");
       else if (role === "cashier") router.replace("/pos");
       else router.replace("/dashboard");
-
     } catch (err) {
       console.error("Redirect error:", err);
     }
@@ -128,7 +116,9 @@ export default function AuthPage() {
   ========================================= */
   useEffect(() => {
     const run = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.user) return;
 
@@ -143,10 +133,7 @@ export default function AuthPage() {
         .eq("id", userId)
         .maybeSingle();
 
-      console.log("PROFILE CHECK:", data, error);
-
       if (!data?.role) {
-        console.error("Profile not accessible yet");
         return;
       }
 
@@ -163,30 +150,21 @@ export default function AuthPage() {
      PASSWORD STRENGTH
   ========================================= */
 
-  const passwordStrength =
-    useMemo(() => {
-      if (!password) return 0;
+  const passwordStrength = useMemo(() => {
+    if (!password) return 0;
 
-      let strength = 0;
+    let strength = 0;
 
-      if (password.length >= 6)
-        strength += 1;
+    if (password.length >= 6) strength += 1;
 
-      if (password.length >= 10)
-        strength += 1;
+    if (password.length >= 10) strength += 1;
 
-      if (
-        /[A-Z]/.test(password)
-      )
-        strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
 
-      if (
-        /[0-9]/.test(password)
-      )
-        strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
 
-      return strength;
-    }, [password]);
+    return strength;
+  }, [password]);
 
   /* =========================================
      SIGNUP
@@ -197,11 +175,10 @@ export default function AuthPage() {
       setLoading(true);
 
       // STEP 1: Create auth user
-      const { data, error } =
-        await supabase.auth.signUp({
-          email,
-          password,
-        });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
       if (error) {
         setErrorMessage(error.message);
@@ -211,22 +188,22 @@ export default function AuthPage() {
       const user = data.user;
 
       if (!user) {
-        setErrorMessage(
-          "User creation failed."
-        );
+        setErrorMessage("User creation failed.");
         return;
       }
 
       // STEP 2: call database function
-      const { data: result, error: fnError } =
-        await supabase.rpc("create_new_manager", {
+      const { data: result, error: fnError } = await supabase.rpc(
+        "create_new_manager",
+        {
           p_user_id: user.id,
           p_email: email,
           p_full_name: fullName,
           p_carwash_name: carwashName,
           p_location: location,
-          p_phone: phone
-        });
+          p_phone: phone,
+        },
+      );
 
       if (fnError) {
         setErrorMessage(fnError.message);
@@ -237,9 +214,7 @@ export default function AuthPage() {
       console.log("SETUP RESULT:", result);
 
       // STEP 4: Success
-      setSuccessMessage(
-        "Account created successfully."
-      );
+      setSuccessMessage("Account created successfully.");
 
       setIsLogin(true);
 
@@ -247,13 +222,10 @@ export default function AuthPage() {
       setEmail("");
       setPassword("");
       setCarwashName("");
-
     } catch (err) {
       console.error(err);
 
-      setErrorMessage(
-        "Something went wrong."
-      );
+      setErrorMessage("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -268,9 +240,7 @@ export default function AuthPage() {
     setSuccessMessage("");
 
     if (!email || !password) {
-      setErrorMessage(
-        "Please fill all fields."
-      );
+      setErrorMessage("Please fill all fields.");
 
       return;
     }
@@ -278,31 +248,23 @@ export default function AuthPage() {
     try {
       setLoading(true);
 
-      const { error } =
-        await supabase.auth.signInWithPassword(
-          {
-            email,
-            password,
-          }
-        );
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (error) {
-        setErrorMessage(
-          error.message
-        );
+        setErrorMessage(error.message);
 
         return;
       }
 
       const {
         data: { user },
-      } =
-        await supabase.auth.getUser();
+      } = await supabase.auth.getUser();
 
       if (!user) {
-        setErrorMessage(
-          "User not found."
-        );
+        setErrorMessage("User not found.");
 
         return;
       }
@@ -311,9 +273,7 @@ export default function AuthPage() {
     } catch (err) {
       console.error(err);
 
-      setErrorMessage(
-        "Unexpected error occurred."
-      );
+      setErrorMessage("Unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -322,7 +282,8 @@ export default function AuthPage() {
   if (!mounted) return null;
 
   return (
-    <main className="
+    <main
+      className="
     min-h-screen
     bg-[#020617]
     text-white
@@ -332,8 +293,8 @@ export default function AuthPage() {
     px-4
     py-6
     overflow-hidden
-  ">
-
+  "
+    >
       {/* BACKGROUND */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 h-[450px] w-[450px] rounded-full bg-cyan-500/20 blur-[160px]" />
@@ -342,7 +303,8 @@ export default function AuthPage() {
       </div>
 
       {/* MAIN CARD */}
-      <div className="
+      <div
+        className="
       relative z-10
       w-full max-w-7xl
       h-[92vh]
@@ -353,7 +315,8 @@ export default function AuthPage() {
       backdrop-blur-2xl
       shadow-[0_25px_120px_rgba(0,0,0,0.55)]
       grid grid-cols-1 xl:grid-cols-2
-    ">
+    "
+      >
         {/* LEFT SIDE */}
 
         <div
@@ -395,8 +358,7 @@ export default function AuthPage() {
                 </h1>
 
                 <p className="mt-2 text-lg text-gray-400">
-                  Smart Carwash
-                  Management Platform
+                  Smart Carwash Management Platform
                 </p>
               </div>
             </div>
@@ -405,25 +367,19 @@ export default function AuthPage() {
 
             <div className="mt-16 space-y-10">
               <Feature
-                icon={
-                  LayoutDashboard
-                }
+                icon={LayoutDashboard}
                 title="Smart Dashboard"
                 text="Track revenue, vehicles, queues and operational analytics in real time."
               />
 
               <Feature
-                icon={
-                  ShieldCheck
-                }
+                icon={ShieldCheck}
                 title="Advanced Security"
                 text="Professional role-based authentication with secure staff permissions."
               />
 
               <Feature
-                icon={
-                  ClipboardList
-                }
+                icon={ClipboardList}
                 title="Workflow Tracking"
                 text="Manage wash queues, vehicle status and customer operations seamlessly."
               />
@@ -463,21 +419,13 @@ export default function AuthPage() {
               </div>
 
               <div>
-                <h1 className="text-3xl font-black">
-                  WashFlow Pro
-                </h1>
+                <h1 className="text-3xl font-black">WashFlow Pro</h1>
 
-                <p className="text-sm text-gray-400">
-                  Smart Wash System
-                </p>
+                <p className="text-sm text-gray-400">Smart Wash System</p>
               </div>
             </div>
 
             {/* HEADER */}
-
-
-
-
 
             <div className="mb-8">
               <div
@@ -611,7 +559,6 @@ export default function AuthPage() {
             {/* FORM */}
 
             <div className="max-w-xl mx-auto w-full">
-
               <div className="space-y-4">
                 {/* FULL NAME */}
 
@@ -628,11 +575,7 @@ export default function AuthPage() {
                         type="text"
                         placeholder="Enter full name"
                         value={fullName}
-                        onChange={(e) =>
-                          setFullName(
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => setFullName(e.target.value)}
                         className="
                       h-12 md:h-14
                       w-full
@@ -666,11 +609,7 @@ export default function AuthPage() {
                       autoComplete="email"
                       placeholder="Enter email"
                       value={email}
-                      onChange={(e) =>
-                        setEmail(
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => setEmail(e.target.value)}
                       className="
                     h-12 md:h-14
                     w-full
@@ -738,11 +677,7 @@ export default function AuthPage() {
                         type="text"
                         placeholder="Enter carwash name"
                         value={carwashName}
-                        onChange={(e) =>
-                          setCarwashName(
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => setCarwashName(e.target.value)}
                         className="
                       h-12 md:h-14
                       w-full
@@ -761,8 +696,6 @@ export default function AuthPage() {
                   </div>
                 )}
 
-
-
                 {/* PASSWORD */}
 
                 <div>
@@ -774,23 +707,13 @@ export default function AuthPage() {
                     <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
 
                     <input
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       autoComplete={
-                        isLogin
-                          ? "current-password"
-                          : "new-password"
+                        isLogin ? "current-password" : "new-password"
                       }
                       placeholder="Enter password"
                       value={password}
-                      onChange={(e) =>
-                        setPassword(
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => setPassword(e.target.value)}
                       className="
                     h-12 md:h-14
                     w-full
@@ -808,11 +731,7 @@ export default function AuthPage() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword(
-                          !showPassword
-                        )
-                      }
+                      onClick={() => setShowPassword(!showPassword)}
                       className="
                     absolute
                     right-4
@@ -830,50 +749,39 @@ export default function AuthPage() {
                     </button>
                   </div>
 
-                  {!isLogin &&
-                    password && (
-                      <div className="mt-3">
-                        <div className="mb-2 flex items-center justify-between text-xs text-gray-400">
-                          <span>
-                            Password Strength
-                          </span>
+                  {!isLogin && password && (
+                    <div className="mt-3">
+                      <div className="mb-2 flex items-center justify-between text-xs text-gray-400">
+                        <span>Password Strength</span>
 
-                          <span>
-                            {
-                              [
-                                "Weak",
-                                "Fair",
-                                "Good",
-                                "Strong",
-                                "Excellent",
-                              ][
+                        <span>
+                          {
+                            ["Weak", "Fair", "Good", "Strong", "Excellent"][
                               passwordStrength
-                              ]
-                            }
-                          </span>
-                        </div>
+                            ]
+                          }
+                        </span>
+                      </div>
 
-                        <div className="flex gap-2">
-                          {[1, 2, 3, 4].map(
-                            (bar) => (
-                              <div
-                                key={bar}
-                                className={`
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4].map((bar) => (
+                          <div
+                            key={bar}
+                            className={`
                               h-2
                               flex-1
                               rounded-full
-                              ${passwordStrength >=
-                                    bar
-                                    ? "bg-cyan-400"
-                                    : "bg-white/10"
-                                  }
+                              ${
+                                passwordStrength >= bar
+                                  ? "bg-cyan-400"
+                                  : "bg-white/10"
+                              }
                             `}
-                              />
-                            )
-                          )}
-                        </div>
+                          />
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </div>
 
                 {/* REMEMBER */}
@@ -883,17 +791,10 @@ export default function AuthPage() {
                     <label className="flex items-center gap-3 text-sm text-gray-400">
                       <input
                         type="checkbox"
-                        checked={
-                          rememberMe
-                        }
-                        onChange={() =>
-                          setRememberMe(
-                            !rememberMe
-                          )
-                        }
+                        checked={rememberMe}
+                        onChange={() => setRememberMe(!rememberMe)}
                         className="h-4 w-4"
                       />
-
                       Remember me
                     </label>
 
@@ -909,11 +810,7 @@ export default function AuthPage() {
                 {/* SUBMIT */}
 
                 <button
-                  onClick={
-                    isLogin
-                      ? handleLogin
-                      : handleSignup
-                  }
+                  onClick={isLogin ? handleLogin : handleSignup}
                   disabled={loading}
                   className="
                 flex
@@ -936,14 +833,11 @@ export default function AuthPage() {
                   {loading ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-
                       Processing...
                     </>
                   ) : (
                     <>
-                      {isLogin
-                        ? "Login"
-                        : "Create Account"}
+                      {isLogin ? "Login" : "Create Account"}
 
                       <ArrowRight className="h-5 w-5" />
                     </>
@@ -955,17 +849,11 @@ export default function AuthPage() {
                 <div className="pt-2 text-center">
                   <button
                     onClick={() => {
-                      setIsLogin(
-                        !isLogin
-                      );
+                      setIsLogin(!isLogin);
 
-                      setErrorMessage(
-                        ""
-                      );
+                      setErrorMessage("");
 
-                      setSuccessMessage(
-                        ""
-                      );
+                      setSuccessMessage("");
                     }}
                     className="
                   text-gray-400
@@ -1055,13 +943,9 @@ function StatCard({
     >
       <Icon className="h-6 w-6 text-cyan-400" />
 
-      <h3 className="mt-4 text-2xl font-black text-white">
-        {value}
-      </h3>
+      <h3 className="mt-4 text-2xl font-black text-white">{value}</h3>
 
-      <p className="mt-1 text-sm text-gray-400">
-        {label}
-      </p>
+      <p className="mt-1 text-sm text-gray-400">{label}</p>
     </div>
   );
 }

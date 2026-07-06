@@ -215,8 +215,6 @@ export default function CustomerSubscriptionsPage() {
         return;
       }
 
-      console.log("CUSTOMER INVOICES:", data);
-
       setInvoices(data || []);
     } catch (err) {
       console.error(err);

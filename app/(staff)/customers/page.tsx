@@ -59,14 +59,11 @@ export default function CustomersPage() {
   const [search, setSearch] = useState("");
 
   const [suggestions, setSuggestions] = useState<Customer[]>([]);
-  const [showSuggestions, setShowSuggestions] =
-    useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [showModal, setShowModal] = useState(false);
 
-  const [activeCustomer, setActiveCustomer] =
-    useState<Customer | null>(null);
-
+  const [activeCustomer, setActiveCustomer] = useState<Customer | null>(null);
 
   /* ================= FORM ================= */
 
@@ -76,12 +73,10 @@ export default function CustomersPage() {
 
   const [tag, setTag] = useState<Tag>("regular");
 
-  const [editingCustomer, setEditingCustomer] =
-    useState<Customer | null>(null);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
   const [plate, setPlate] = useState("");
-  const [vehicleType, setVehicleType] =
-    useState("Sedan");
+  const [vehicleType, setVehicleType] = useState("Sedan");
 
   const [color, setColor] = useState("");
 
@@ -89,14 +84,11 @@ export default function CustomersPage() {
 
   const [message, setMessage] = useState("");
 
-  const [messageType, setMessageType] = useState<
-    "success" | "error" | ""
-  >("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   /* ================= LOAD ================= */
   useEffect(() => {
     fetchCustomers();
-
 
     /* ================= REALTIME ================= */
 
@@ -111,7 +103,7 @@ export default function CustomersPage() {
         },
         () => {
           fetchCustomers();
-        }
+        },
       )
       .subscribe();
 
@@ -126,7 +118,7 @@ export default function CustomersPage() {
         },
         () => {
           fetchCustomers();
-        }
+        },
       )
       .subscribe();
 
@@ -141,7 +133,8 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     let query = supabase
       .from("customers")
-      .select(`
+      .select(
+        `
         id,
         name,
         phone,
@@ -154,7 +147,8 @@ export default function CustomersPage() {
         type,
         color
         )
-        `)
+        `,
+      )
       .order("created_at", { ascending: false });
 
     if (!search.trim()) {
@@ -179,10 +173,9 @@ export default function CustomersPage() {
           customer.phone?.toLowerCase().includes(q) ||
           customer.email?.toLowerCase().includes(q);
 
-        const matchesVehicle =
-          customer.vehicles?.some((vehicle: Vehicle) =>
-            vehicle.plate_number?.toLowerCase().includes(q)
-          );
+        const matchesVehicle = customer.vehicles?.some((vehicle: Vehicle) =>
+          vehicle.plate_number?.toLowerCase().includes(q),
+        );
 
         return matchesCustomer || matchesVehicle;
       });
@@ -199,9 +192,7 @@ export default function CustomersPage() {
       customer.name?.toLowerCase().includes(q) ||
       customer.phone?.toLowerCase().includes(q) ||
       customer.email?.toLowerCase().includes(q) ||
-      customer.vehicles?.some((v) =>
-        v.plate_number?.toLowerCase().includes(q)
-      )
+      customer.vehicles?.some((v) => v.plate_number?.toLowerCase().includes(q))
     );
   });
   /* ================= AUTOSUGGEST ================= */
@@ -220,9 +211,7 @@ export default function CustomersPage() {
           c.name?.toLowerCase().includes(q) ||
           c.phone?.toLowerCase().includes(q) ||
           c.email?.toLowerCase().includes(q) ||
-          c.vehicles?.some((v) =>
-            v.plate_number?.toLowerCase().includes(q)
-          )
+          c.vehicles?.some((v) => v.plate_number?.toLowerCase().includes(q)),
       )
       .slice(0, 5);
 
@@ -285,19 +274,16 @@ export default function CustomersPage() {
       /* ================= CHECK DUPLICATE ================= */
 
       if (cleanPlate) {
-        const { data: existingVehicle } =
-          await supabase
-            .from("vehicles")
-            .select("id")
-            .eq("plate_number", cleanPlate)
-            .maybeSingle();
+        const { data: existingVehicle } = await supabase
+          .from("vehicles")
+          .select("id")
+          .eq("plate_number", cleanPlate)
+          .maybeSingle();
 
         if (existingVehicle) {
           setMessageType("error");
 
-          setMessage(
-            "Vehicle already exists in system"
-          );
+          setMessage("Vehicle already exists in system");
 
           setLoading(false);
           return;
@@ -308,18 +294,15 @@ export default function CustomersPage() {
 
       const vehicleObject = cleanPlate
         ? {
-          plate_number: cleanPlate,
-          type: vehicleType || "UNKNOWN",
-          color: color || "UNKNOWN",
-        }
+            plate_number: cleanPlate,
+            type: vehicleType || "UNKNOWN",
+            color: color || "UNKNOWN",
+          }
         : null;
 
       /* ================= SAVE CUSTOMER ================= */
 
-      const {
-        data: customerData,
-        error: customerError,
-      } = await supabase
+      const { data: customerData, error: customerError } = await supabase
         .from("customers")
         .insert([
           {
@@ -327,9 +310,7 @@ export default function CustomersPage() {
             phone,
             email: email || null,
             tag,
-            vehicles: vehicleObject
-              ? [vehicleObject]
-              : [],
+            vehicles: vehicleObject ? [vehicleObject] : [],
           },
         ])
         .select()
@@ -338,7 +319,7 @@ export default function CustomersPage() {
       if (customerError) {
         console.error(
           "CUSTOMER ERROR:",
-          JSON.stringify(customerError, null, 2)
+          JSON.stringify(customerError, null, 2),
         );
 
         setMessageType("error");
@@ -349,18 +330,10 @@ export default function CustomersPage() {
         return;
       }
 
-      console.log(
-        "✅ CUSTOMER SAVED:",
-        customerData
-      );
-
       /* ================= SAVE VEHICLE TABLE ================= */
 
       if (vehicleObject) {
-        const {
-          data: vehicleData,
-          error: vehicleError,
-        } = await supabase
+        const { data: vehicleData, error: vehicleError } = await supabase
           .from("vehicles")
           .insert([
             {
@@ -373,34 +346,24 @@ export default function CustomersPage() {
           .select();
 
         if (vehicleError) {
-          console.error(
-            "VEHICLE ERROR:",
-            vehicleError
-          );
+          console.error("VEHICLE ERROR:", vehicleError);
 
           setMessageType("error");
 
-          setMessage(
-            "Customer saved but vehicle sync failed"
-          );
+          setMessage("Customer saved but vehicle sync failed");
 
           setLoading(false);
           return;
         }
 
-        console.log(
-          "✅ VEHICLE SAVED:",
-          vehicleData
-        );
+        console.log("✅ VEHICLE SAVED:", vehicleData);
       }
 
       /* ================= SUCCESS ================= */
 
       setMessageType("success");
 
-      setMessage(
-        "Customer & vehicle saved successfully ✅"
-      );
+      setMessage("Customer & vehicle saved successfully ✅");
 
       setName("");
       setPhone("");
@@ -422,9 +385,7 @@ export default function CustomersPage() {
 
       setMessageType("error");
 
-      setMessage(
-        err.message || "Unexpected error"
-      );
+      setMessage(err.message || "Unexpected error");
     }
 
     setLoading(false);
@@ -450,27 +411,18 @@ export default function CustomersPage() {
   };
 
   /* ================= DELETE CUSTOMER ================= */
-  const deleteVehicle = async (
-    customerId: string,
-    plateNumber: string
-  ) => {
-    const confirmed = window.confirm(
-      `Delete vehicle ${plateNumber}?`
-    );
+  const deleteVehicle = async (customerId: string, plateNumber: string) => {
+    const confirmed = window.confirm(`Delete vehicle ${plateNumber}?`);
 
     if (!confirmed) return;
 
     try {
-      const customer = customers.find(
-        (c) => c.id === customerId
-      );
+      const customer = customers.find((c) => c.id === customerId);
 
       if (!customer) return;
 
       const updatedVehicles =
-        customer.vehicles?.filter(
-          (v) => v.plate_number !== plateNumber
-        ) || [];
+        customer.vehicles?.filter((v) => v.plate_number !== plateNumber) || [];
 
       const { error } = await supabase
         .from("customers")
@@ -495,14 +447,11 @@ export default function CustomersPage() {
       console.error(err);
     }
   };
-  {/* ================= DELETE CUSTOMER ================= */ }
-  const deleteCustomer = async (
-    customerId: string,
-    customerName: string
-  ) => {
-    const confirmed = window.confirm(
-      `Delete ${customerName}?`
-    );
+  {
+    /* ================= DELETE CUSTOMER ================= */
+  }
+  const deleteCustomer = async (customerId: string, customerName: string) => {
+    const confirmed = window.confirm(`Delete ${customerName}?`);
 
     if (!confirmed) return;
 
@@ -518,7 +467,9 @@ export default function CustomersPage() {
 
     fetchCustomers();
   };
-  {/* ================= UPDATE CUSTOMER ================= */ }
+  {
+    /* ================= UPDATE CUSTOMER ================= */
+  }
   const updateCustomer = async () => {
     try {
       if (!editingCustomer) return;
@@ -541,20 +492,12 @@ export default function CustomersPage() {
 
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(
-          () =>
-            reject(
-              new Error(
-                "Update request timed out after 15 seconds"
-              )
-            ),
-          15000
-        )
+          () => reject(new Error("Update request timed out after 15 seconds")),
+          15000,
+        ),
       );
 
-      const result: any = await Promise.race([
-        updatePromise,
-        timeoutPromise,
-      ]);
+      const result: any = await Promise.race([updatePromise, timeoutPromise]);
 
       const { error } = result;
 
@@ -583,15 +526,11 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6">
-
       {/* ================= HEADER ================= */}
 
       <div className="flex items-center justify-between">
-
         <div>
-          <h1 className="text-2xl font-bold text-white">
-            Customers
-          </h1>
+          <h1 className="text-2xl font-bold text-white">Customers</h1>
 
           <p className="text-gray-500 text-sm">
             Manage customers & registered vehicles
@@ -621,7 +560,6 @@ export default function CustomersPage() {
           <Plus className="h-4 w-4" />
           Add Customer
         </Button>
-
       </div>
 
       {/* ================= SEARCH ================= */}
@@ -633,11 +571,8 @@ export default function CustomersPage() {
         }}
         className="relative max-w-xl"
       >
-
         <div className="flex gap-2">
-
           <div className="relative flex-1">
-
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
 
             <Input
@@ -657,7 +592,6 @@ export default function CustomersPage() {
           >
             Search
           </Button>
-
         </div>
 
         {/* ================= SUGGESTIONS ================= */}
@@ -683,19 +617,13 @@ export default function CustomersPage() {
           loading={loading}
           message={message}
           messageType={messageType}
-          onSubmit={
-            editingCustomer
-              ? updateCustomer
-              : addCustomer
-          }
+          onSubmit={editingCustomer ? updateCustomer : addCustomer}
         />
-
       </form>
 
       {/* ================= LIST ================= */}
 
       <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-
         {filteredCustomers.map((c) => {
           return (
             <Card
@@ -719,7 +647,6 @@ export default function CustomersPage() {
               hover:shadow-[0_0_45px_rgba(0,255,255,0.35)]
               "
             >
-
               {/* ================= GLOW EDGE ================= */}
 
               <div className="absolute inset-0 rounded-[2rem] border border-white/5 pointer-events-none" />
@@ -731,12 +658,10 @@ export default function CustomersPage() {
               <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none" />
 
               <CardContent className="relative z-10 p-6 flex flex-col h-full">
-
                 <div className="flex justify-between items-start">
-
                   <div className="flex gap-4">
-
-                    <div className="
+                    <div
+                      className="
                       h-14
                       w-14
                       rounded-2xl
@@ -750,18 +675,17 @@ export default function CustomersPage() {
                       font-bold
                       text-xl
                       shadow-[0_0_20px_rgba(0,255,255,0.15)]
-                    ">
+                    "
+                    >
                       {c.name?.[0]}
                     </div>
 
                     <div>
-
                       <h2 className="font-bold text-lg tracking-wide">
                         {c.name}
                       </h2>
 
                       <div className="space-y-1 mt-2 text-sm text-gray-400">
-
                         <div className="flex items-center gap-2">
                           <Phone className="h-4 w-4 text-cyan-400" />
                           {c.phone}
@@ -769,13 +693,10 @@ export default function CustomersPage() {
 
                         <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4 text-cyan-400" />
-                          {c.email ||
-                            "No email"}
+                          {c.email || "No email"}
                         </div>
-
                       </div>
                     </div>
-
                   </div>
 
                   <Badge
@@ -791,30 +712,23 @@ export default function CustomersPage() {
                     `}
                   >
                     {getTagIcon(c.tag)}
-                    {(
-                      c.tag || "regular"
-                    ).toUpperCase()}
+                    {(c.tag || "regular").toUpperCase()}
                   </Badge>
-
                 </div>
 
                 {/* ================= VEHICLES ================= */}
 
                 <div className="mt-6">
-
                   <p className="text-xs text-gray-400 mb-3 uppercase tracking-[0.2em]">
                     Registered Vehicles
                   </p>
 
                   <div className="flex flex-wrap gap-2">
-
-                    {c.vehicles &&
-                      c.vehicles.length > 0 ? (
-                      c.vehicles.map(
-                        (v, i) => (
-                          <div
-                            key={i}
-                            className="
+                    {c.vehicles && c.vehicles.length > 0 ? (
+                      c.vehicles.map((v, i) => (
+                        <div
+                          key={i}
+                          className="
                               rounded-2xl
                               border
                               border-cyan-500/10
@@ -828,31 +742,25 @@ export default function CustomersPage() {
                               hover:bg-cyan-500/10
                               hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]
                             "
-                          >
-                            <p className="text-sm font-semibold">
-                              {v.plate_number}
-                            </p>
+                        >
+                          <p className="text-sm font-semibold">
+                            {v.plate_number}
+                          </p>
 
-                            <p className="text-xs text-gray-400">
-                              {v.type} •{" "}
-                              {v.color}
-                            </p>
-                          </div>
-                        )
-                      )
+                          <p className="text-xs text-gray-400">
+                            {v.type} • {v.color}
+                          </p>
+                        </div>
+                      ))
                     ) : (
-                      <p className="text-sm text-gray-500">
-                        No vehicles
-                      </p>
+                      <p className="text-sm text-gray-500">No vehicles</p>
                     )}
-
                   </div>
                 </div>
 
                 {/* ================= ACTIONS ================= */}
 
                 <div className="mt-auto pt-6 flex justify-end gap-3">
-
                   <Button
                     size="icon"
                     variant="outline"
@@ -893,10 +801,7 @@ export default function CustomersPage() {
                     onClick={(e) => {
                       e.stopPropagation();
 
-                      deleteCustomer(
-                        c.id,
-                        c.name
-                      );
+                      deleteCustomer(c.id, c.name);
                     }}
                     className="
                     border-red-500/20
@@ -907,59 +812,38 @@ export default function CustomersPage() {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-
                 </div>
-
               </CardContent>
             </Card>
           );
         })}
-
       </div>
 
       {/* ================= DRAWER ================= */}
 
-      {
-        activeCustomer && (
+      {activeCustomer && (
+        <div
+          onClick={() => setActiveCustomer(null)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-end z-50"
+        >
           <div
-            onClick={() =>
-              setActiveCustomer(null)
-            }
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-end z-50"
+            onClick={(e) => e.stopPropagation()}
+            className="w-[420px] max-w-full bg-[#0B1220] text-white h-full p-6 overflow-y-auto border-l border-cyan-500/20 shadow-[0_0_40px_rgba(0,255,255,0.15)]"
           >
+            <h2 className="text-2xl font-bold">{activeCustomer.name}</h2>
 
-            <div
-              onClick={(e) =>
-                e.stopPropagation()
-              }
-              className="w-[420px] max-w-full bg-[#0B1220] text-white h-full p-6 overflow-y-auto border-l border-cyan-500/20 shadow-[0_0_40px_rgba(0,255,255,0.15)]"
-            >
+            <p className="text-gray-400 mt-1">{activeCustomer.phone}</p>
 
-              <h2 className="text-2xl font-bold">
-                {activeCustomer.name}
-              </h2>
+            <p className="text-gray-400">{activeCustomer.email}</p>
 
-              <p className="text-gray-400 mt-1">
-                {activeCustomer.phone}
-              </p>
+            <div className="mt-6">
+              <h3 className="font-semibold mb-3">Vehicles</h3>
 
-              <p className="text-gray-400">
-                {activeCustomer.email}
-              </p>
-
-              <div className="mt-6">
-
-                <h3 className="font-semibold mb-3">
-                  Vehicles
-                </h3>
-
-                <div className="space-y-3">
-
-                  {activeCustomer.vehicles?.map(
-                    (v, i) => (
-                      <div
-                        key={i}
-                        className="
+              <div className="space-y-3">
+                {activeCustomer.vehicles?.map((v, i) => (
+                  <div
+                    key={i}
+                    className="
     rounded-2xl
     border
     border-cyan-500/10
@@ -977,51 +861,41 @@ export default function CustomersPage() {
     items-start
     gap-3
   "
-                      >
-                        <div>
-                          <p className="text-sm font-semibold">
-                            {v.plate_number}
-                          </p>
+                  >
+                    <div>
+                      <p className="text-sm font-semibold">{v.plate_number}</p>
 
-                          <p className="text-xs text-gray-400">
-                            {v.type} • {v.color}
-                          </p>
-                        </div>
+                      <p className="text-xs text-gray-400">
+                        {v.type} • {v.color}
+                      </p>
+                    </div>
 
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          title="Delete Vehicle"
-                          onClick={(e) => {
-                            e.stopPropagation();
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      title="Delete Vehicle"
+                      onClick={(e) => {
+                        e.stopPropagation();
 
-                            deleteVehicle(
-                              activeCustomer.id,
-                              v.plate_number
-                            );
-                          }}
-                          className="
+                        deleteVehicle(activeCustomer.id, v.plate_number);
+                      }}
+                      className="
                           h-8
                           w-8
                           text-red-400
                           hover:text-red-300
                           hover:bg-red-500/10
                           "
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )
-                  )}
-
-                </div>
-
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   );
 }

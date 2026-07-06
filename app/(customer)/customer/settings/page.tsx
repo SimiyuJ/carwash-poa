@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  User,
-  Phone,
-  MapPin,
-  Bell,
-  Lock,
-  Save,
-  Car,
-} from "lucide-react";
+import { User, Phone, MapPin, Bell, Lock, Save, Car } from "lucide-react";
 
 export default function CustomerSettingsPage() {
   const [form, setForm] = useState({
@@ -25,7 +17,6 @@ export default function CustomerSettingsPage() {
   };
 
   const handleSave = () => {
-    console.log("Saved settings:", form);
     alert("Settings updated successfully 🚀");
   };
 
@@ -66,8 +57,7 @@ export default function CustomerSettingsPage() {
               {form.location}
             </div>
             <div className="flex items-center gap-2">
-              <Car className="w-4 h-4 text-gray-400" />
-              2 Registered Cars
+              <Car className="w-4 h-4 text-gray-400" />2 Registered Cars
             </div>
           </div>
         </div>
@@ -75,7 +65,10 @@ export default function CustomerSettingsPage() {
         {/* RIGHT FORM */}
         <div className="lg:col-span-2 space-y-4">
           {/* PERSONAL INFO */}
-          <Section title="Personal Information" icon={<User className="w-4 h-4" />}>
+          <Section
+            title="Personal Information"
+            icon={<User className="w-4 h-4" />}
+          >
             <Input
               label="Full Name"
               value={form.name}

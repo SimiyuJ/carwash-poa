@@ -41,8 +41,6 @@ export default function CustomerDashboard() {
     if (!isReady) return;
 
     if (!activeBranch?.id) {
-      console.log("No active carwash -> redirecting to selector");
-
       router.replace("/customer/select-branch");
     }
   }, [activeBranch, isReady, router]);
@@ -146,9 +144,6 @@ export default function CustomerDashboard() {
           ascending: true,
         });
 
-      console.log("APPOINTMENTS:", bookingData);
-      console.log("APPOINTMENTS ERROR:", error);
-
       setNextBooking(bookingData?.[0] || null);
 
       /*
@@ -217,8 +212,6 @@ export default function CustomerDashboard() {
   };
 
   useEffect(() => {
-    console.log("BRANCH CHANGED:", activeBranch);
-
     if (!activeBranch?.id) return;
 
     loadDashboard();

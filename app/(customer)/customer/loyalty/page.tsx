@@ -132,7 +132,6 @@ export default function LoyaltyPage() {
         .eq("branch_id", activeBranch?.id);
 
       setRewards(rewardData || []);
-      console.log("REWARDS LOADED:", rewardData);
     } finally {
       setLoading(false);
     }

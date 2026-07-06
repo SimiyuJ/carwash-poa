@@ -4,28 +4,20 @@ import { createClient } from "@supabase/supabase-js";
    ENV VARIABLES
 ========================================= */
 
-const supabaseUrl =
-  process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-const supabaseAnonKey =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-console.log("SUPABASE URL:", supabaseUrl);
-console.log("SUPABASE KEY EXISTS:", !!supabaseAnonKey);
 /* =========================================
    VALIDATE ENV
 ========================================= */
 
 if (!supabaseUrl) {
-  throw new Error(
-    "Missing NEXT_PUBLIC_SUPABASE_URL"
-  );
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
 }
 
 if (!supabaseAnonKey) {
-  throw new Error(
-    "Missing NEXT_PUBLIC_SUPABASE_ANON_KEY"
-  );
+  throw new Error("Missing NEXT_PUBLIC_SUPABASE_ANON_KEY");
 }
 
 /* =========================================
@@ -33,42 +25,33 @@ if (!supabaseAnonKey) {
 ========================================= */
 
 const createSupabaseClient = () => {
-  return createClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      auth: {
-        persistSession: true,
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
 
-        autoRefreshToken: true,
+      autoRefreshToken: true,
 
-        detectSessionInUrl: true,
+      detectSessionInUrl: true,
 
-        flowType: "pkce",
+      flowType: "pkce",
 
-        storage:
-          typeof window !== "undefined"
-            ? window.localStorage
-            : undefined,
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
 
-        storageKey:
-          "carwash-management-auth",
+      storageKey: "carwash-management-auth",
+    },
+
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
       },
+    },
 
-      realtime: {
-        params: {
-          eventsPerSecond: 10,
-        },
+    global: {
+      headers: {
+        "X-Client-Info": "carwash-management-system",
       },
-
-      global: {
-        headers: {
-          "X-Client-Info":
-            "carwash-management-system",
-        },
-      },
-    }
-  );
+    },
+  });
 };
 
 /* =========================================
@@ -77,83 +60,49 @@ const createSupabaseClient = () => {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __supabase:
-    | ReturnType<
-      typeof createSupabaseClient
-    >
-    | undefined;
+  var __supabase: ReturnType<typeof createSupabaseClient> | undefined;
 }
 
 /* =========================================
    EXPORT SINGLE INSTANCE
 ========================================= */
 
-export const supabase =
-  globalThis.__supabase ??
-  createSupabaseClient();
+export const supabase = globalThis.__supabase ?? createSupabaseClient();
 
 /* =========================================
    PREVENT MULTIPLE CLIENTS
 ========================================= */
 
-if (
-  process.env.NODE_ENV !==
-  "production"
-) {
-  globalThis.__supabase =
-    supabase;
+if (process.env.NODE_ENV !== "production") {
+  globalThis.__supabase = supabase;
 }
 
 /* =========================================
    CONNECTION DEBUGGING
 ========================================= */
 
-if (
-  typeof window !== "undefined"
-) {
-  window.addEventListener(
-    "online",
-    () => {
-      console.log(
-        "SUPABASE: Internet reconnected"
-      );
-    }
-  );
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => {
+    console.log("SUPABASE: Internet reconnected");
+  });
 
-  window.addEventListener(
-    "offline",
-    () => {
-      console.warn(
-        "SUPABASE: Internet disconnected"
-      );
-    }
-  );
+  window.addEventListener("offline", () => {
+    console.warn("SUPABASE: Internet disconnected");
+  });
 }
 
 /* =========================================
    SAFE AUTH RECOVERY
 ========================================= */
 
-supabase.auth.onAuthStateChange(
-  async (event) => {
-    console.log(
-      "AUTH EVENT:",
-      event
-    );
+supabase.auth.onAuthStateChange(async (event) => {
+  console.log("AUTH EVENT:", event);
 
-    if (
-      event === "SIGNED_OUT"
-    ) {
-      try {
-        localStorage.removeItem(
-          "carwash-management-auth"
-        );
-      } catch (error) {
-        console.error(
-          "LOCAL STORAGE CLEAN ERROR:",
-          error
-        );
-      }
+  if (event === "SIGNED_OUT") {
+    try {
+      localStorage.removeItem("carwash-management-auth");
+    } catch (error) {
+      console.error("LOCAL STORAGE CLEAN ERROR:", error);
     }
   }
-);
+});

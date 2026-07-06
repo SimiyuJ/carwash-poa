@@ -3,45 +3,32 @@
 import { useEffect, useState } from "react";
 import { getProfile } from "@/lib/getProfile";
 
-type Role =
-  | "admin"
-  | "manager"
-  | "cashier"
-  | "washer";
+type Role = "admin" | "manager" | "cashier" | "washer";
 
 export default function AdminInvitesPage() {
   /* =========================================
      FORM STATE
   ========================================= */
-  const [email, setEmail] =
-    useState("");
+  const [email, setEmail] = useState("");
 
-  const [role, setRole] =
-    useState<Role>("cashier");
+  const [role, setRole] = useState<Role>("cashier");
 
-  const [branchId, setBranchId] =
-    useState("");
+  const [branchId, setBranchId] = useState("");
 
   /* =========================================
      SYSTEM STATE
   ========================================= */
-  const [carwashId, setCarwashId] =
-    useState<string | null>(null);
+  const [carwashId, setCarwashId] = useState<string | null>(null);
 
-  const [loadingProfile, setLoadingProfile] =
-    useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
-  const [sending, setSending] =
-    useState(false);
+  const [sending, setSending] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-  const [success, setSuccess] =
-    useState("");
+  const [success, setSuccess] = useState("");
 
-  const [inviteLink, setInviteLink] =
-    useState("");
+  const [inviteLink, setInviteLink] = useState("");
 
   /* =========================================
      LOAD PROFILE
@@ -53,39 +40,25 @@ export default function AdminInvitesPage() {
       try {
         setLoadingProfile(true);
 
-        const profile =
-          await getProfile();
+        const profile = await getProfile();
 
         if (!mounted) return;
 
         if (!profile?.carwash_id) {
-          setError(
-            "Your account is not linked to a carwash"
-          );
+          setError("Your account is not linked to a carwash");
 
           return;
         }
 
-        setCarwashId(
-          profile.carwash_id
-        );
+        setCarwashId(profile.carwash_id);
 
         if (profile.branch_id) {
-          setBranchId(
-            profile.branch_id
-          );
+          setBranchId(profile.branch_id);
         }
-
       } catch (err) {
-        console.error(
-          "PROFILE ERROR:",
-          err
-        );
+        console.error("PROFILE ERROR:", err);
 
-        setError(
-          "Failed to load profile"
-        );
-
+        setError("Failed to load profile");
       } finally {
         if (mounted) {
           setLoadingProfile(false);
@@ -103,12 +76,8 @@ export default function AdminInvitesPage() {
   /* =========================================
      EMAIL VALIDATION
   ========================================= */
-  function isValidEmail(
-    value: string
-  ) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      value
-    );
+  function isValidEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
   /* =========================================
@@ -116,14 +85,9 @@ export default function AdminInvitesPage() {
   ========================================= */
   async function copyInviteLink() {
     try {
-      await navigator.clipboard.writeText(
-        inviteLink
-      );
+      await navigator.clipboard.writeText(inviteLink);
 
-      alert(
-        "Invite link copied"
-      );
-
+      alert("Invite link copied");
     } catch (err) {
       console.error(err);
     }
@@ -144,27 +108,19 @@ export default function AdminInvitesPage() {
          VALIDATION
       ========================================= */
       if (!email.trim()) {
-        setError(
-          "Staff email is required"
-        );
+        setError("Staff email is required");
 
         return;
       }
 
-      if (
-        !isValidEmail(email)
-      ) {
-        setError(
-          "Invalid email address"
-        );
+      if (!isValidEmail(email)) {
+        setError("Invalid email address");
 
         return;
       }
 
       if (!carwashId) {
-        setError(
-          "Missing carwash ID"
-        );
+        setError("Missing carwash ID");
 
         return;
       }
@@ -172,71 +128,46 @@ export default function AdminInvitesPage() {
       /* =========================================
          API REQUEST
       ========================================= */
-      const res = await fetch(
-        "/api/invite/send",
-        {
-          method: "POST",
+      const res = await fetch("/api/invite/send", {
+        method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-          body: JSON.stringify({
-            email:
-              email
-                .trim()
-                .toLowerCase(),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
 
-            role,
+          role,
 
-            branch_id:
-              branchId || null,
+          branch_id: branchId || null,
 
-            carwash_id:
-              carwashId,
-          }),
-        }
-      );
+          carwash_id: carwashId,
+        }),
+      });
 
       /* =========================================
          SAFE RESPONSE
       ========================================= */
-      const contentType =
-        res.headers.get(
-          "content-type"
-        );
+      const contentType = res.headers.get("content-type");
 
       let data: any = null;
 
-      if (
-        contentType?.includes(
-          "application/json"
-        )
-      ) {
+      if (contentType?.includes("application/json")) {
         data = await res.json();
       } else {
-        const text =
-          await res.text();
+        const text = await res.text();
 
-        console.error(
-          "INVALID RESPONSE:",
-          text
-        );
+        console.error("INVALID RESPONSE:", text);
 
-        throw new Error(
-          "Server returned invalid response"
-        );
+        throw new Error("Server returned invalid response");
       }
 
       /* =========================================
          ERROR
       ========================================= */
       if (!res.ok) {
-        setError(
-          data?.error ||
-            "Failed to send invite"
-        );
+        setError(data?.error || "Failed to send invite");
 
         return;
       }
@@ -244,20 +175,11 @@ export default function AdminInvitesPage() {
       /* =========================================
          SUCCESS
       ========================================= */
-      setSuccess(
-        "Invite created successfully"
-      );
+      setSuccess("Invite created successfully");
 
       if (data?.inviteLink) {
-        setInviteLink(
-          data.inviteLink
-        );
+        setInviteLink(data.inviteLink);
       }
-
-      console.log(
-        "INVITE CREATED:",
-        data
-      );
 
       /* =========================================
          RESET
@@ -265,18 +187,10 @@ export default function AdminInvitesPage() {
       setEmail("");
 
       setRole("cashier");
-
     } catch (err: any) {
-      console.error(
-        "INVITE ERROR:",
-        err
-      );
+      console.error("INVITE ERROR:", err);
 
-      setError(
-        err?.message ||
-          "Network error occurred"
-      );
-
+      setError(err?.message || "Network error occurred");
     } finally {
       setSending(false);
     }
@@ -287,36 +201,24 @@ export default function AdminInvitesPage() {
   ========================================= */
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6">
-
       <div className="max-w-2xl mx-auto">
-
         {/* HEADER */}
         <div className="mb-8">
-
-          <h1 className="text-4xl font-bold">
-            Staff Invitations
-          </h1>
+          <h1 className="text-4xl font-bold">Staff Invitations</h1>
 
           <p className="text-slate-400 mt-2">
-            Invite staff members into
-            your carwash workspace
+            Invite staff members into your carwash workspace
           </p>
-
         </div>
 
         {/* MAIN CARD */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-
           {/* LOADING */}
           {loadingProfile && (
             <div className="flex items-center gap-3 text-slate-400">
-
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
 
-              <span>
-                Loading profile...
-              </span>
-
+              <span>Loading profile...</span>
             </div>
           )}
 
@@ -336,142 +238,88 @@ export default function AdminInvitesPage() {
 
           {/* EMAIL */}
           <div className="space-y-2">
-
-            <label className="text-sm text-slate-400">
-              Staff Email
-            </label>
+            <label className="text-sm text-slate-400">Staff Email</label>
 
             <input
               type="email"
               placeholder="staff@example.com"
               value={email}
-              onChange={(e) =>
-                setEmail(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 focus:border-green-500 outline-none p-4 rounded-2xl"
             />
-
           </div>
 
           {/* ROLE */}
           <div className="space-y-2">
-
-            <label className="text-sm text-slate-400">
-              Staff Role
-            </label>
+            <label className="text-sm text-slate-400">Staff Role</label>
 
             <select
               value={role}
-              onChange={(e) =>
-                setRole(
-                  e.target
-                    .value as Role
-                )
-              }
+              onChange={(e) => setRole(e.target.value as Role)}
               className="w-full bg-slate-800 border border-slate-700 focus:border-green-500 outline-none p-4 rounded-2xl"
             >
-              <option value="admin">
-                Admin
-              </option>
+              <option value="admin">Admin</option>
 
-              <option value="manager">
-                Manager
-              </option>
+              <option value="manager">Manager</option>
 
-              <option value="cashier">
-                Cashier
-              </option>
+              <option value="cashier">Cashier</option>
 
-              <option value="washer">
-                Washer
-              </option>
+              <option value="washer">Washer</option>
             </select>
-
           </div>
 
           {/* BRANCH */}
           <div className="space-y-2">
-
-            <label className="text-sm text-slate-400">
-              Branch ID
-            </label>
+            <label className="text-sm text-slate-400">Branch ID</label>
 
             <input
               type="text"
               placeholder="Optional branch ID"
               value={branchId}
-              onChange={(e) =>
-                setBranchId(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setBranchId(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 focus:border-green-500 outline-none p-4 rounded-2xl"
             />
-
           </div>
 
           {/* CARWASH INFO */}
           <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4">
-
-            <p className="text-xs text-slate-400">
-              Current Carwash ID
-            </p>
+            <p className="text-xs text-slate-400">Current Carwash ID</p>
 
             <p className="mt-2 text-green-400 break-all font-medium">
-              {carwashId ||
-                "Not linked"}
+              {carwashId || "Not linked"}
             </p>
-
           </div>
 
           {/* INVITE LINK */}
           {inviteLink && (
             <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-4">
-
               <div>
-
-                <p className="text-xs text-slate-400">
-                  Invite Link
-                </p>
+                <p className="text-xs text-slate-400">Invite Link</p>
 
                 <p className="mt-2 text-sm text-green-400 break-all">
                   {inviteLink}
                 </p>
-
               </div>
 
               <button
-                onClick={
-                  copyInviteLink
-                }
+                onClick={copyInviteLink}
                 className="bg-green-600 hover:bg-green-700 transition px-4 py-3 rounded-xl font-medium"
               >
                 Copy Invite Link
               </button>
-
             </div>
           )}
 
           {/* SUBMIT */}
           <button
             onClick={sendInvite}
-            disabled={
-              sending ||
-              loadingProfile
-            }
+            disabled={sending || loadingProfile}
             className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 transition p-4 rounded-2xl font-semibold text-lg"
           >
-            {sending
-              ? "Sending Invite..."
-              : "Send Invite"}
+            {sending ? "Sending Invite..." : "Send Invite"}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }

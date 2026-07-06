@@ -1,27 +1,14 @@
-
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  ShieldX,
-  Loader2,
-} from "lucide-react";
+import { ShieldX, Loader2 } from "lucide-react";
 
-import {
-  getProfile,
-  type UserRole,
-} from "@/lib/getProfile";
+import { getProfile, type UserRole } from "@/lib/getProfile";
 
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 /* =========================================
    TYPES
@@ -36,20 +23,14 @@ interface RoleGuardProps {
    COMPONENT
 ========================================= */
 
-export default function RoleGuard({
-  allow,
-  children,
-}: RoleGuardProps) {
+export default function RoleGuard({ allow, children }: RoleGuardProps) {
   const router = useRouter();
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [allowed, setAllowed] =
-    useState(false);
+  const [allowed, setAllowed] = useState(false);
 
-  const [profile, setProfile] =
-    useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
 
   /* =========================================
      CHECK ACCESS
@@ -62,17 +43,14 @@ export default function RoleGuard({
       try {
         setLoading(true);
 
-        const userProfile =
-          await getProfile();
+        const userProfile = await getProfile();
 
         /* =========================================
            NO PROFILE
         ========================================= */
 
         if (!userProfile) {
-          console.warn(
-            "NO PROFILE FOUND"
-          );
+          console.warn("NO PROFILE FOUND");
 
           router.replace("/auth");
 
@@ -83,37 +61,21 @@ export default function RoleGuard({
 
         setProfile(userProfile);
 
-        console.log(
-          "CURRENT ROLE:",
-          userProfile.role
-        );
-
         /* =========================================
            ROLE CHECK
         ========================================= */
 
-        const hasAccess =
-          allow.includes(
-            userProfile.role
-          );
+        const hasAccess = allow.includes(userProfile.role);
 
         if (!hasAccess) {
-          console.warn(
-            "ACCESS DENIED FOR ROLE:",
-            userProfile.role
-          );
+          console.warn("ACCESS DENIED FOR ROLE:", userProfile.role);
 
           /*
             CUSTOMER REDIRECT
           */
 
-          if (
-            userProfile.role ===
-            "customer"
-          ) {
-            router.replace(
-              "/customer-profiles/dashboard"
-            );
+          if (userProfile.role === "customer") {
+            router.replace("/customer-profiles/dashboard");
 
             return;
           }
@@ -122,19 +84,14 @@ export default function RoleGuard({
             STAFF REDIRECT
           */
 
-          router.replace(
-            "/unauthorized"
-          );
+          router.replace("/unauthorized");
 
           return;
         }
 
         setAllowed(true);
       } catch (error: any) {
-        console.error(
-          "ROLE GUARD ERROR:",
-          error?.message || error
-        );
+        console.error("ROLE GUARD ERROR:", error?.message || error);
 
         router.replace("/auth");
       } finally {
@@ -227,8 +184,7 @@ export default function RoleGuard({
                   mt-2
                 "
               >
-                Verifying your access
-                rights...
+                Verifying your access rights...
               </p>
             </div>
           </CardContent>
@@ -311,9 +267,7 @@ export default function RoleGuard({
                   mt-2
                 "
               >
-                You do not have
-                permission to access
-                this page.
+                You do not have permission to access this page.
               </p>
             </div>
           </CardContent>

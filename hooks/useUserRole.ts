@@ -19,8 +19,6 @@ export default function useUserRole() {
 
         const user = session?.user;
 
-        console.log("USER:", user);
-
         if (!user) {
           if (isMounted) {
             setRole(null);
@@ -35,8 +33,6 @@ export default function useUserRole() {
           .select("role")
           .eq("id", user.id)
           .maybeSingle();
-
-        console.log("PROFILE:", data, error);
 
         if (!isMounted) return;
 
@@ -68,7 +64,7 @@ export default function useUserRole() {
 
         // re-fetch role when auth changes
         getRole();
-      }
+      },
     );
 
     return () => {

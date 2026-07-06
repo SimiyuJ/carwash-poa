@@ -57,8 +57,6 @@ export default function AuthProvider({
 
   const loadProfile = async (userId: string) => {
     try {
-
-
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -66,13 +64,9 @@ export default function AuthProvider({
         .single();
 
       if (error) {
-        console.log("PROFILE ERROR:", error);
-
         setProfile(null);
         return;
       }
-
-      console.log("PROFILE LOADED:", data);
 
       setProfile(data);
 
@@ -81,9 +75,7 @@ export default function AuthProvider({
       setCurrentCompany(data?.company_id || null);
 
       setRole(data?.role || null);
-    } catch (err) {
-      console.log("LOAD PROFILE FAILED:", err);
-    }
+    } catch (err) {}
   };
 
   /* =========================================================
@@ -104,8 +96,6 @@ export default function AuthProvider({
           console.log(error);
           return;
         }
-
-        console.log("SESSION:", session);
 
         if (!session?.user) {
           setUser(null);
@@ -128,8 +118,6 @@ export default function AuthProvider({
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("AUTH EVENT:", event);
-
         if (!session?.user) {
           setUser(null);
           setProfile(null);

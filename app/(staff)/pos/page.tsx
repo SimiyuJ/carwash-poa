@@ -304,10 +304,7 @@ export default function POSPage() {
     loadServices();
   }, [branchId, createdBy]);
 
-  useEffect(() => {
-    console.log("Cart changed:", cart);
-    console.log("Cart Open:", cartOpen);
-  }, [cart, cartOpen]);
+  useEffect(() => {}, [cart, cartOpen]);
 
   /* =========================================================
      SEARCH VEHICLE
@@ -418,8 +415,6 @@ SUBSCRIPTION SERVICES
             console.error("Failed to parse subscription services", err);
             services = [];
           }
-
-          console.log("PARSED SERVICES:", services);
 
           const cartItems = services
             .map((service: any, index: number) => ({
