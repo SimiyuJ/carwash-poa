@@ -53,7 +53,7 @@ export default function BranchSelectPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.replace("/login");
+        router.replace("/auth");
         return;
       }
 
@@ -61,15 +61,14 @@ export default function BranchSelectPage() {
          GET PROFILE
       ----------------------------- */
 
-      const { data: profileData, error: profileError } =
-        await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
       if (profileError || !profileData) {
-        router.replace("/login");
+        router.replace("/auth");
         return;
       }
 
@@ -145,12 +144,9 @@ export default function BranchSelectPage() {
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-
         {/* HEADER */}
         <div>
-          <h1 className="text-3xl font-bold">
-            Select Your Branch
-          </h1>
+          <h1 className="text-3xl font-bold">Select Your Branch</h1>
           <p className="text-zinc-400 mt-2">
             Choose a branch to continue working inside the system
           </p>
@@ -165,16 +161,13 @@ export default function BranchSelectPage() {
               onClick={() => selectBranch(branch)}
             >
               <CardContent className="p-5 space-y-3">
-
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
                     <Building2 className="w-5 h-5" />
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-lg">
-                      {branch.name}
-                    </h3>
+                    <h3 className="font-bold text-lg">{branch.name}</h3>
 
                     <p className="text-zinc-400 text-sm flex items-center gap-1">
                       <MapPin className="w-3 h-3" />

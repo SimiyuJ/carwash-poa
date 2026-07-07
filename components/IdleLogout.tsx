@@ -6,23 +6,18 @@ import { supabase } from "@/lib/supabase";
 const IDLE_TIME = 2 * 60 * 60 * 1000; // 2 hours
 
 export default function IdleLogout() {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(
-    null
-  );
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetTimer = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    timeoutRef.current = setTimeout(
-      async () => {
-        await supabase.auth.signOut();
+    timeoutRef.current = setTimeout(async () => {
+      await supabase.auth.signOut();
 
-        window.location.href = "/login";
-      },
-      IDLE_TIME
-    );
+      window.location.href = "/auth";
+    }, IDLE_TIME);
   };
 
   useEffect(() => {
@@ -34,22 +29,12 @@ export default function IdleLogout() {
       "touchstart",
     ];
 
-    events.forEach((event) =>
-      window.addEventListener(
-        event,
-        resetTimer
-      )
-    );
+    events.forEach((event) => window.addEventListener(event, resetTimer));
 
     resetTimer();
 
     return () => {
-      events.forEach((event) =>
-        window.removeEventListener(
-          event,
-          resetTimer
-        )
-      );
+      events.forEach((event) => window.removeEventListener(event, resetTimer));
 
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

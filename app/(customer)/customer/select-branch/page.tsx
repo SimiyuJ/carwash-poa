@@ -32,11 +32,6 @@ export default function SelectCarWashPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.replace("/customer/auth");
-        return;
-      }
-
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("branch_id, carwash_id")

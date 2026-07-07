@@ -99,7 +99,7 @@ export default function AcceptInvitePage() {
       if (!user) {
         setError("Please login first before accepting invite");
 
-        router.push("/login");
+        router.push("/auth");
 
         return;
       }
@@ -107,13 +107,8 @@ export default function AcceptInvitePage() {
       /* =========================================
          EMAIL SAFETY CHECK
       ========================================= */
-      if (
-        user.email?.toLowerCase() !==
-        invite.email?.toLowerCase()
-      ) {
-        setError(
-          `This invite belongs to ${invite.email}`
-        );
+      if (user.email?.toLowerCase() !== invite.email?.toLowerCase()) {
+        setError(`This invite belongs to ${invite.email}`);
 
         return;
       }
@@ -131,24 +126,19 @@ export default function AcceptInvitePage() {
          CREATE PROFILE IF MISSING
       ========================================= */
       if (!existingProfile) {
-        const { error: profileError } =
-          await supabase.from("profiles").insert([
-            {
-              id: user.id,
-              email: user.email,
-              full_name:
-                user.user_metadata?.full_name || "",
-              role: invite.role,
-              carwash_id: invite.carwash_id,
-              branch_id: invite.branch_id || null,
-            },
-          ]);
+        const { error: profileError } = await supabase.from("profiles").insert([
+          {
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || "",
+            role: invite.role,
+            carwash_id: invite.carwash_id,
+            branch_id: invite.branch_id || null,
+          },
+        ]);
 
         if (profileError) {
-          console.error(
-            "PROFILE CREATE ERROR:",
-            profileError.message
-          );
+          console.error("PROFILE CREATE ERROR:", profileError.message);
 
           setError("Failed to create user profile");
 
@@ -167,10 +157,7 @@ export default function AcceptInvitePage() {
         .eq("id", invite.id);
 
       if (inviteError) {
-        console.error(
-          "INVITE UPDATE ERROR:",
-          inviteError.message
-        );
+        console.error("INVITE UPDATE ERROR:", inviteError.message);
 
         setError("Failed to finalize invite");
 
@@ -203,9 +190,7 @@ export default function AcceptInvitePage() {
         <div className="space-y-3 text-center">
           <div className="w-10 h-10 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
 
-          <p className="text-sm text-slate-400">
-            Loading invite...
-          </p>
+          <p className="text-sm text-slate-400">Loading invite...</p>
         </div>
       </div>
     );
@@ -218,16 +203,12 @@ export default function AcceptInvitePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white p-6">
         <div className="max-w-md w-full bg-slate-900 border border-red-500/30 rounded-2xl p-6 space-y-4">
-          <h1 className="text-2xl font-bold text-red-400">
-            Invite Error
-          </h1>
+          <h1 className="text-2xl font-bold text-red-400">Invite Error</h1>
 
-          <p className="text-slate-300">
-            {error}
-          </p>
+          <p className="text-slate-300">{error}</p>
 
           <button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/auth")}
             className="w-full bg-red-600 hover:bg-red-700 transition p-3 rounded-xl font-medium"
           >
             Go To Login
@@ -243,16 +224,11 @@ export default function AcceptInvitePage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-
         {/* HEADER */}
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">
-            Accept Invite
-          </h1>
+          <h1 className="text-3xl font-bold">Accept Invite</h1>
 
-          <p className="text-slate-400">
-            Join your carwash workspace
-          </p>
+          <p className="text-slate-400">Join your carwash workspace</p>
         </div>
 
         {/* SUCCESS */}
@@ -271,37 +247,23 @@ export default function AcceptInvitePage() {
 
         {/* INVITE DETAILS */}
         <div className="space-y-4">
-
           <div className="bg-slate-800 rounded-2xl p-4">
-            <p className="text-xs text-slate-400">
-              Email
-            </p>
+            <p className="text-xs text-slate-400">Email</p>
 
-            <p className="font-medium mt-1">
-              {invite?.email}
-            </p>
+            <p className="font-medium mt-1">{invite?.email}</p>
           </div>
 
           <div className="bg-slate-800 rounded-2xl p-4">
-            <p className="text-xs text-slate-400">
-              Role
-            </p>
+            <p className="text-xs text-slate-400">Role</p>
 
-            <p className="font-medium mt-1 capitalize">
-              {invite?.role}
-            </p>
+            <p className="font-medium mt-1 capitalize">{invite?.role}</p>
           </div>
 
           <div className="bg-slate-800 rounded-2xl p-4">
-            <p className="text-xs text-slate-400">
-              Carwash ID
-            </p>
+            <p className="text-xs text-slate-400">Carwash ID</p>
 
-            <p className="font-medium mt-1 break-all">
-              {invite?.carwash_id}
-            </p>
+            <p className="font-medium mt-1 break-all">{invite?.carwash_id}</p>
           </div>
-
         </div>
 
         {/* ACTION BUTTON */}
@@ -310,11 +272,8 @@ export default function AcceptInvitePage() {
           disabled={accepting}
           className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 transition p-4 rounded-2xl font-semibold text-lg"
         >
-          {accepting
-            ? "Accepting Invite..."
-            : "Accept Invite"}
+          {accepting ? "Accepting Invite..." : "Accept Invite"}
         </button>
-
       </div>
     </div>
   );

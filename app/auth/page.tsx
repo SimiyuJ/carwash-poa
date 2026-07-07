@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 
 import {
@@ -37,6 +37,10 @@ export default function AuthPage() {
 
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+
+  const mode = searchParams.get("mode");
+
   const [email, setEmail] = useState("");
 
   const [password, setPassword] = useState("");
@@ -70,50 +74,51 @@ export default function AuthPage() {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (mode === "signup") {
+      setIsLogin(false);
+    } else {
+      setIsLogin(true);
+    }
+  }, [mode]);
+
   /* =========================================
      REDIRECT BASED ON ROLE
   ========================================= */
 
   const redirectUser = async (userId: string) => {
-    if (redirectingRef.current) return;
-    redirectingRef.current = true;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
 
-    try {
-      let role = null;
+    if (!profile) {
+      setErrorMessage("No profile found.");
+      return;
+    }
 
-      for (let i = 0; i < 10; i++) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .maybeSingle();
+    switch (profile.role.toLowerCase()) {
+      case "customer":
+        router.replace("/customer/dashboard");
+        break;
 
-        if (data?.role) {
-          role = data.role;
-          break;
-        }
+      case "washer":
+        router.replace("/queue");
+        break;
 
-        await new Promise((r) => setTimeout(r, 500));
-      }
+      case "cashier":
+        router.replace("/pos");
+        break;
 
-      if (!role) {
-        console.error("Profile not ready or blocked by RLS");
-        return;
-      }
-
-      role = role.toLowerCase();
-
-      if (role === "washer") router.replace("/queue");
-      else if (role === "cashier") router.replace("/pos");
-      else router.replace("/dashboard");
-    } catch (err) {
-      console.error("Redirect error:", err);
+      default:
+        router.replace("/dashboard");
     }
   };
 
   /* =========================================
-     SESSION CHECK
-  ========================================= */
+   SESSION CHECK
+========================================= */
   useEffect(() => {
     const run = async () => {
       const {
@@ -122,30 +127,12 @@ export default function AuthPage() {
 
       if (!session?.user) return;
 
-      const userId = session.user.id;
-
-      // wait for auth to fully hydrate
-      await new Promise((r) => setTimeout(r, 800));
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (!data?.role) {
-        return;
-      }
-
-      const role = data.role.toLowerCase();
-
-      if (role === "washer") router.replace("/queue");
-      else if (role === "cashier") router.replace("/pos");
-      else router.replace("/dashboard");
+      await redirectUser(session.user.id);
     };
 
     run();
   }, []);
+
   /* =========================================
      PASSWORD STRENGTH
   ========================================= */
@@ -275,6 +262,10 @@ export default function AuthPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const goToUniversalSignup = () => {
+    router.push("/signup");
   };
 
   if (!mounted) return null;
@@ -844,25 +835,38 @@ export default function AuthPage() {
 
                 {/* SWITCH */}
 
-                <div className="pt-2 text-center">
-                  <button
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-
-                      setErrorMessage("");
-
-                      setSuccessMessage("");
-                    }}
-                    className="
-                  text-gray-400
-                  transition-colors
-                  hover:text-cyan-400
-                "
-                  >
-                    {isLogin
-                      ? "Don't have an account? Create one"
-                      : "Already have an account? Login"}
-                  </button>
+                <div className="text-center mt-8">
+                  {isLogin ? (
+                    <button
+                      onClick={() => router.push("/signup")}
+                      className="
+        text-gray-400
+        transition-colors
+        hover:text-cyan-400
+      "
+                    >
+                      Don't have an account?{" "}
+                      <span className="font-semibold text-cyan-400">
+                        Create one
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsLogin(true);
+                        setErrorMessage("");
+                        setSuccessMessage("");
+                      }}
+                      className="
+        text-gray-400
+        transition-colors
+        hover:text-cyan-400
+      "
+                    >
+                      Already have an account?{" "}
+                      <span className="font-semibold text-cyan-400">Login</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

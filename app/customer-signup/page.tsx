@@ -230,101 +230,171 @@ export default function CustomerAuthPage() {
   ========================= */
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-      <Card className="w-full max-w-md rounded-[32px] border-0 shadow-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white">
-          <div className="w-16 h-16 rounded-3xl bg-white/20 flex items-center justify-center backdrop-blur mb-5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50 flex items-center justify-center p-6">
+      <Card className="w-full max-w-lg overflow-hidden rounded-3xl border border-gray-200 shadow-2xl">
+        {/* Header */}
+
+        <div className="bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-500 p-8 text-white">
+          <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
             <Car className="w-8 h-8" />
           </div>
 
-          <h1 className="text-3xl font-black">Customer Portal</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            Create Your Account
+          </h1>
 
-          <p className="text-white/80 mt-2">
-            Login or create your customer account
+          <p className="mt-2 text-blue-100 leading-relaxed">
+            Join your preferred carwash, earn loyalty points, manage your
+            vehicles and enjoy exclusive offers.
           </p>
         </div>
 
+        {/* Form */}
+
         <CardContent className="p-8 space-y-5">
-          <>
+          {/* Full Name */}
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Full Name
+            </label>
+
+            <div className="relative">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+
+              <Input
+                placeholder="John Doe"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="h-12 rounded-2xl pl-11"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Email Address
+            </label>
+
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+
+              <Input
+                type="email"
+                placeholder="john@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12 rounded-2xl pl-11"
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Password
+            </label>
+
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+
+              <Input
+                type="password"
+                placeholder="Create a secure password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 rounded-2xl pl-11"
+              />
+            </div>
+          </div>
+
+          {/* Region */}
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700">
+              Region
+            </label>
+
+            <select
+              value={selectedRegion}
+              onChange={(e) => {
+                setSelectedRegion(e.target.value);
+                setSelectedCarwash("");
+              }}
+              className="w-full h-12 rounded-2xl border border-gray-300 bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select your region</option>
+
+              {regions.map((region) => (
+                <option key={region} value={region}>
+                  {region}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Carwash */}
+
+          {selectedRegion && (
             <div className="space-y-2">
-              <label className="text-sm font-medium">Region</label>
+              <label className="text-sm font-semibold text-gray-700">
+                Preferred Carwash
+              </label>
 
               <select
-                value={selectedRegion}
-                onChange={(e) => {
-                  setSelectedRegion(e.target.value);
-                  setSelectedCarwash("");
-                }}
-                className="w-full h-12 rounded-2xl border px-4"
+                value={selectedCarwash}
+                onChange={(e) => setSelectedCarwash(e.target.value)}
+                className="w-full h-12 rounded-2xl border border-gray-300 bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select Region</option>
+                <option value="">Select your preferred carwash</option>
 
-                {regions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
+                {filteredCarwashes.map((carwash) => (
+                  <option key={carwash.id} value={carwash.id}>
+                    {carwash.carwashes?.name}
                   </option>
                 ))}
               </select>
             </div>
+          )}
 
-            {selectedRegion && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Carwash</label>
-
-                <select
-                  value={selectedCarwash}
-                  onChange={(e) => setSelectedCarwash(e.target.value)}
-                  className="w-full h-12 rounded-2xl border px-4"
-                >
-                  <option value="">Select Carwash</option>
-
-                  {filteredCarwashes.map((carwash) => (
-                    <option key={carwash.id} value={carwash.id}>
-                      {carwash.carwashes?.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email Address</label>
-
-            <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-
-              <Input
-                type="email"
-                placeholder="example@email.com"
-                className="pl-10 rounded-2xl h-12"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
-
-            <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-3.5 text-gray-400" />
-
-              <Input
-                type="password"
-                placeholder="••••••••"
-                className="pl-10 rounded-2xl h-12"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+          {/* Error */}
 
           {error && (
-            <div className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
+
+          {/* Button */}
+
+          <Button
+            onClick={handleSignup}
+            disabled={loading}
+            className="h-12 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold shadow-lg hover:opacity-95"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              "Create Account"
+            )}
+          </Button>
+
+          {/* Footer */}
+
+          <div className="border-t pt-5 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?
+              <a
+                href="/customer-login"
+                className="ml-1 font-semibold text-blue-600 hover:underline"
+              >
+                Sign In
+              </a>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

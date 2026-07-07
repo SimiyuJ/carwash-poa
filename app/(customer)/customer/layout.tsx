@@ -14,8 +14,15 @@ export default function CustomerLayout({
 }) {
   const pathname = usePathname();
 
-  const hideSidebar =
-    pathname === "/customer/auth" || pathname === "/customer/select-branch";
+  const hiddenRoutes = [
+    "/auth",
+    "/signup",
+    "/customer/auth",
+    "/customer-signup",
+    "/customer/select-branch",
+  ];
+
+  const hideSidebar = hiddenRoutes.some((route) => pathname.startsWith(route));
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -33,10 +40,6 @@ export default function CustomerLayout({
   return (
     <ActiveBranchProvider>
       <div className="min-h-screen bg-[#020817] overflow-x-hidden">
-        {!hideSidebar && (
-          <CustomerSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-        )}
-
         {!hideSidebar && (
           <CustomerSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
         )}

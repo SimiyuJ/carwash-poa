@@ -84,7 +84,7 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.replace("/customer/auth");
+        router.replace("/auth");
         return;
       }
 
@@ -147,7 +147,7 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
       clearActiveBranch();
       await supabase.auth.signOut();
 
-      router.replace("/customer/auth");
+      router.replace("/auth");
     } catch (error) {
       console.error("[CustomerSidebar] Logout failed", error);
     }
