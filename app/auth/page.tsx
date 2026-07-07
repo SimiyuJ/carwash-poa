@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
@@ -31,7 +31,7 @@ import {
    PAGE
 ========================================= */
 
-export default function AuthPage() {
+function AuthPageContent() {
   const [redirecting, setRedirecting] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -918,6 +918,20 @@ function Feature({
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+          <Loader2 className="h-10 w-10 animate-spin text-cyan-400" />
+        </div>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
   );
 }
 
