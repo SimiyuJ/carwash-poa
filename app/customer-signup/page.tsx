@@ -388,7 +388,7 @@ export default function CustomerAuthPage() {
             <p className="text-sm text-gray-500">
               Already have an account?
               <a
-                href="/customer-login"
+                href="/auth"
                 className="ml-1 font-semibold text-blue-600 hover:underline"
               >
                 Sign In
