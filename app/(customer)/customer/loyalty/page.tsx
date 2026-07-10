@@ -174,11 +174,41 @@ export default function LoyaltyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
-      {/* HERO */}
+    <div
+      className="
+    min-h-screen
 
+    bg-gradient-to-br
+    from-[#07142B]
+    via-[#081A33]
+    to-[#07142B]
+
+    text-slate-100
+
+    px-3
+    py-4
+
+    sm:px-4
+    sm:py-5
+
+    lg:px-6
+    lg:py-6
+  "
+    >
       <div
         className="
+      mx-auto
+      w-full
+      max-w-7xl
+
+      space-y-5
+      lg:space-y-6
+    "
+      >
+        {/* HERO */}
+
+        <div
+          className="
           rounded-[32px]
           p-8
           mb-8
@@ -188,170 +218,171 @@ export default function LoyaltyPage() {
           via-[#0A1D3D]
           to-[#07142B]
         "
-      >
-        <div className="flex justify-between">
-          <div>
-            <p className="text-cyan-400 font-semibold uppercase tracking-[4px]">
-              Loyalty Program
-            </p>
+        >
+          <div className="flex justify-between">
+            <div>
+              <p className="text-cyan-400 font-semibold uppercase tracking-[4px]">
+                Loyalty Program
+              </p>
 
-            <h1 className="text-5xl font-black mt-2">Rewards Dashboard</h1>
+              <h1 className="text-5xl font-black mt-2">Rewards Dashboard</h1>
 
-            <p className="text-slate-400 mt-3">
-              Earn automatically after completed invoices
-            </p>
+              <p className="text-slate-400 mt-3">
+                Earn automatically after completed invoices
+              </p>
 
-            <div className="mt-8">
-              <p className="text-slate-500">Membership</p>
+              <div className="mt-8">
+                <p className="text-slate-500">Membership</p>
 
-              <h2 className="text-4xl font-black text-yellow-400">
-                {loyalty.tier}
+                <h2 className="text-4xl font-black text-yellow-400">
+                  {loyalty.tier}
+                </h2>
+              </div>
+            </div>
+
+            <div className="text-right">
+              <Crown className="h-12 w-12 text-yellow-400 ml-auto" />
+
+              <h2 className="text-6xl font-black text-cyan-400 mt-4">
+                {loyalty.currentPoints}
               </h2>
+
+              <p className="text-slate-500">Available Points</p>
             </div>
           </div>
-
-          <div className="text-right">
-            <Crown className="h-12 w-12 text-yellow-400 ml-auto" />
-
-            <h2 className="text-6xl font-black text-cyan-400 mt-4">
-              {loyalty.currentPoints}
-            </h2>
-
-            <p className="text-slate-500">Available Points</p>
-          </div>
         </div>
-      </div>
 
-      {/* STATS */}
+        {/* STATS */}
 
-      <div className="grid xl:grid-cols-4 gap-5">
-        {[
-          {
-            label: "Points",
-            value: loyalty.currentPoints,
-            icon: Star,
-          },
-          {
-            label: "Earned",
-            value: loyalty.earned,
-            icon: Award,
-          },
-          {
-            label: "Redeemed",
-            value: loyalty.redeemed,
-            icon: Gift,
-          },
-          {
-            label: "Free Washes",
-            value: loyalty.freeWashes,
-            icon: Trophy,
-          },
-        ].map((item) => (
-          <Card
-            key={item.label}
-            className="
+        <div className="grid xl:grid-cols-4 gap-5">
+          {[
+            {
+              label: "Points",
+              value: loyalty.currentPoints,
+              icon: Star,
+            },
+            {
+              label: "Earned",
+              value: loyalty.earned,
+              icon: Award,
+            },
+            {
+              label: "Redeemed",
+              value: loyalty.redeemed,
+              icon: Gift,
+            },
+            {
+              label: "Free Washes",
+              value: loyalty.freeWashes,
+              icon: Trophy,
+            },
+          ].map((item) => (
+            <Card
+              key={item.label}
+              className="
                 rounded-[28px]
                 border
                 border-[#1A2D4D]
                 bg-[#07142B]
               "
-          >
-            <CardContent className="p-6">
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-slate-500">{item.label}</p>
+            >
+              <CardContent className="p-6">
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-slate-500">{item.label}</p>
 
-                  <h2 className="text-4xl font-black mt-2">{item.value}</h2>
+                    <h2 className="text-4xl font-black mt-2">{item.value}</h2>
+                  </div>
+
+                  <item.icon className="text-cyan-400" />
                 </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-                <item.icon className="text-cyan-400" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        {/* PROGRESS */}
 
-      {/* PROGRESS */}
+        <Card className="mt-6 rounded-[32px] border border-cyan-500/20 bg-[#07142B]">
+          <CardContent className="p-7">
+            <div className="flex justify-between">
+              <h2 className="text-2xl font-black">Tier Progress</h2>
 
-      <Card className="mt-6 rounded-[32px] border border-cyan-500/20 bg-[#07142B]">
-        <CardContent className="p-7">
-          <div className="flex justify-between">
-            <h2 className="text-2xl font-black">Tier Progress</h2>
+              <span className="text-cyan-400">{progress.toFixed(0)}%</span>
+            </div>
 
-            <span className="text-cyan-400">{progress.toFixed(0)}%</span>
-          </div>
-
-          <div className="h-5 rounded-full bg-[#091A34] overflow-hidden mt-6">
-            <div
-              className="
+            <div className="h-5 rounded-full bg-[#091A34] overflow-hidden mt-6">
+              <div
+                className="
                 h-full
                 bg-gradient-to-r
                 from-cyan-500
                 to-blue-600
               "
-              style={{
-                width: `${progress}%`,
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+                style={{
+                  width: `${progress}%`,
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* REWARDS */}
+        {/* REWARDS */}
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mt-6">
-        {rewards.map((reward) => (
-          <Card
-            key={reward.id}
-            className="
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mt-6">
+          {rewards.map((reward) => (
+            <Card
+              key={reward.id}
+              className="
                 rounded-[28px]
                 border
                 border-[#1A2D4D]
                 bg-[#07142B]
               "
-          >
-            <CardContent className="p-6">
-              <Gift className="text-cyan-400 mb-5" />
+            >
+              <CardContent className="p-6">
+                <Gift className="text-cyan-400 mb-5" />
 
-              <h3 className="text-xl font-black">{reward.title}</h3>
+                <h3 className="text-xl font-black">{reward.title}</h3>
 
-              <p className="text-slate-500 mt-2">{reward.description}</p>
+                <p className="text-slate-500 mt-2">{reward.description}</p>
 
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-slate-400">Cost</span>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-slate-400">Cost</span>
 
-                <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
-                  {reward.points_required} pts
-                </span>
-              </div>
+                  <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                    {reward.points_required} pts
+                  </span>
+                </div>
 
-              <div className="mt-6">
-                <Button
-                  className={`w-full h-14 ${
-                    loyalty.currentPoints >= reward.points_required
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600"
-                      : "bg-slate-800 text-slate-400"
-                  }`}
-                  disabled={loyalty.currentPoints < reward.points_required}
-                  onClick={() => redeemReward(reward.id)}
-                >
-                  {loyalty.currentPoints >= reward.points_required
-                    ? "Redeem Reward"
-                    : "Not Enough Points"}
+                <div className="mt-6">
+                  <Button
+                    className={`w-full h-14 ${
+                      loyalty.currentPoints >= reward.points_required
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600"
+                        : "bg-slate-800 text-slate-400"
+                    }`}
+                    disabled={loyalty.currentPoints < reward.points_required}
+                    onClick={() => redeemReward(reward.id)}
+                  >
+                    {loyalty.currentPoints >= reward.points_required
+                      ? "Redeem Reward"
+                      : "Not Enough Points"}
 
-                  <ArrowUpRight className="ml-2 h-4 w-4" />
-                </Button>
+                    <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Button>
 
-                {loyalty.currentPoints < reward.points_required && (
-                  <p className="mt-2 text-sm text-yellow-400">
-                    Need {reward.points_required - loyalty.currentPoints} more
-                    points
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  {loyalty.currentPoints < reward.points_required && (
+                    <p className="mt-2 text-sm text-yellow-400">
+                      Need {reward.points_required - loyalty.currentPoints} more
+                      points
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

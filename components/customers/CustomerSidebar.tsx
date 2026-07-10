@@ -162,88 +162,165 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
   }
 
   return (
-    <div className="overflow-hidden border border-red-500">
+    <>
+      {/* Mobile Overlay */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="
+          fixed
+          inset-0
+          bg-black/60
+          backdrop-blur-sm
+          z-40
+          lg:hidden
+        "
+        />
+      )}
+
       <aside
         className={`
-    fixed
-    left-0
-    top-0
-    h-screen
-    w-72
-    flex
-    flex-col
-    bg-[#020817]
-    z-[100]
-    transition-transform
-    duration-300
+        fixed
+        left-0
+        top-0
+        z-50
+        h-screen
+        flex
+        flex-col
+        overflow-hidden
 
-    ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        bg-[#07142B]/95
+        backdrop-blur-2xl
 
-    lg:${open ? "w-72" : "w-20"}
-  `}
+        border-r
+        border-cyan-500/10
+
+        shadow-2xl
+        shadow-black/40
+
+        transition-all
+        duration-300
+
+        ${
+          open
+            ? "translate-x-0 w-72"
+            : "-translate-x-full lg:translate-x-0 lg:w-24"
+        }
+      `}
       >
-        {/* HEADER */}
-        <div className="shrink-0 p-5 border-b border-white/5">
-          <button
-            onClick={() => setOpen(!open)}
-            className="
-    h-10
-    w-10
-    shrink-0
-    rounded-xl
-    bg-cyan-500/10
-    border
-    border-cyan-500/20
-    flex
-    items-center
-    justify-center
-    text-cyan-400
-  "
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+        {/* ================= HEADER ================= */}
+
+        <div className="p-5 border-b border-white/5">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setOpen(!open)}
+              className="
+              h-11
+              w-11
+              rounded-2xl
+              flex
+              items-center
+              justify-center
+
+              bg-cyan-500/10
+              border
+              border-cyan-500/20
+
+              text-cyan-400
+
+              hover:bg-cyan-500/20
+              transition
+            "
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+
+            {open && (
+              <span className="text-xs uppercase tracking-[0.35em] text-cyan-400">
+                Customer Portal
+              </span>
+            )}
+          </div>
+
           <div
             className={`
-    rounded-3xl
-    border
-    border-cyan-500/10
-    bg-gradient-to-br
-    from-[#07142B]
-    to-[#020817]
-    ${open ? "p-5" : "p-3"}`}
+            mt-5
+
+            rounded-3xl
+
+            bg-gradient-to-br
+            from-cyan-500/10
+            via-sky-500/5
+            to-transparent
+
+            border
+            border-cyan-500/20
+
+            transition-all
+
+            ${open ? "p-5" : "p-3"}
+          `}
           >
             <div
               className={`
-                        flex
-                        ${open ? "items-center gap-4" : "flex-col gap-3 items-center"}
-                        `}
+              flex
+
+              ${open ? "items-center gap-4" : "flex-col items-center gap-3"}
+            `}
             >
               <div
                 className="
-          h-16
-          w-16
-          rounded-3xl
-          bg-cyan-500/10
-          flex
-          items-center
-          justify-center
-        "
+                relative
+
+                h-16
+                w-16
+
+                rounded-3xl
+
+                bg-cyan-500/15
+
+                border
+                border-cyan-400/20
+
+                flex
+                items-center
+                justify-center
+              "
               >
                 <Car className="h-8 w-8 text-cyan-400" />
+
+                <span
+                  className="
+                  absolute
+                  bottom-1
+                  right-1
+
+                  h-3
+                  w-3
+
+                  rounded-full
+                  bg-emerald-400
+
+                  ring-2
+                  ring-[#07142B]
+                "
+                />
               </div>
 
               {open && (
-                <div>
-                  <h3 className="text-xl font-black text-white">CUSTOMER</h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-black text-lg text-white truncate">
+                    CUSTOMER
+                  </h3>
 
                   <p className="text-slate-400 text-sm truncate">
                     {activeBranch?.name}
                   </p>
 
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="mt-3 flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-emerald-400" />
 
-                    <span className="text-emerald-400 text-sm">
+                    <span className="text-xs font-semibold text-emerald-400">
                       Active Session
                     </span>
                   </div>
@@ -255,28 +332,45 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
           <Button
             onClick={() => router.push("/customer/select-branch")}
             className={`
-    mt-4
-    ${open ? "w-full" : "w-12 mx-auto"}
-    bg-cyan-500/10
-    border
-    border-cyan-500/20
-    text-cyan-300
-    hover:bg-cyan-500/20
-  `}
+            mt-5
+
+            ${open ? "w-full" : "w-12 mx-auto"}
+
+            rounded-2xl
+
+            bg-cyan-500/10
+
+            border
+            border-cyan-500/20
+
+            hover:bg-cyan-500/20
+
+            text-cyan-300
+          `}
           >
-            {open ? "Switch Car Wash" : <Car className="h-5 w-5" />}
+            {open ? (
+              <>
+                <Car className="mr-2 h-4 w-4" />
+                Switch Car Wash
+              </>
+            ) : (
+              <Car className="h-5 w-5" />
+            )}
           </Button>
         </div>
 
-        {/* NAVIGATION */}
+        {/* ================= NAVIGATION ================= */}
+
         <nav
           className="
-    flex-1
-    overflow-y-auto
-    px-4
-    py-5
-    space-y-2
-  "
+          flex-1
+          overflow-y-auto
+
+          px-4
+          py-5
+
+          space-y-2
+        "
         >
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -288,33 +382,70 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
                 key={item.path}
                 onClick={() => router.push(item.path)}
                 className={`
-          w-full
-          flex
-          items-center
-          gap-4
-          ${open ? "justify-start gap-4 px-4" : "justify-center"}
-          rounded-2xl
-          px-4
-          py-4
-          transition-all
-          ${
-            active
-              ? `
-                bg-gradient-to-r
-                from-cyan-500
-                to-sky-500
-                text-white
-                shadow-lg
-                shadow-cyan-500/20
-              `
-              : `
-                text-slate-300
-                hover:bg-white/5
-              `
-          }
-        `}
+                group
+                relative
+
+                flex
+                items-center
+
+                w-full
+
+                ${open ? "justify-start gap-4 px-4" : "justify-center px-0"}
+
+                py-4
+
+                rounded-2xl
+
+                transition-all
+                duration-300
+
+                ${
+                  active
+                    ? `
+                        bg-gradient-to-r
+                        from-cyan-500
+                        to-sky-500
+
+                        text-white
+
+                        shadow-xl
+                        shadow-cyan-500/20
+                      `
+                    : `
+                        text-slate-300
+
+                        hover:bg-white/5
+
+                        hover:text-cyan-300
+                      `
+                }
+              `}
               >
-                <Icon className="h-5 w-5" />
+                {active && (
+                  <div
+                    className="
+                    absolute
+                    left-0
+                    top-3
+                    bottom-3
+
+                    w-1
+
+                    rounded-full
+
+                    bg-white
+                  "
+                  />
+                )}
+
+                <Icon
+                  className={`
+                  h-5
+                  w-5
+
+                  ${active ? "text-white" : "group-hover:text-cyan-400"}
+                `}
+                />
 
                 {open && <span className="font-medium">{item.name}</span>}
               </button>
@@ -322,34 +453,45 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
           })}
         </nav>
 
-        {/* FOOTER */}
+        {/* ================= FOOTER ================= */}
+
         <div
           className="
-    shrink-0
-    p-4
-    border-t
-    border-white/5
-    bg-[#030B1D]
-  "
+          border-t
+          border-white/5
+
+          bg-black/10
+
+          p-5
+        "
         >
           <button
             onClick={handleLogout}
             className="
-      w-full
-      flex
-      items-center
-      justify-center
-      gap-3
-      rounded-3xl
-      border
-      border-red-500/20
-      bg-red-500/10
-      py-4
-      text-red-400
-      font-semibold
-      hover:bg-red-500/20
-      transition
-    "
+            flex
+            items-center
+            justify-center
+            gap-3
+
+            w-full
+
+            rounded-2xl
+
+            py-4
+
+            bg-red-500/10
+
+            border
+            border-red-500/20
+
+            text-red-400
+
+            font-semibold
+
+            hover:bg-red-500/20
+
+            transition-all
+          "
           >
             <LogOut className="h-5 w-5" />
 
@@ -357,6 +499,6 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
           </button>
         </div>
       </aside>
-    </div>
+    </>
   );
 }
