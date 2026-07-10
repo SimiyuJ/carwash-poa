@@ -319,23 +319,26 @@ export default function CustomerServicesPage() {
               <Card
                 key={service.id}
                 className="
-        group
-        relative
-        overflow-hidden
-        rounded-[30px]
-        border
-        border-cyan-500/10
-        bg-gradient-to-br
-        from-[#07142B]
-        via-[#0A1D3D]
-        to-[#07142B]
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:border-cyan-500/30
-        hover:shadow-xl
-        hover:shadow-cyan-500/10
-      "
+                group
+                relative
+                overflow-hidden
+                rounded-[30px]
+                border
+                border-cyan-500/10
+                bg-gradient-to-br
+                from-[#07142B]
+                via-[#0A1D3D]
+                to-[#07142B]
+        
+
+                transition-all
+        
+                duration-300
+                hover:-translate-y-1
+                hover:border-cyan-500/30
+                hover:shadow-xl
+                hover:shadow-cyan-500/10
+                "
               >
                 {/* Background Glow */}
 
@@ -445,15 +448,23 @@ export default function CustomerServicesPage() {
                     </div>
                   </div>
 
-                  {/* FOOTER */}
+                  {/* FEATURES */}
 
-                  <div className="mt-4 rounded-2xl border border-cyan-500/10 bg-cyan-500/5 px-3 py-2">
-                    <p className="text-center text-[10px] sm:text-xs font-medium text-slate-300">
-                      Available at{" "}
-                      <span className="text-cyan-400">
-                        {activeBranch?.name}
-                      </span>
-                    </p>
+                  <div className="mt-3 space-y-2">
+                    {(service.description ?? "")
+                      .split(",")
+                      .map((item) => item.trim())
+                      .filter(Boolean)
+                      .slice(0, 3)
+                      .map((feature, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-cyan-400" />
+
+                          <span className="text-xs sm:text-sm text-slate-300">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
                   </div>
                 </CardContent>
               </Card>
