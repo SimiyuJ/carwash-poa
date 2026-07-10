@@ -724,36 +724,37 @@ export default function BookingPage() {
           </section>
         )}
 
-        <div className="grid xl:grid-cols-[1fr_420px] gap-6">
-          {/* LEFT SIDE */}
-          <div className="space-y-6">
-            {/* VEHICLES */}
-            <Card
-              className="
+        {activeTab === "book" && (
+          <div className="grid xl:grid-cols-[1fr_420px] gap-6">
+            {/* LEFT SIDE */}
+            <div className="space-y-6">
+              {/* VEHICLES */}
+              <Card
+                className="
             rounded-[32px]
             border border-[#1A2D4D]
             bg-[#07142B]
             text-white"
-            >
-              <CardContent className="p-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <Car className="h-6 w-6 text-cyan-400" />
+              >
+                <CardContent className="p-7">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Car className="h-6 w-6 text-cyan-400" />
 
-                  <h2 className="text-2xl font-bold">Choose Vehicle</h2>
-                </div>
+                    <h2 className="text-2xl font-bold">Choose Vehicle</h2>
+                  </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {vehicles.map((vehicle) => (
-                    <button
-                      key={vehicle.id}
-                      onClick={() => {
-                        setSelectedVehicle(vehicle);
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {vehicles.map((vehicle) => (
+                      <button
+                        key={vehicle.id}
+                        onClick={() => {
+                          setSelectedVehicle(vehicle);
 
-                        setVehicle(vehicle.type);
-                        setPlate(vehicle.plate_number);
-                        setVehicleColor(vehicle.color);
-                      }}
-                      className={`
+                          setVehicle(vehicle.type);
+                          setPlate(vehicle.plate_number);
+                          setVehicleColor(vehicle.color);
+                        }}
+                        className={`
                       text-left
                       rounded-[24px]
                       border
@@ -774,77 +775,77 @@ export default function BookingPage() {
     `
                       }
                       `}
-                    >
-                      <div className="flex justify-between">
-                        <div>
-                          <h3 className="font-bold text-lg text-white">
-                            {vehicle.plate_number}
-                          </h3>
+                      >
+                        <div className="flex justify-between">
+                          <div>
+                            <h3 className="font-bold text-lg text-white">
+                              {vehicle.plate_number}
+                            </h3>
 
-                          <p className="text-white/70">
-                            {vehicle.type || "Vehicle"}
-                          </p>
+                            <p className="text-white/70">
+                              {vehicle.type || "Vehicle"}
+                            </p>
 
-                          <p className="text-cyan-400 text-sm mt-1">
-                            {vehicle.color}
-                          </p>
+                            <p className="text-cyan-400 text-sm mt-1">
+                              {vehicle.color}
+                            </p>
+                          </div>
+
+                          {selectedVehicle?.id === vehicle.id && (
+                            <CheckCircle2 className="text-cyan-400" />
+                          )}
                         </div>
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-                        {selectedVehicle?.id === vehicle.id && (
-                          <CheckCircle2 className="text-cyan-400" />
-                        )}
+              {/* SERVICES */}
+              <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
+                <CardContent className="p-7">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Sparkles className="h-6 w-6 text-cyan-400" />
+
+                    <h2 className="text-2xl font-bold text-white">
+                      Select Service Package
+                    </h2>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {!selectedVehicle ? (
+                      <div className="col-span-2 text-center py-10 text-slate-400">
+                        Select a vehicle first
                       </div>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ) : (
+                      services.map((service) => {
+                        const vehicleTypeId = getVehicleTypeId(
+                          selectedVehicle?.type,
+                        );
 
-            {/* SERVICES */}
-            <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
-              <CardContent className="p-7">
-                <div className="flex items-center gap-3 mb-6">
-                  <Sparkles className="h-6 w-6 text-cyan-400" />
+                        const vehiclePrice = service.service_prices?.find(
+                          (p) => p.vehicle_type_id === vehicleTypeId,
+                        );
 
-                  <h2 className="text-2xl font-bold text-white">
-                    Select Service Package
-                  </h2>
-                </div>
+                        if (!vehiclePrice) return null;
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  {!selectedVehicle ? (
-                    <div className="col-span-2 text-center py-10 text-slate-400">
-                      Select a vehicle first
-                    </div>
-                  ) : (
-                    services.map((service) => {
-                      const vehicleTypeId = getVehicleTypeId(
-                        selectedVehicle?.type,
-                      );
+                        return (
+                          <button
+                            key={service.id}
+                            onClick={() => {
+                              setSelectedService(service);
 
-                      const vehiclePrice = service.service_prices?.find(
-                        (p) => p.vehicle_type_id === vehicleTypeId,
-                      );
+                              const vehicleTypeId = getVehicleTypeId(
+                                selectedVehicle?.type,
+                              );
 
-                      if (!vehiclePrice) return null;
+                              const vehiclePrice = service.service_prices?.find(
+                                (p) => p.vehicle_type_id === vehicleTypeId,
+                              );
 
-                      return (
-                        <button
-                          key={service.id}
-                          onClick={() => {
-                            setSelectedService(service);
-
-                            const vehicleTypeId = getVehicleTypeId(
-                              selectedVehicle?.type,
-                            );
-
-                            const vehiclePrice = service.service_prices?.find(
-                              (p) => p.vehicle_type_id === vehicleTypeId,
-                            );
-
-                            setSelectedPrice(vehiclePrice?.price || 0);
-                          }}
-                          className={`
+                              setSelectedPrice(vehiclePrice?.price || 0);
+                            }}
+                            className={`
                     text-left
                     rounded-[24px]
                     border
@@ -857,63 +858,65 @@ export default function BookingPage() {
                         : "border-white/10 bg-white/[0.02]"
                     }
                   `}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-bold text-xl text-white">
-                                {service.name}
-                              </h3>
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-bold text-xl text-white">
+                                  {service.name}
+                                </h3>
 
-                              <p className="text-slate-400 mt-2">
-                                {service.description}
-                              </p>
+                                <p className="text-slate-400 mt-2">
+                                  {service.description}
+                                </p>
+                              </div>
+
+                              {selectedService?.id === service.id && (
+                                <CheckCircle2 className="text-cyan-400" />
+                              )}
                             </div>
 
-                            {selectedService?.id === service.id && (
-                              <CheckCircle2 className="text-cyan-400" />
-                            )}
-                          </div>
+                            <div className="mt-6 flex items-center justify-between">
+                              <div>
+                                <p className="text-slate-500 text-sm">
+                                  Starting From
+                                </p>
 
-                          <div className="mt-6 flex items-center justify-between">
-                            <div>
-                              <p className="text-slate-500 text-sm">
-                                Starting From
-                              </p>
+                                <p className="text-cyan-400 font-black text-3xl">
+                                  KES {vehiclePrice.price.toLocaleString()}
+                                </p>
+                              </div>
 
-                              <p className="text-cyan-400 font-black text-3xl">
-                                KES {vehiclePrice.price.toLocaleString()}
-                              </p>
-                            </div>
-
-                            <div
-                              className="
+                              <div
+                                className="
                         px-4 py-2
                         rounded-full
                         bg-white/5
                         border border-white/10
                       "
-                            >
-                              {service.duration_minutes} mins
+                              >
+                                {service.duration_minutes} mins
+                              </div>
                             </div>
-                          </div>
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* DATE + TIME */}
-            <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
-              <CardContent className="p-7">
-                <h2 className="text-2xl font-bold mb-6">Select Date & Time</h2>
+              {/* DATE + TIME */}
+              <Card className="rounded-[32px] border border-[#1A2D4D] bg-[#07142B]">
+                <CardContent className="p-7">
+                  <h2 className="text-2xl font-bold mb-6">
+                    Select Date & Time
+                  </h2>
 
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="
                 w-full
                 h-16
                 rounded-2xl
@@ -922,23 +925,23 @@ export default function BookingPage() {
                 px-5
                 text-white
               "
-                />
+                  />
 
-                <div className="grid grid-cols-4 gap-3 mt-5">
-                  {[
-                    "08:00",
-                    "09:00",
-                    "10:00",
-                    "11:00",
-                    "12:00",
-                    "13:00",
-                    "14:00",
-                    "15:00",
-                  ].map((slot) => (
-                    <button
-                      key={slot}
-                      onClick={() => setTime(slot)}
-                      className={`
+                  <div className="grid grid-cols-4 gap-3 mt-5">
+                    {[
+                      "08:00",
+                      "09:00",
+                      "10:00",
+                      "11:00",
+                      "12:00",
+                      "13:00",
+                      "14:00",
+                      "15:00",
+                    ].map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => setTime(slot)}
+                        className={`
                     h-14
                     rounded-2xl
                     border
@@ -954,72 +957,72 @@ export default function BookingPage() {
                         : "bg-slate-900 border-white/10 text-slate-300"
                     }
                   `}
-                    >
-                      <Clock3 size={16} />
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                      >
+                        <Clock3 size={16} />
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-          {/* SUMMARY */}
-          <div>
-            <Card
-              className="
+            {/* SUMMARY */}
+            <div>
+              <Card
+                className="
             sticky top-6
             rounded-[32px]
             border border-cyan-500/20
             bg-[#07142B]
           "
-            >
-              <CardContent className="p-7">
-                <h2 className="text-3xl font-black mb-8">Booking Summary</h2>
+              >
+                <CardContent className="p-7">
+                  <h2 className="text-3xl font-black mb-8">Booking Summary</h2>
 
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-slate-500">Vehicle</p>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-slate-500">Vehicle</p>
 
-                    <p className="font-semibold text-lg text-white">
-                      {selectedVehicle?.plate_number || "Select vehicle"}
-                    </p>
+                      <p className="font-semibold text-lg text-white">
+                        {selectedVehicle?.plate_number || "Select vehicle"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-500">Service</p>
+
+                      <p className="font-semibold text-lg">
+                        {selectedService?.name || "Select service"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-500">Schedule</p>
+
+                      <p className="font-semibold">
+                        {date || "--"} • {time || "--"}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-6">
+                      <p className="text-slate-500">Total Price</p>
+
+                      <h3 className="text-5xl font-black text-cyan-400 mt-2">
+                        KES{" "}
+                        {selectedService?.service_prices?.find(
+                          (p: any) =>
+                            p.vehicle_type_id ===
+                            selectedVehicle?.vehicle_type_id,
+                        )?.price || 0}
+                      </h3>
+                    </div>
                   </div>
 
-                  <div>
-                    <p className="text-slate-500">Service</p>
-
-                    <p className="font-semibold text-lg">
-                      {selectedService?.name || "Select service"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-slate-500">Schedule</p>
-
-                    <p className="font-semibold">
-                      {date || "--"} • {time || "--"}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-white/10 pt-6">
-                    <p className="text-slate-500">Total Price</p>
-
-                    <h3 className="text-5xl font-black text-cyan-400 mt-2">
-                      KES{" "}
-                      {selectedService?.service_prices?.find(
-                        (p: any) =>
-                          p.vehicle_type_id ===
-                          selectedVehicle?.vehicle_type_id,
-                      )?.price || 0}
-                    </h3>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={createBooking}
-                  disabled={saving}
-                  className="
+                  <Button
+                    onClick={createBooking}
+                    disabled={saving}
+                    className="
                 mt-8
                 h-16
                 w-full
@@ -1030,15 +1033,16 @@ export default function BookingPage() {
                 text-lg
                 font-bold
               "
-                >
-                  <CheckCircle2 className="mr-2 h-5 w-5" />
+                  >
+                    <CheckCircle2 className="mr-2 h-5 w-5" />
 
-                  {saving ? "Creating Booking..." : "Confirm Booking"}
-                </Button>
-              </CardContent>
-            </Card>
+                    {saving ? "Creating Booking..." : "Confirm Booking"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
