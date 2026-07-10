@@ -40,7 +40,7 @@ export default function CustomerLayout({
 
   return (
     <ActiveBranchProvider>
-      <div className="min-h-screen bg-[#020817] overflow-x-hidden">
+      <div className="min-h-screen bg-[#081A33] overflow-x-hidden">
         {!hideSidebar && (
           <CustomerSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
         )}
