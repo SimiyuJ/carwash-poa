@@ -363,14 +363,15 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
 
         <nav
           className="
+    
           flex-1
+    
           overflow-y-auto
-
           px-4
           py-5
-
           space-y-2
-        "
+          pb-28
+          "
         >
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -457,41 +458,47 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
 
         <div
           className="
+          shrink-0
+          sticky
+          bottom-0
+          bg-[#07142B]
           border-t
-          border-white/5
-
-          bg-black/10
-
-          p-5
-        "
+          border-cyan-500/10
+          p-4
+          "
         >
           <button
             onClick={handleLogout}
             className="
-            flex
-            items-center
-            justify-center
-            gap-3
+    flex
+    items-center
+    justify-center
+    gap-3
 
-            w-full
+    w-full
+    h-14
 
-            rounded-2xl
+    rounded-2xl
 
-            py-4
+    bg-gradient-to-r
+    from-red-500/15
+    to-red-600/10
 
-            bg-red-500/10
+    border
+    border-red-500/20
 
-            border
-            border-red-500/20
+    text-red-400
 
-            text-red-400
+    font-semibold
 
-            font-semibold
+    shadow-lg
+    shadow-red-900/20
 
-            hover:bg-red-500/20
+    hover:from-red-500/25
+    hover:to-red-600/20
 
-            transition-all
-          "
+    transition-all
+  "
           >
             <LogOut className="h-5 w-5" />
 

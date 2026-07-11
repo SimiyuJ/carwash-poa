@@ -88,7 +88,7 @@ export default function CustomerLayout({
         >
           {children}
         </main>
-        {!hideSidebar && <CustomerBottomNav />}
+        {!hideSidebar && !sidebarOpen && <CustomerBottomNav />}
       </div>
     </ActiveBranchProvider>
   );
