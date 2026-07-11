@@ -88,21 +88,20 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
         return;
       }
 
-      const { data: profile, error } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select(
-          `
-        branch_id,
-        carwash_id
-    `,
-        )
+        .select("branch_id, carwash_id")
         .eq("id", user.id)
         .single();
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+      if (profileError) throw profileError;
+
+      const { data: customer } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("profile_id", user.id)
+        .eq("branch_id", profile.branch_id)
+        .maybeSingle();
 
       if (!profile?.branch_id) {
         router.replace("/customer/select-branch");
@@ -114,6 +113,7 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
           id: profile.branch_id,
           name: activeBranch?.name ?? "Main Branch",
           carwashId: profile.carwash_id,
+          customerId: customer?.id ?? "",
         });
       }
     } catch (error) {
@@ -152,6 +152,15 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
       console.error("[CustomerSidebar] Logout failed", error);
     }
   };
+
+  const fullscreenRoutes = [
+    "/customer/select-carwash",
+    "/customer/add-carwash",
+  ];
+
+  if (fullscreenRoutes.includes(pathname)) {
+    return null;
+  }
 
   if (!isReady || loading) {
     return (

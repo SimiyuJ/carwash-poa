@@ -14,6 +14,7 @@ type ActiveBranch = {
   name: string;
   location?: string | null;
   carwashId: string;
+  customerId: string;
 };
 
 export default function SelectCarWashPage() {
@@ -37,39 +38,33 @@ export default function SelectCarWashPage() {
         return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("branch_id, carwash_id")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      if (!profile?.branch_id) {
-        setBranches([]);
-        return;
-      }
-
-      const { data: branchesData, error: branchesError } = await supabase
-        .from("branches")
+      const { data: customerCarwashes, error } = await supabase
+        .from("customer_carwashes")
         .select(
           `
-    id,
-    name,
-    location,
-    carwash_id
+      customer_id,
+      carwash_id,
+      branch_id,
+
+      branches(
+          id,
+          name,
+          location,
+          carwash_id
+      )
   `,
         )
-        .eq("id", profile.branch_id);
+        .eq("customer_id", user.id);
 
-      if (branchesError) throw branchesError;
+      if (error) throw error;
 
       const formatted =
-        branchesData?.map((branch) => ({
-          id: branch.id,
-          name: branch.name,
-          location: branch.location,
-          carwashId: branch.carwash_id,
+        customerCarwashes?.map((item: any) => ({
+          id: item.branches.id,
+          name: item.branches.name,
+          location: item.branches.location,
+          carwashId: item.branches.carwash_id,
+          customerId: item.customer_id,
         })) ?? [];
 
       setBranches(formatted);
@@ -84,6 +79,7 @@ export default function SelectCarWashPage() {
           id: selected.id,
           name: selected.name,
           carwashId: selected.carwashId,
+          customerId: selected.customerId,
         });
 
         return;
@@ -107,6 +103,7 @@ export default function SelectCarWashPage() {
       id: branch.id,
       name: branch.name,
       carwashId: branch.carwashId,
+      customerId: branch.customerId,
     });
 
     router.push("/customer/dashboard");
