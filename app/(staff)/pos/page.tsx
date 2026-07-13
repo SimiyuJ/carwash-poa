@@ -10,6 +10,9 @@ import {
   Droplets,
   Sparkles,
   Gem,
+  Minus,
+  User,
+  TriangleAlert,
   Brush,
   SprayCan,
   Circle,
@@ -31,6 +34,8 @@ import {
   AlertTriangle,
   RefreshCw,
   MapPin,
+  PanelRightOpen,
+  PanelRightClose,
   Activity,
   ShieldCheck,
   ShoppingCart,
@@ -39,7 +44,7 @@ import {
   Coins,
   BadgeCheck,
   TicketPercent,
-  ChevronRight,
+  ChevronDown,
   X,
 } from "lucide-react";
 
@@ -392,10 +397,13 @@ export default function POSPage() {
         return;
       }
 
-      const { data: subscription } = await supabase
+      const { data: subscription, error: subscriptionError } = await supabase
         .from("subscription_members")
         .select("*")
-        .eq("plate", cleanPlate)
+        .eq("vehicle_id", data.id)
+        .eq("customer_id", data.customer_id)
+        .eq("carwash_id", companyId)
+        .eq("branch_id", branchId)
         .eq("status", "active")
         .maybeSingle();
 
@@ -1295,38 +1303,72 @@ SUBSCRIPTION SERVICES
       <div className="min-h-screen bg-[#020817] text-white">
         {/* HEADER */}
 
-        <div className="border-b border-white/10 bg-[#07111F]">
-          <div className="px-6 py-5">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/10">
-                  <Car className="h-8 w-8 text-cyan-400" />
+        <div className="relative overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-2xl">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute bottom-0 left-0 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl" />
+
+          <div className="relative z-10 p-5 sm:p-6 lg:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-start gap-4 sm:gap-5">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border border-cyan-500/20 bg-cyan-500/10 sm:h-20 sm:w-20">
+                  <Car className="h-8 w-8 text-cyan-400 sm:h-10 sm:w-10" />
                 </div>
 
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-cyan-400">
+                <div className="min-w-0">
+                  <span className="inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan-300">
                     Multi Branch POS
+                  </span>
+
+                  <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+                    WashPro Terminal
+                  </h1>
+
+                  <p className="mt-2 max-w-2xl text-sm text-slate-400 sm:text-base">
+                    Manage vehicle check-ins, payments, invoices and customer
+                    loyalty from one intelligent dashboard.
                   </p>
 
-                  <h1 className="text-4xl font-black">WashPro Terminal</h1>
+                  <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
+                      <Building2 className="h-4 w-4 shrink-0 text-cyan-400 sm:h-5 sm:w-5" />
 
-                  <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-slate-400">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-cyan-400" />
+                      <div className="min-w-0 text-center sm:text-left">
+                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                          Branch
+                        </p>
 
-                      {currentBranchData?.name || "Main Branch"}
+                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
+                          {currentBranchData?.name || "Main Branch"}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-green-400" />
+                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
+                      <MapPin className="h-4 w-4 shrink-0 text-green-400 sm:h-5 sm:w-5" />
 
-                      {currentBranchData?.location || "No location"}
+                      <div className="min-w-0 text-center sm:text-left">
+                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                          Location
+                        </p>
+
+                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
+                          {currentBranchData?.location || "Not Set"}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
+                      <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400 sm:h-5 sm:w-5" />
 
-                      {profile?.role || "Staff"}
+                      <div className="min-w-0 text-center sm:text-left">
+                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                          Role
+                        </p>
+
+                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
+                          {profile?.role || "Staff"}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1341,149 +1383,332 @@ SUBSCRIPTION SERVICES
           <div
             className={`grid gap-6 transition-all duration-300 ${
               cartOpen && cart.length > 0
-                ? "xl:grid-cols-[1fr_420px]"
+                ? "grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[minmax(0,1fr)_420px]"
                 : "grid-cols-1"
             }`}
           >
             {/* LEFT */}
 
             <div>
-              {/* SEARCH */}
+              {/* VEHICLE SEARCH */}
 
-              <div className="rounded-3xl border border-white/10 bg-[#07111F] p-6">
-                <div className="flex gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-
-                    <input
-                      value={plate}
-                      onChange={(e) => setPlate(e.target.value.toUpperCase())}
-                      placeholder="Search plate number..."
-                      className="h-14 w-full rounded-2xl border border-white/10 bg-[#111827] pl-14 pr-5 text-white outline-none focus:border-cyan-500"
-                    />
-                  </div>
-
-                  <button
-                    onClick={searchVehicle}
-                    className="
-                    h-14
-                    px-4
-                    sm:px-8
-                    shrink-0
-                    flex items-center justify-center gap-2
-                    rounded-2xl
-                    bg-cyan-500
-                    font-bold text-white"
-                  >
-                    {loading ? (
-                      <>
-                        <RefreshCw className="h-4 w-4 animate-spin" />
-                        Searching
-                      </>
-                    ) : (
-                      <>
-                        <Search className="h-4 w-4" />
-                        Search
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {searchMessage && (
-                  <div
-                    className={`mt-5 flex items-center justify-between rounded-2xl p-4 ${
-                      searchType === "success"
-                        ? "bg-green-500/10 text-green-300"
-                        : searchType === "error"
-                          ? "bg-red-500/10 text-red-300"
-                          : "bg-yellow-500/10 text-yellow-300"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {searchType === "success" ? (
-                        <CheckCircle2 className="h-5 w-5" />
-                      ) : searchType === "error" ? (
-                        <AlertTriangle className="h-5 w-5" />
-                      ) : (
-                        <Clock3 className="h-5 w-5" />
-                      )}
-
-                      <span className="text-sm font-medium">
-                        {searchMessage}
-                      </span>
+              <div className="mt-6 overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-xl">
+                <div className="p-4 sm:p-5 lg:p-6">
+                  <div className="mb-5 flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
+                      <Car className="h-7 w-7 text-cyan-400" />
                     </div>
 
-                    {vehicleNotFound && (
-                      <button
-                        onClick={() => {
-                          setCustomerPlate(plate);
-                          setShowCustomerModal(true);
-                        }}
-                        className="flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-white"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add Vehicle
-                      </button>
-                    )}
+                    <div>
+                      <h2 className="text-xl font-black text-white">
+                        Vehicle Search
+                      </h2>
+
+                      <p className="mt-1 text-sm text-slate-400">
+                        Find an existing customer by vehicle registration
+                        number.
+                      </p>
+                    </div>
                   </div>
-                )}
-              </div>
 
-              {/* FILTERS */}
+                  <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
-              <div className="mt-6 rounded-3xl border border-white/10 bg-[#07111F] p-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <input
-                    value={serviceSearch}
-                    onChange={(e) => setServiceSearch(e.target.value)}
-                    placeholder="Search services..."
-                    className="h-14 flex-1 rounded-2xl border border-white/10 bg-[#111827] px-5 text-white outline-none focus:border-cyan-500"
-                  />
+                      <input
+                        value={plate}
+                        onChange={(e) => setPlate(e.target.value.toUpperCase())}
+                        placeholder="Enter vehicle registration..."
+                        className="
+            h-14
+            w-full
+            rounded-2xl
+            border
+            border-slate-700
+            bg-slate-950/60
+            pl-14
+            pr-5
+            text-white
+            placeholder:text-slate-500
+            outline-none
+            transition-all
+            duration-300
+            focus:border-cyan-500
+            focus:ring-4
+            focus:ring-cyan-500/10
+          "
+                      />
+                    </div>
 
-                  <select
-                    value={activeVehicleType}
-                    onChange={(e) => setActiveVehicleType(e.target.value)}
-                    className="h-14 rounded-2xl border border-white/10 bg-[#111827] px-5 text-white outline-none focus:border-cyan-500"
-                  >
-                    <option value="">All Vehicles</option>
+                    <button
+                      onClick={searchVehicle}
+                      disabled={loading}
+                      className="
+          flex
+          h-14
+          w-full
+          items-center
+          justify-center
+          gap-3
+          rounded-2xl
+          bg-gradient-to-r
+          from-cyan-500
+          to-blue-600
+          px-8
+          font-bold
+          text-white
+          shadow-lg
+          shadow-cyan-500/20
+          transition-all
+          duration-300
+          hover:-translate-y-0.5
+          hover:shadow-cyan-500/40
+          disabled:cursor-not-allowed
+          disabled:opacity-60
+          active:scale-[0.98]
+          lg:w-auto
+        "
+                    >
+                      {loading ? (
+                        <>
+                          <RefreshCw className="h-5 w-5 animate-spin" />
+                          <span>Searching...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Search className="h-5 w-5" />
+                          <span>Search Vehicle</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
 
-                    {vehicleTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </select>
+                  {searchMessage && (
+                    <div
+                      className={`mt-5 rounded-2xl border p-4 transition-all
 
-                  <button
-                    onClick={openInvoices}
-                    className="
-                    flex h-12 items-center justify-center gap-2
-                    rounded-2xl
-                    bg-emerald-500
-                    hover:bg-emerald-600
-                    text-white
-                    font-bold
-                    shadow-lg
-                    shadow-emerald-500/25
-                    transition-all
-                    duration-300
-                    hover:scale-[1.02]
-                    hover:shadow-emerald-500/40
-                    "
-                  >
-                    <CheckCircle2 className="h-4 w-4" />
-                    Complete Payment
-                  </button>
+        ${
+          searchType === "success"
+            ? "border-green-500/20 bg-green-500/10"
+            : searchType === "error"
+              ? "border-red-500/20 bg-red-500/10"
+              : "border-yellow-500/20 bg-yellow-500/10"
+        }`}
+                    >
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`mt-0.5 rounded-xl p-2
+
+              ${
+                searchType === "success"
+                  ? "bg-green-500/20"
+                  : searchType === "error"
+                    ? "bg-red-500/20"
+                    : "bg-yellow-500/20"
+              }`}
+                          >
+                            {searchType === "success" ? (
+                              <CheckCircle2 className="h-5 w-5 text-green-400" />
+                            ) : searchType === "error" ? (
+                              <AlertTriangle className="h-5 w-5 text-red-400" />
+                            ) : (
+                              <Clock3 className="h-5 w-5 text-yellow-400" />
+                            )}
+                          </div>
+
+                          <div>
+                            <h3
+                              className={`font-bold
+
+                ${
+                  searchType === "success"
+                    ? "text-green-300"
+                    : searchType === "error"
+                      ? "text-red-300"
+                      : "text-yellow-300"
+                }`}
+                            >
+                              {searchType === "success"
+                                ? "Vehicle Found"
+                                : searchType === "error"
+                                  ? "Vehicle Not Found"
+                                  : "Notice"}
+                            </h3>
+
+                            <p className="mt-1 text-sm text-slate-300">
+                              {searchMessage}
+                            </p>
+                          </div>
+                        </div>
+
+                        {vehicleNotFound && (
+                          <button
+                            onClick={() => {
+                              setCustomerPlate(plate);
+                              setShowCustomerModal(true);
+                            }}
+                            className="
+                flex
+                h-11
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-2xl
+                bg-gradient-to-r
+                from-emerald-500
+                to-green-600
+                px-5
+                font-bold
+                text-white
+                shadow-lg
+                shadow-emerald-500/20
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                hover:shadow-emerald-500/40
+                active:scale-[0.98]
+                sm:w-auto
+              "
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add Vehicle
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* SERVICES */}
+              {/* FILTER BAR */}
+
+              <div className="mt-6 overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-xl">
+                <div className="p-4 sm:p-5 lg:p-6">
+                  <div className="grid gap-4 lg:grid-cols-[1fr_260px_auto]">
+                    <div className="relative">
+                      <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+
+                      <input
+                        value={serviceSearch}
+                        onChange={(e) => setServiceSearch(e.target.value)}
+                        placeholder="Search services..."
+                        className="
+            h-14
+            w-full
+            rounded-2xl
+            border
+            border-slate-700
+            bg-slate-950/60
+            pl-14
+            pr-4
+            text-white
+            placeholder:text-slate-500
+            outline-none
+            transition-all
+            duration-300
+            focus:border-cyan-500
+            focus:ring-4
+            focus:ring-cyan-500/10
+          "
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <Car className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+
+                      <select
+                        value={activeVehicleType}
+                        onChange={(e) => setActiveVehicleType(e.target.value)}
+                        className="
+            h-14
+            w-full
+            appearance-none
+            rounded-2xl
+            border
+            border-slate-700
+            bg-slate-950/60
+            pl-14
+            pr-10
+            text-white
+            outline-none
+            transition-all
+            duration-300
+            focus:border-cyan-500
+            focus:ring-4
+            focus:ring-cyan-500/10
+          "
+                      >
+                        <option value="">All Vehicles</option>
+
+                        {vehicleTypes.map((type) => (
+                          <option key={type.id} value={type.id}>
+                            {type.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      <ChevronDown className="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    </div>
+
+                    <button
+                      onClick={openInvoices}
+                      className="
+          flex
+          h-14
+          w-full
+          items-center
+          justify-center
+          gap-3
+          rounded-2xl
+          bg-gradient-to-r
+          from-emerald-500
+          to-green-600
+          px-8
+          font-bold
+          text-white
+          shadow-lg
+          shadow-emerald-500/20
+          transition-all
+          duration-300
+          hover:-translate-y-0.5
+          hover:shadow-emerald-500/40
+          active:scale-[0.98]
+          lg:w-auto
+        "
+                    >
+                      <CheckCircle2 className="h-5 w-5" />
+
+                      <span>Complete Payment</span>
+                    </button>
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                      {filteredServices.length} Services
+                    </span>
+
+                    {activeVehicleType && (
+                      <span className="rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-300">
+                        Vehicle Filter Active
+                      </span>
+                    )}
+
+                    {serviceSearch && (
+                      <span className="rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-300">
+                        Searching: "{serviceSearch}"
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <div
-                className={`mt-6 grid gap-3 transition-all duration-300 ${
+                className={`mt-6 grid gap-4 transition-all duration-300 ${
                   cartOpen && cart.length > 0
-                    ? "grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3"
-                    : "grid-cols-3 md:grid-cols-4 xl:grid-cols-4"
+                    ? "grid-cols-2 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3"
+                    : "grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
                 }`}
               >
                 {filteredServices.map((item, i) => {
@@ -1493,76 +1718,91 @@ SUBSCRIPTION SERVICES
                   return (
                     <div
                       key={i}
-                      className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#0F172A] to-[#081120] p-3 transition hover:-translate-y-2 hover:border-cyan-500/40"
+                      className="
+          group
+          overflow-hidden
+          rounded-3xl
+          border
+          border-white/10
+          bg-gradient-to-br
+          from-[#0F172A]
+          via-[#0B1628]
+          to-[#081120]
+          shadow-lg
+          shadow-black/20
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:border-cyan-500/40
+          hover:shadow-cyan-500/10
+        "
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10">
-                          <Icon className="h-7 w-7 text-cyan-400" />
-                        </div>
-
-                        <div className="rounded-full bg-yellow-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-300">
-                          {item.displayVehicle}
-                        </div>
-                      </div>
-
-                      <div className="mt-5">
-                        <h3 className="text-xl font-black">{item.name}</h3>
-
-                        <p className="mt-3 min-h-[72px] text-sm text-slate-400">
-                          {item.details?.[0]}
-                        </p>
-
-                        <div className="mt-5 flex items-end justify-between">
-                          <div>
-                            <p className="text-xs uppercase tracking-widest text-slate-500">
-                              Price
-                            </p>
-
-                            <h2 className="mt-1 text-3xl font-black text-cyan-400">
-                              KSh{" "}
-                              {Number(item.displayPrice || 0).toLocaleString()}
-                            </h2>
+                      <div className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/10 ring-1 ring-cyan-500/20 transition group-hover:scale-105">
+                            <Icon className="h-7 w-7 text-cyan-400" />
                           </div>
 
-                          <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-center">
-                            <p className="text-[10px] uppercase tracking-wider text-slate-500">
-                              Duration
-                            </p>
+                          <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-300">
+                            {item.displayVehicle}
+                          </span>
+                        </div>
 
-                            <p className="text-sm font-bold">{item.time}</p>
+                        <div className="mt-4">
+                          <h3 className="line-clamp-1 text-lg font-black text-white">
+                            {item.name}
+                          </h3>
+
+                          <p className="mt-2 line-clamp-2 min-h-[38px] text-xs leading-5 text-slate-400">
+                            {item.details?.[0] ||
+                              "Professional vehicle cleaning service."}
+                          </p>
+                        </div>
+
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                Price
+                              </p>
+
+                              <h2 className="mt-1 text-xl font-black text-cyan-400">
+                                KSh{" "}
+                                {Number(
+                                  item.displayPrice || 0,
+                                ).toLocaleString()}
+                              </h2>
+                            </div>
+
+                            <div className="rounded-xl bg-slate-900 px-3 py-2 text-center">
+                              <p className="text-[9px] uppercase tracking-wider text-slate-500">
+                                Time
+                              </p>
+
+                              <p className="mt-1 text-xs font-bold text-white">
+                                {item.time}
+                              </p>
+                            </div>
                           </div>
                         </div>
+
+                        <button
+                          disabled={hasSubscriptionWash}
+                          onClick={() => {
+                            if (hasSubscriptionWash) return;
+                            addToCart(item);
+                          }}
+                          className={`mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-bold transition-all duration-300 ${
+                            hasSubscriptionWash
+                              ? "cursor-not-allowed bg-slate-800 text-slate-500"
+                              : "bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/30 active:scale-95"
+                          }`}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+
+                          {hasSubscriptionWash ? "Unavailable" : "Add Service"}
+                        </button>
                       </div>
-
-                      <button
-                        disabled={hasSubscriptionWash}
-                        onClick={() => {
-                          console.log("BUTTON CLICKED");
-                          console.log(
-                            "hasSubscriptionWash =",
-                            hasSubscriptionWash,
-                          );
-                          console.log("item =", item.name);
-
-                          if (hasSubscriptionWash) {
-                            console.log("Blocked");
-                            return;
-                          }
-
-                          console.log("Calling addToCart");
-
-                          addToCart(item);
-                        }}
-                        className={`mt-6 flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold
-                            ${
-                              hasSubscriptionWash
-                                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                                : "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
-                            }`}
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                        Add Service
-                      </button>
                     </div>
                   );
                 })}
@@ -1573,109 +1813,210 @@ SUBSCRIPTION SERVICES
 
             {cart.length > 0 && cartOpen && (
               <div
-                className={`sticky top-4 h-fit transition-all duration-300 overflow-hidden ${
-                  cartOpen ? "w-[420px]" : "w-[80px]"
+                className={`sticky top-4 h-fit overflow-hidden transition-all duration-300 shrink-0 ${
+                  cartOpen ? "max-w-[420px] w-full" : "w-[72px]"
                 }`}
               >
                 <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#07111F]">
-                  <div className="border-b border-white/10 p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-400">
-                          Checkout
-                        </p>
+                  <div className="border-b border-white/10 bg-gradient-to-r from-[#081A33] via-[#0B1220] to-[#07111F] p-4 sm:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10 sm:h-14 sm:w-14">
+                          <ShoppingCart className="h-6 w-6 text-cyan-400 sm:h-7 sm:w-7" />
+                        </div>
 
-                        <h2 className="mt-2 text-3xl font-black">POS Cart</h2>
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-cyan-400 sm:text-xs">
+                            Checkout
+                          </p>
+
+                          <h2 className="truncate text-xl font-black text-white sm:text-3xl">
+                            POS Cart
+                          </h2>
+
+                          <p className="mt-1 text-xs text-slate-400 sm:text-sm">
+                            {cart.length}{" "}
+                            {cart.length === 1 ? "service" : "services"}{" "}
+                            selected
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <ShoppingCart className="h-8 w-8 text-cyan-400" />
-
-                        <button
-                          onClick={() => setCartOpen(!cartOpen)}
-                          className="rounded-xl border border-white/10 bg-white/5 p-2 hover:bg-white/10"
-                        >
-                          {cartOpen ? "→" : "←"}
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => setCartOpen(!cartOpen)}
+                        className="
+        flex
+        h-11
+        w-11
+        shrink-0
+        items-center
+        justify-center
+        rounded-2xl
+        border
+        border-white/10
+        bg-white/5
+        text-slate-300
+        transition-all
+        duration-300
+        hover:border-cyan-500/30
+        hover:bg-cyan-500/10
+        hover:text-cyan-400
+        hover:shadow-lg
+        hover:shadow-cyan-500/20
+      "
+                      >
+                        {cartOpen ? (
+                          <PanelRightClose className="h-5 w-5" />
+                        ) : (
+                          <PanelRightOpen className="h-5 w-5" />
+                        )}
+                      </button>
                     </div>
                   </div>
 
-                  {/* CUSTOMER */}
+                  <div className="border-b border-white/10 p-4 sm:p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
+                        <User className="h-7 w-7 text-cyan-400" />
+                      </div>
 
-                  <div className="border-b border-white/10 p-6">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">
-                      Customer
-                    </p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                          Customer
+                        </p>
 
-                    <h3 className="mt-2 text-xl font-black">
-                      {vehicle?.customers?.name || "Walk-in Customer"}
-                    </h3>
+                        <h3 className="mt-1 truncate text-xl font-black text-white sm:text-2xl">
+                          {vehicle?.customers?.name || "Walk-in Customer"}
+                        </h3>
 
-                    <div className="mt-3 rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm font-bold text-green-300">
-                      {vehicle?.plate_number || plate || "NO PLATE"}
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                          <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-3">
+                            <p className="text-[10px] uppercase tracking-widest text-green-300">
+                              Plate
+                            </p>
+
+                            <p className="mt-1 truncate font-bold text-white">
+                              {vehicle?.plate_number || plate || "NO PLATE"}
+                            </p>
+                          </div>
+
+                          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3">
+                            <p className="text-[10px] uppercase tracking-widest text-cyan-300">
+                              Status
+                            </p>
+
+                            <p className="mt-1 font-bold text-white">
+                              {subscription
+                                ? isExpired
+                                  ? "Expired"
+                                  : hasSubscriptionWash
+                                    ? "Subscribed"
+                                    : "Limit Reached"
+                                : "Standard"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {hasSubscriptionWash && (
-                      <div className="rounded-2xl bg-green-500/10 border border-green-500/20 p-4">
-                        <p className="font-bold text-green-400">
-                          Subscription Wash
-                        </p>
+                      <div className="mt-5 rounded-2xl border border-green-500/20 bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-4">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-400" />
 
-                        <p className="text-sm text-green-300">
-                          This customer will not be charged.
-                        </p>
+                          <div>
+                            <p className="font-bold text-green-300">
+                              Subscription Wash Available
+                            </p>
 
-                        <p className="text-sm text-green-300">
-                          1 wash will be deducted from subscription.
-                        </p>
+                            <p className="mt-1 text-sm text-green-200">
+                              This wash will be covered by the customer's
+                              subscription.
+                            </p>
+
+                            <p className="mt-1 text-sm text-green-200">
+                              One remaining wash will be deducted automatically.
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     )}
 
-                    {/* SUBSCRIPTION STATUS */}
                     {subscription && (
                       <>
                         {isExpired ? (
-                          <div className="mt-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3">
-                            <p className="font-bold text-red-400">
-                              Subscription Expired
-                            </p>
+                          <div className="mt-4 rounded-2xl border border-red-500/20 bg-gradient-to-r from-red-500/10 to-rose-500/10 p-4">
+                            <div className="flex items-start gap-3">
+                              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
 
-                            <p className="text-sm text-red-300">
-                              Renewal date has passed.
-                            </p>
+                              <div>
+                                <p className="font-bold text-red-300">
+                                  Subscription Expired
+                                </p>
 
-                            <p className="text-sm text-red-300">
-                              Customer must pay normally.
-                            </p>
+                                <p className="mt-1 text-sm text-red-200">
+                                  Renewal date has passed.
+                                </p>
+
+                                <p className="text-sm text-red-200">
+                                  Customer will proceed with normal payment.
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         ) : hasSubscriptionWash ? (
-                          <div className="mt-3 rounded-xl border border-green-500/20 bg-green-500/10 p-3">
-                            <p className="font-bold text-green-400">
-                              Subscription Active
-                            </p>
+                          <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-green-500/10 p-4">
+                            <div className="flex items-start gap-3">
+                              <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
 
-                            <p className="text-sm text-green-300">
-                              Remaining Washes: {remainingWashes}
-                            </p>
+                              <div className="flex-1">
+                                <p className="font-bold text-emerald-300">
+                                  Active Subscription
+                                </p>
 
-                            <p className="text-xs text-green-200">
-                              Plan: {subscription.plan}
-                            </p>
+                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                  <div>
+                                    <p className="text-[10px] uppercase tracking-widest text-emerald-200">
+                                      Remaining
+                                    </p>
+
+                                    <p className="font-bold text-white">
+                                      {remainingWashes} Washes
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-[10px] uppercase tracking-widest text-emerald-200">
+                                      Plan
+                                    </p>
+
+                                    <p className="truncate font-bold text-white">
+                                      {subscription.plan}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         ) : (
-                          <div className="mt-3 rounded-xl border border-orange-500/20 bg-orange-500/10 p-3">
-                            <p className="font-bold text-orange-400">
-                              Wash Limit Reached
-                            </p>
+                          <div className="mt-4 rounded-2xl border border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-amber-500/10 p-4">
+                            <div className="flex items-start gap-3">
+                              <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-orange-400" />
 
-                            <p className="text-sm text-orange-300">
-                              Subscription washes have been fully utilized.
-                            </p>
+                              <div>
+                                <p className="font-bold text-orange-300">
+                                  Wash Limit Reached
+                                </p>
 
-                            <p className="text-sm text-orange-300">
-                              Customer will proceed to normal payment.
-                            </p>
+                                <p className="mt-1 text-sm text-orange-200">
+                                  All subscription washes have been used.
+                                </p>
+
+                                <p className="text-sm text-orange-200">
+                                  Customer will continue with standard payment.
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         )}
                       </>
@@ -1684,73 +2025,162 @@ SUBSCRIPTION SERVICES
 
                   {/* CART */}
 
-                  <div className="max-h-[400px] overflow-y-auto p-6">
+                  <div className="max-h-[55vh] overflow-y-auto p-4 sm:p-6">
                     {cart.length === 0 ? (
-                      <div className="py-20 text-center">
-                        <ShoppingCart className="mx-auto h-14 w-14 text-slate-700" />
+                      <div className="flex flex-col items-center justify-center py-16 sm:py-20">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-500/20 bg-cyan-500/10">
+                          <ShoppingCart className="h-10 w-10 text-cyan-400" />
+                        </div>
 
-                        <h3 className="mt-5 text-xl font-bold text-slate-300">
-                          Cart Empty
+                        <h3 className="mt-6 text-xl font-black text-white">
+                          Your Cart is Empty
                         </h3>
+
+                        <p className="mt-2 max-w-xs text-center text-sm text-slate-400">
+                          Search and add wash services to begin checkout.
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         {cart.map((item, index) => (
                           <div
                             key={index}
-                            className="rounded-2xl border border-white/10 bg-[#0B1220] p-4"
+                            className="
+            group
+            rounded-3xl
+            border
+            border-white/10
+            bg-gradient-to-br
+            from-[#0F172A]
+            via-[#0B1220]
+            to-[#081120]
+            p-4
+            transition-all
+            duration-300
+            hover:border-cyan-500/30
+            hover:shadow-lg
+            hover:shadow-cyan-500/10
+          "
                           >
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h3 className="font-bold">{item.name}</h3>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10">
+                                    <Droplets className="h-5 w-5 text-cyan-400" />
+                                  </div>
 
-                                <p className="mt-1 text-xs text-slate-500">
-                                  {item.displayVehicle}
-                                </p>
+                                  <div className="min-w-0">
+                                    <h3 className="truncate text-base font-bold text-white">
+                                      {item.name}
+                                    </h3>
+
+                                    <p className="truncate text-xs text-slate-400">
+                                      {item.displayVehicle}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
 
                               <button
                                 onClick={() => removeFromCart(index)}
-                                className="text-red-400"
+                                className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-red-500/20
+                bg-red-500/10
+                text-red-400
+                transition
+                hover:bg-red-500
+                hover:text-white
+              "
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
                             </div>
 
+                            <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-3">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                    Unit Price
+                                  </p>
+
+                                  <p className="mt-1 font-semibold text-slate-300">
+                                    KSh{" "}
+                                    {Number(
+                                      item.resolvedPrice,
+                                    ).toLocaleString()}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                    Total
+                                  </p>
+
+                                  <h3 className="mt-1 text-xl font-black text-cyan-400">
+                                    KSh{" "}
+                                    {Number(item.total || 0).toLocaleString()}
+                                  </h3>
+                                </div>
+                              </div>
+                            </div>
+
                             <div className="mt-4 flex items-center justify-between">
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/50 p-1">
                                 <button
                                   onClick={() =>
                                     updateQuantity(index, "decrease")
                                   }
-                                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10"
+                                  className="
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-xl
+                  text-slate-300
+                  transition
+                  hover:bg-white/10
+                "
                                 >
-                                  -
+                                  <Minus className="h-4 w-4" />
                                 </button>
 
-                                <span className="font-bold">
+                                <div className="min-w-[44px] text-center text-lg font-black text-white">
                                   {item.quantity}
-                                </span>
+                                </div>
 
                                 <button
                                   onClick={() =>
                                     updateQuantity(index, "increase")
                                   }
-                                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10"
+                                  className="
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-cyan-500/10
+                  text-cyan-400
+                  transition
+                  hover:bg-cyan-500
+                  hover:text-white
+                "
                                 >
-                                  +
+                                  <Plus className="h-4 w-4" />
                                 </button>
                               </div>
 
-                              <div className="text-right">
-                                <p className="text-xs text-slate-500">
-                                  KSh {item.resolvedPrice} each
-                                </p>
-
-                                <h3 className="text-lg font-black text-cyan-400">
-                                  KSh {Number(item.total || 0).toLocaleString()}
-                                </h3>
-                              </div>
+                              <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                                Qty {item.quantity}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -1758,158 +2188,123 @@ SUBSCRIPTION SERVICES
                     )}
                   </div>
 
-                  {/* PAYMENT */}
-
-                  <div className="border-t border-white/10 p-6">
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        {
-                          label: "Cash",
-                          value: "CASH",
-                          icon: Wallet,
-                        },
-                        {
-                          label: "Card",
-                          value: "CARD",
-                          icon: CreditCard,
-                        },
-                        {
-                          label: "M-Pesa",
-                          value: "MPESA",
-                          icon: Smartphone,
-                        },
-                      ].map((method, i) => {
-                        const Icon = method.icon;
-
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => setPaymentMethod(method.value)}
-                            className={`flex flex-col items-center gap-2 rounded-2xl border p-4 ${
-                              paymentMethod === method.value
-                                ? "border-cyan-500 bg-cyan-500/10 text-cyan-300"
-                                : "border-white/10 bg-[#111827]"
-                            }`}
-                          >
-                            <Icon className="h-5 w-5" />
-
-                            <span className="text-xs font-bold">
-                              {method.label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      <input
-                        type="number"
-                        value={discount}
-                        onChange={(e) => setDiscount(Number(e.target.value))}
-                        placeholder="Discount"
-                        className="h-12 rounded-2xl border border-white/10 bg-[#111827] px-4 text-white"
-                      />
-
-                      <input
-                        type="number"
-                        value={taxPercent}
-                        onChange={(e) => setTaxPercent(Number(e.target.value))}
-                        placeholder="Tax %"
-                        className="h-12 rounded-2xl border border-white/10 bg-[#111827] px-4 text-white"
-                      />
-                    </div>
-
-                    <textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Additional notes..."
-                      className="mt-4 min-h-[90px] w-full rounded-2xl border border-white/10 bg-[#111827] p-4 text-white"
-                    />
-                  </div>
-
                   {/* TOTALS */}
 
-                  <div className="border-t border-white/10 bg-[#0B1220] p-6">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400">Subtotal</span>
+                  <div className="border-t border-white/10 bg-gradient-to-b from-[#0B1220] to-[#08111E] p-4 sm:p-6">
+                    <div className="rounded-3xl border border-cyan-500/15 bg-cyan-500/5 p-5">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Subtotal</span>
 
-                        <span>KSh {subtotal.toLocaleString()}</span>
-                      </div>
+                          <span className="font-semibold text-white">
+                            KSh {subtotal.toLocaleString()}
+                          </span>
+                        </div>
 
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400">Tax</span>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Tax</span>
 
-                        <span>KSh {taxAmount.toLocaleString()}</span>
-                      </div>
+                          <span className="font-semibold text-white">
+                            KSh {taxAmount.toLocaleString()}
+                          </span>
+                        </div>
 
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-400">Discount</span>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-400">Discount</span>
 
-                        <span className="text-red-400">
-                          - KSh {discount.toLocaleString()}
-                        </span>
-                      </div>
+                          <span className="font-semibold text-red-400">
+                            - KSh {discount.toLocaleString()}
+                          </span>
+                        </div>
 
-                      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-5">
-                        <span className="text-lg font-bold">Total</span>
+                        <div className="my-2 border-t border-white/10" />
 
-                        <h2 className="text-4xl font-black text-cyan-400">
-                          KSh{" "}
-                          {hasSubscriptionWash
-                            ? "0"
-                            : grandTotal.toLocaleString()}
-                          {!(
-                            subscription &&
-                            subscription.limit - subscription.usage
-                          ) && (
-                            <div className="grid grid-cols-3 gap-3">
-                              {/* Cash/Card/Mpesa buttons */}
-                            </div>
-                          )}
-                        </h2>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                              Total Payable
+                            </p>
+
+                            <p className="mt-1 text-xs text-slate-500">
+                              Inclusive of taxes & discounts
+                            </p>
+                          </div>
+
+                          <div className="text-right">
+                            <h2 className="text-3xl sm:text-4xl font-black text-cyan-400">
+                              KSh{" "}
+                              {hasSubscriptionWash
+                                ? "0"
+                                : grandTotal.toLocaleString()}
+                            </h2>
+
+                            {hasSubscriptionWash && (
+                              <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs font-bold text-green-300">
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                Subscription Wash
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid gap-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => generateInvoice()}
-                          disabled={processingPayment}
-                          className={`
-    flex h-14 items-center justify-center gap-3 rounded-2xl
-    font-bold text-white transition-all
-
-    ${
-      processingPayment
-        ? "bg-slate-700 cursor-not-allowed opacity-80"
-        : "bg-gradient-to-r from-yellow-500 to-orange-600 hover:opacity-90"
-    }
-  `}
-                        >
-                          {processingPayment ? (
-                            <>
-                              <RefreshCw className="h-5 w-5 animate-spin" />
-                              Generating Receipt...
-                            </>
-                          ) : (
-                            <>
-                              <Receipt className="h-5 w-5" />
-                              Generate Receipt
-                            </>
-                          )}
-                        </button>
-
-                        <button
-                          onClick={() => setCart([])}
-                          className="flex h-12 items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 font-bold text-red-300"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Clear
-                        </button>
+                    {!(
+                      subscription && subscription.limit - subscription.usage
+                    ) && (
+                      <div className="mt-5 grid grid-cols-3 gap-2">
+                        {/* Cash / Card / Mpesa Buttons */}
                       </div>
+                    )}
 
-                      <div className="grid grid-cols-2 gap-3"></div>
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        onClick={() => generateInvoice()}
+                        disabled={processingPayment}
+                        className={`
+        group flex h-14 items-center justify-center gap-3
+        rounded-2xl
+        font-bold
+        transition-all
+        duration-300
+        ${
+          processingPayment
+            ? "cursor-not-allowed bg-slate-700 text-slate-300 opacity-70"
+            : "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30 hover:-translate-y-0.5 hover:shadow-cyan-500/50"
+        }
+      `}
+                      >
+                        {processingPayment ? (
+                          <>
+                            <RefreshCw className="h-5 w-5 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Receipt className="h-5 w-5 transition group-hover:rotate-6" />
+                            Generate Receipt
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => setCart([])}
+                        className="
+        flex h-14 items-center justify-center gap-3
+        rounded-2xl
+        border border-red-500/20
+        bg-red-500/10
+        font-bold
+        text-red-300
+        transition-all
+        duration-300
+        hover:bg-red-500/20
+        hover:border-red-500/40
+      "
+                      >
+                        <Trash2 className="h-5 w-5" />
+                        Clear Cart
+                      </button>
                     </div>
                   </div>
                 </div>
