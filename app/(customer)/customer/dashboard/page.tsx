@@ -275,26 +275,50 @@ hover:shadow-[0_15px_40px_rgba(34,211,238,.08)]
     <div
       className="
     min-h-screen
-    bg-gradient-to-br
-    from-[#07142B]
-    via-[#081A33]
-    to-[#07142B]
+    relative
+    overflow-hidden
+    bg-[#050B1A]
     text-white
     px-3
     py-4
-    sm:px-4
-    sm:py-5
-    lg:px-6
-    lg:py-6
+    sm:px-5
+    sm:py-6
+    lg:px-8
+    lg:py-8
   "
     >
+      {/* Background ambient glow */}
       <div
         className="
+      absolute
+      inset-0
+      pointer-events-none
+      bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_35%)]
+    "
+      />
+
+      <div
+        className="
+      absolute
+      top-0
+      right-0
+      w-[500px]
+      h-[500px]
+      rounded-full
+      bg-blue-500/10
+      blur-3xl
+      pointer-events-none
+    "
+      />
+
+      <div
+        className="
+      relative
       mx-auto
       w-full
-      max-w-7xl
-      space-y-4
-      lg:space-y-5
+      max-w-[1440px]
+      space-y-5
+      lg:space-y-6
     "
       >
         {/* HERO */}
