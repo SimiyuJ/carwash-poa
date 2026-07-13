@@ -34,8 +34,16 @@ import {
   Activity,
   ShieldCheck,
   ShoppingCart,
+  Gift,
+  Star,
+  Coins,
+  BadgeCheck,
+  TicketPercent,
+  ChevronRight,
   X,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 /* =========================================================
    ICON MAP
@@ -181,6 +189,30 @@ export default function POSPage() {
   const [newVehicleColor, setNewVehicleColor] = useState("");
 
   /* =========================================================
+      REWARDS
+  ========================================================= */
+
+  const [availableRewards, setAvailableRewards] = useState<any[]>([]);
+
+  const [selectedReward, setSelectedReward] = useState<any | null>(null);
+
+  const [pendingInvoice, setPendingInvoice] = useState(false);
+
+  const [showRewardDialog, setShowRewardDialog] = useState(false);
+
+  const [redeemReward, setRedeemReward] = useState(false);
+
+  const [rewardDialogOpen, setRewardDialogOpen] = useState(false);
+
+  const [availableReward, setAvailableReward] = useState<any>(null);
+
+  const [customerPoints, setCustomerPoints] = useState(0);
+
+  const [processingReward, setProcessingReward] = useState(false);
+
+  const [selectedRewardService, setSelectedRewardService] = useState<any>(null);
+
+  /* =========================================================
      LOAD BRANCHES
   ========================================================= */
 
@@ -297,11 +329,21 @@ export default function POSPage() {
 
   useEffect(() => {}, [cart, cartOpen]);
 
+  useEffect(() => {
+    console.log("Cart changed:", cart);
+  }, [cart]);
+
+  useEffect(() => {
+    console.log("selectedRewardService =", selectedRewardService);
+  }, [selectedRewardService]);
   /* =========================================================
      SEARCH VEHICLE
   ========================================================= */
 
   const searchVehicle = async () => {
+    console.log("SEARCH VEHICLE CALLED");
+    console.trace();
+
     if (!plate.trim()) return;
 
     try {
@@ -330,12 +372,20 @@ export default function POSPage() {
 
       if (error) throw error;
 
+      if (error) throw error;
+
       if (!data) {
         setVehicle(null);
 
+        setAvailableReward(null);
+
+        setCustomerPoints(0);
+
+        setSubscription(null);
+
         setSearchType("info");
 
-        setSearchMessage("Vehicle not found. Register new vehicle.");
+        setSearchMessage("Vehicle not found. Register a new vehicle.");
 
         setCustomerPlate(cleanPlate);
 
@@ -349,16 +399,18 @@ export default function POSPage() {
         .eq("status", "active")
         .maybeSingle();
 
-      setVehicle({
-        ...data,
-        subscription,
-      });
-
       if (data.vehicle_type_id) {
         setActiveVehicleType(String(data.vehicle_type_id));
       }
 
       setSubscription(subscription);
+
+      setVehicle({
+        ...data,
+        subscription,
+      });
+
+      await checkAvailableRewards(data.customer_id);
 
       setSearchType("success");
 
@@ -389,7 +441,8 @@ SUBSCRIPTION SERVICES
           setSearchMessage(
             `Subscription expired on ${subscription.renewal}. Proceed with normal payment.`,
           );
-
+          console.log("CLEAR CART -> expired");
+          console.trace("setCart");
           setCart([]);
           setCartOpen(false);
         } else if (remainingWashes > 0) {
@@ -417,7 +470,7 @@ SUBSCRIPTION SERVICES
               isSubscription: true,
             }))
             .filter((item) => item.name);
-
+          console.trace("setCart");
           setCart(cartItems);
 
           if (cartItems.length > 0) {
@@ -436,9 +489,133 @@ SUBSCRIPTION SERVICES
           setSearchMessage(
             "Subscription wash limit reached. Proceed with normal payment.",
           );
-
+          console.log("CLEARING CART FROM HERE");
+          console.trace();
           setCart([]);
           setCartOpen(false);
+        }
+      }
+
+      /* ===========================================================
+   CHECK CUSTOMER REWARD ELIGIBILITY
+=========================================================== */
+      async function checkAvailableRewards(customerId: string) {
+        try {
+          if (!customerId || !branchId) {
+            setCustomerPoints(0);
+            setAvailableReward(null);
+            setAvailableRewards([]);
+            setSelectedReward(null);
+            setShowRewardDialog(false);
+            return false;
+          }
+
+          /* ------------------------------------
+       CUSTOMER POINTS
+    ------------------------------------ */
+
+          const { data: customer, error: customerError } = await supabase
+            .from("customers")
+            .select("loyalty_points")
+            .eq("id", customerId)
+            .single();
+
+          if (customerError) {
+            setAvailableReward(null);
+            setAvailableRewards([]);
+            setSelectedReward(null);
+            setShowRewardDialog(false);
+
+            return false;
+          }
+
+          setCustomerPoints(customer?.loyalty_points ?? 0);
+
+          /* ------------------------------------
+       UNLOCKED REWARDS
+    ------------------------------------ */
+
+          const { data, error } = await supabase
+            .from("loyalty_customer_rewards")
+            .select(
+              `
+        id,
+        reward_id,
+        unlocked_at,
+        status,
+        loyalty_rewards (
+          id,
+          title,
+          description,
+          reward_type,
+          reward_value,
+          points_required
+        )
+      `,
+            )
+            .eq("customer_id", customerId)
+            .eq("branch_id", branchId)
+            .eq("status", "available")
+            .order("unlocked_at", { ascending: true });
+
+          if (error) {
+            setAvailableReward(null);
+            setAvailableRewards([]);
+            setSelectedReward(null);
+            setShowRewardDialog(false);
+
+            return false;
+          }
+
+          if (!data || data.length === 0) {
+            setAvailableReward(null);
+            setAvailableRewards([]);
+            setSelectedReward(null);
+            setShowRewardDialog(false);
+
+            return false;
+          }
+
+          /* ------------------------------------
+       Flatten nested rewards
+    ------------------------------------ */
+
+          const rewards = data
+            .map((item: any) => ({
+              unlock_id: item.id,
+              ...(Array.isArray(item.loyalty_rewards)
+                ? item.loyalty_rewards[0]
+                : item.loyalty_rewards),
+            }))
+            .filter(Boolean);
+
+          if (rewards.length === 0) {
+            setAvailableReward(null);
+            setAvailableRewards([]);
+            setSelectedReward(null);
+            setShowRewardDialog(false);
+
+            return false;
+          }
+
+          /* ------------------------------------
+       OPEN DIALOG
+    ------------------------------------ */
+
+          setAvailableReward(rewards[0]);
+          setAvailableRewards(rewards);
+          setSelectedReward(rewards[0]);
+
+          setShowRewardDialog(true);
+
+          return true;
+        } catch (err) {
+          setAvailableReward(null);
+          setAvailableRewards([]);
+          setSelectedReward(null);
+          setShowRewardDialog(false);
+
+          return false;
         }
       }
 
@@ -455,6 +632,55 @@ SUBSCRIPTION SERVICES
       setSearchType("error");
 
       setSearchMessage("Vehicle search failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ==========================================================
+   REDEEM SELECTED REWARD
+========================================================== */
+
+  const redeemSelectedReward = async () => {
+    if (!selectedReward || !vehicle) return;
+
+    try {
+      setLoading(true);
+
+      const rewardId =
+        selectedReward.reward_id ??
+        selectedReward.loyalty_rewards?.id ??
+        selectedReward.id;
+
+      const { data, error } = await supabase.rpc("redeem_loyalty_reward", {
+        p_customer_id: vehicle.customer_id,
+        p_reward_id: rewardId,
+      });
+
+      if (error) throw error;
+
+      console.log("Reward redeemed:", data);
+
+      // Store reward for invoice generation
+      setRedeemReward(true);
+
+      // Save redeemed reward
+      setSelectedReward({
+        ...selectedReward,
+        redeemed: true,
+      });
+
+      // Update displayed customer points
+      if (data?.points_remaining !== undefined) {
+        setCustomerPoints(data.points_remaining);
+      }
+
+      setShowRewardDialog(false);
+
+      alert(`${data.reward} redeemed successfully.`);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message);
     } finally {
       setLoading(false);
     }
@@ -536,6 +762,8 @@ SUBSCRIPTION SERVICES
   ========================================================= */
 
   const addToCart = (service: any) => {
+    console.log("INSIDE addToCart");
+
     const resolvedPrice = Number(service.displayPrice || 0);
 
     if (resolvedPrice <= 0) {
@@ -556,12 +784,12 @@ SUBSCRIPTION SERVICES
 
       updated[existingIndex].total =
         updated[existingIndex].quantity * updated[existingIndex].resolvedPrice;
-
+      console.trace("setCart");
       setCart(updated);
 
       return;
     }
-
+    console.trace("setCart");
     setCart((prev) => [
       ...prev,
       {
@@ -578,6 +806,7 @@ SUBSCRIPTION SERVICES
   ========================================================= */
 
   const removeFromCart = (index: number) => {
+    console.trace("setCart");
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -601,7 +830,7 @@ SUBSCRIPTION SERVICES
 
     updated[index].total =
       updated[index].quantity * updated[index].resolvedPrice;
-
+    console.trace("setCart");
     setCart(updated);
   };
 
@@ -672,6 +901,19 @@ SUBSCRIPTION SERVICES
     return result;
   }, [services, serviceSearch, activeVehicleType]);
 
+  const rewardServices = availableRewards.map((reward) => {
+    return {
+      id: reward.id,
+      name: reward.title,
+      description: reward.description,
+      displayPrice: 0,
+      resolvedPrice: 0,
+      quantity: 1,
+      isReward: true,
+      reward_id: reward.id,
+      reward_type: reward.reward_type,
+    };
+  });
   /* =========================================================
     SAVE CUSTOMER FROM POS
 ========================================================= */
@@ -778,13 +1020,32 @@ SUBSCRIPTION SERVICES
      COMPLETE PAYMENT
   ========================================================= */
 
-  const generateInvoice = async () => {
+  async function generateInvoice(redeem = false, invoiceCart = cart) {
+    console.log("generateInvoice called");
+    console.trace();
+
+    console.log("===== GENERATE INVOICE =====");
+    console.log("redeem:", redeem);
+    console.log("invoiceCart:", invoiceCart);
+    console.log("invoiceCart length:", invoiceCart.length);
+    console.log("availableRewards:", availableRewards.length);
+    console.log("selectedReward:", selectedReward);
+    console.log("pendingInvoice:", pendingInvoice);
+
+    if (availableRewards.length > 0 && !selectedReward) {
+      console.log("Opening reward dialog...");
+
+      setPendingInvoice(true);
+      setShowRewardDialog(true);
+      return;
+    }
     if (!canOperate) {
       alert("Branch access invalid");
       return;
     }
 
-    if (cart.length === 0) {
+    if (invoiceCart.length === 0) {
+      console.log("Invoice cart is empty!");
       alert("Add services first");
       return;
     }
@@ -794,13 +1055,22 @@ SUBSCRIPTION SERVICES
 
       const invoiceNumber = "INV-" + Date.now();
 
-      const servicesArray = cart.map((item) => ({
-        service_id: item.id,
+      const servicesArray = invoiceCart.map((item) => ({
+        service_id: item.rewardApplied ? null : item.id,
+
+        reward_id: item.rewardApplied ? item.rewardId : null,
+
+        reward: item.rewardApplied,
+
+        reward_type: item.rewardType ?? null,
+
         name: item.name,
+
         price: item.resolvedPrice,
+
         quantity: item.quantity,
+
         total: item.total,
-        vehicle_type: item.displayVehicle,
       }));
       /* =========================================================
          SUBSCRIPTION STATUS
@@ -809,8 +1079,9 @@ SUBSCRIPTION SERVICES
       const subscriptionAvailable = subscription && remainingWashes > 0;
 
       const isSubscribed = !!subscription && remainingWashes > 0;
+      const isReward = redeem;
 
-      const finalTotal = isSubscribed ? 0 : grandTotal;
+      const finalTotal = isSubscribed || isReward ? 0 : grandTotal;
 
       const payload = {
         invoice_number: invoiceNumber,
@@ -839,13 +1110,17 @@ SUBSCRIPTION SERVICES
 
         total: finalTotal,
 
-        payment_method: isSubscribed ? "SUBSCRIPTION" : paymentMethod,
+        payment_method: isSubscribed
+          ? "SUBSCRIPTION"
+          : isReward
+            ? "LOYALTY_REWARD"
+            : paymentMethod,
 
-        payment_status: isSubscribed ? "PAID" : "UNPAID",
+        payment_status: isSubscribed || isReward ? "PAID" : "UNPAID",
 
-        status: isSubscribed ? "COMPLETED" : "PENDING",
+        status: isSubscribed || isReward ? "COMPLETED" : "PENDING",
 
-        notes,
+        notes: isReward ? `FREE REWARD - ${selectedReward?.title}` : notes,
 
         cashier: profile?.full_name || "Staff",
       };
@@ -858,8 +1133,34 @@ SUBSCRIPTION SERVICES
 
       if (error) {
         alert(error.message);
-
         return;
+      }
+
+      console.log("redeemReward:", redeemReward);
+      console.log("selectedReward:", selectedReward);
+      console.log("vehicle:", vehicle);
+      console.log("customer_id:", vehicle?.customer_id);
+
+      if (redeem && selectedReward && vehicle?.customer_id) {
+        const rewardId = selectedReward.reward_id ?? selectedReward.id;
+
+        console.log("Redeeming reward:", rewardId);
+
+        const { data: redeemData, error: redeemError } = await supabase.rpc(
+          "redeem_loyalty_reward",
+          {
+            p_customer_id: vehicle.customer_id,
+            p_reward_id: rewardId,
+          },
+        );
+
+        console.log(redeemData);
+        console.log(redeemError);
+
+        if (redeemError) {
+          alert(redeemError.message);
+          return;
+        }
       }
 
       //autodeduct wash
@@ -873,20 +1174,25 @@ SUBSCRIPTION SERVICES
           .select();
       }
 
-      if (isSubscribed) {
+      if (isSubscribed || isReward) {
         setSubscription(null);
 
         setVehicle(null);
 
         setPlate("");
-
+        console.log("CLEAR CART -> subscription");
+        console.trace("setCart");
         setCart([]);
 
         setCartOpen(false);
 
         setActiveVehicleType("");
 
-        setSearchMessage("Subscription wash completed successfully.");
+        setSearchMessage(
+          isReward
+            ? "Reward redeemed successfully."
+            : "Subscription wash completed successfully.",
+        );
 
         setSearchType("success");
       }
@@ -897,7 +1203,7 @@ SUBSCRIPTION SERVICES
 
       const ticket = "Q-" + Date.now().toString().slice(-6);
 
-      const serviceNames = cart.map((item) => item.name).join(", ");
+      const serviceNames = invoiceCart.map((item) => item.name).join(", ");
 
       const { error: queueError } = await supabase
         .from("queue_vehicles")
@@ -924,7 +1230,7 @@ SUBSCRIPTION SERVICES
 
           priority: "Normal",
 
-          payment: "Paid",
+          payment: isSubscribed || isReward ? "Paid" : "Pending",
 
           status: "waiting",
 
@@ -940,7 +1246,8 @@ SUBSCRIPTION SERVICES
       }
 
       setInvoiceId(data.id);
-
+      console.log("auto send to queue");
+      console.trace("setCart");
       setCart([]);
 
       setNotes("");
@@ -953,7 +1260,7 @@ SUBSCRIPTION SERVICES
     } finally {
       setProcessingPayment(false);
     }
-  };
+  }
 
   /* =========================================================
      PRINT
@@ -1230,7 +1537,20 @@ SUBSCRIPTION SERVICES
                       <button
                         disabled={hasSubscriptionWash}
                         onClick={() => {
-                          if (hasSubscriptionWash) return;
+                          console.log("BUTTON CLICKED");
+                          console.log(
+                            "hasSubscriptionWash =",
+                            hasSubscriptionWash,
+                          );
+                          console.log("item =", item.name);
+
+                          if (hasSubscriptionWash) {
+                            console.log("Blocked");
+                            return;
+                          }
+
+                          console.log("Calling addToCart");
+
                           addToCart(item);
                         }}
                         className={`mt-6 flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-bold
@@ -1280,8 +1600,6 @@ SUBSCRIPTION SERVICES
                       </div>
                     </div>
                   </div>
-
-                  {/* CUSTOMER */}
 
                   {/* CUSTOMER */}
 
@@ -1556,7 +1874,7 @@ SUBSCRIPTION SERVICES
                     <div className="mt-6 grid gap-3">
                       <div className="grid grid-cols-2 gap-3">
                         <button
-                          onClick={generateInvoice}
+                          onClick={() => generateInvoice()}
                           disabled={processingPayment}
                           className={`
     flex h-14 items-center justify-center gap-3 rounded-2xl
@@ -1696,6 +2014,202 @@ SUBSCRIPTION SERVICES
           </div>
         </div>
       )}
+
+      {/* ==========================================================
+    CUSTOMER REWARD REDEMPTION
+========================================================== */}
+
+      {showRewardDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3">
+          <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-cyan-500/20 bg-[#081A33] shadow-2xl">
+            {/* ================= HEADER ================= */}
+
+            <div className="border-b border-slate-800 bg-gradient-to-r from-cyan-500/10 to-blue-500/5 px-5 py-4">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/15">
+                  <Gift className="h-6 w-6 text-cyan-300" />
+                </div>
+
+                <div className="flex-1">
+                  <h2 className="text-xl font-bold text-white">
+                    Reward Available
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-400">
+                    Redeem a loyalty reward before completing payment.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-center">
+                  <div className="flex items-center justify-center gap-1 text-cyan-300">
+                    <Coins className="h-3.5 w-3.5" />
+                    <span className="text-[10px] uppercase">Points</span>
+                  </div>
+
+                  <p className="mt-1 text-xl font-black text-cyan-300">
+                    {customerPoints}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ================= REWARDS ================= */}
+
+            <div className="max-h-[45vh] overflow-y-auto p-4 space-y-3">
+              {availableRewards.map((reward) => {
+                const selected = selectedReward?.id === reward.id;
+
+                return (
+                  <button
+                    key={reward.id}
+                    onClick={() => {
+                      console.log("Reward selected", reward);
+
+                      setSelectedReward(reward);
+
+                      setSelectedRewardService({
+                        id: reward.id,
+                        name: reward.title,
+                        quantity: 1,
+                        resolvedPrice: 0,
+                        total: 0,
+                        rewardApplied: true,
+                        rewardType: reward.reward_type,
+                        rewardId: reward.id,
+                      });
+                    }}
+                    className={`w-full rounded-2xl border text-left transition
+
+              ${
+                selected
+                  ? "border-cyan-500 bg-cyan-500/10 ring-1 ring-cyan-400/30"
+                  : "border-slate-700 bg-[#0B1220] hover:border-cyan-400"
+              }`}
+                  >
+                    <div className="flex items-center gap-4 p-4">
+                      <div
+                        className={`flex h-11 w-11 items-center justify-center rounded-xl
+
+                  ${
+                    selected
+                      ? "bg-cyan-500 text-white"
+                      : "bg-slate-800 text-cyan-300"
+                  }`}
+                      >
+                        <Sparkles className="h-5 w-5" />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate text-base font-semibold text-white">
+                            {reward.title}
+                          </h3>
+
+                          {selected && (
+                            <BadgeCheck className="h-4 w-4 text-green-400 shrink-0" />
+                          )}
+                        </div>
+
+                        <p className="mt-1 line-clamp-2 text-sm text-slate-400">
+                          {reward.description}
+                        </p>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-cyan-500/10 px-2.5 py-1 text-xs font-medium text-cyan-300">
+                            <TicketPercent className="h-3.5 w-3.5" />
+                            {reward.reward_type}
+                          </span>
+
+                          <span className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs text-slate-300">
+                            {reward.reward_value}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[10px] uppercase tracking-wide text-cyan-300">
+                          Cost
+                        </p>
+
+                        <p className="text-lg font-bold text-cyan-300">
+                          {reward.points_required}
+                        </p>
+
+                        <p className="text-xs text-slate-400">pts</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* ================= FOOTER ================= */}
+
+            <div className="border-t border-slate-800 bg-[#07142B] p-4">
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-3">
+                <Star className="mt-0.5 h-4 w-4 text-yellow-300 shrink-0" />
+
+                <p className="text-xs text-yellow-100">
+                  Redeeming a reward immediately deducts the required loyalty
+                  points.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setRedeemReward(true);
+                    setShowRewardDialog(false);
+
+                    if (pendingInvoice) {
+                      setPendingInvoice(false);
+                      generateInvoice();
+                    }
+                  }}
+                  className="flex-1 rounded-xl border border-slate-700 py-3 font-medium text-slate-300 hover:bg-slate-800 transition"
+                >
+                  Skip
+                </button>
+
+                <button
+                  disabled={!selectedReward}
+                  onClick={async () => {
+                    console.log("Redeem clicked");
+                    console.log(
+                      "selectedRewardService:",
+                      selectedRewardService,
+                    );
+
+                    setShowRewardDialog(false);
+
+                    if (!selectedRewardService) {
+                      alert("Select a service");
+                      return;
+                    }
+
+                    const rewardCart = [
+                      {
+                        ...selectedRewardService,
+                        quantity: 1,
+                        resolvedPrice: 0,
+                        total: 0,
+                        rewardApplied: true,
+                      },
+                    ];
+
+                    await generateInvoice(true, rewardCart);
+                  }}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-3 font-semibold text-white transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <Gift className="h-4 w-4" />
+                  Redeem
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <CustomerModal
         open={showCustomerModal}
         onClose={() => setShowCustomerModal(false)}
