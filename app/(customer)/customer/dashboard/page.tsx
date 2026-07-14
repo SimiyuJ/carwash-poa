@@ -40,7 +40,7 @@ export default function CustomerDashboard() {
     if (!isReady) return;
 
     if (!activeBranch?.id) {
-      router.replace("/customer/select-branch");
+      router.replace("/customer/dashboard");
     }
   }, [activeBranch, isReady, router]);
 

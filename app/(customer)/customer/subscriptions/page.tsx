@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-
+import { useActiveBranch } from "@/components/providers/ActiveBranchProvider";
 type Plan = {
   id: number;
   name: string;
@@ -27,13 +27,25 @@ export default function CustomerSubscriptionsPage() {
   const [subscribing, setSubscribing] = useState(false);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [member, setMember] = useState<any[]>([]);
+  const { activeBranch, activeBranchId, isReady } = useActiveBranch();
+  const activeCarwashId = activeBranch?.carwashId;
   const [activeTab, setActiveTab] = useState<
     "membership" | "plans" | "history"
   >("membership");
   /* =========================================================
      FETCH PLANS
   ========================================================= */
+  console.log({
+    activeBranch,
+    activeBranchId,
+    activeCarwashId,
+  });
+
   useEffect(() => {
+    if (!isReady) return;
+
+    if (!activeCarwashId || !activeBranchId) return;
+
     const fetchData = async () => {
       setLoading(true);
 
@@ -49,11 +61,13 @@ export default function CustomerSubscriptionsPage() {
         }
 
         // Get customer record
-        const { data: customer } = await supabase
+        const { data: customer, error: customerError } = await supabase
           .from("customers")
           .select("id, carwash_id, branch_id")
           .eq("profile_id", user.id)
-          .single();
+          .eq("carwash_id", activeCarwashId)
+          .eq("branch_id", activeBranchId)
+          .maybeSingle();
 
         if (!customer) {
           setLoading(false);
@@ -62,10 +76,13 @@ export default function CustomerSubscriptionsPage() {
         const { carwash_id, branch_id } = customer;
 
         // Get active subscription
+        // Get active subscription
         const { data: members, error: memberError } = await supabase
           .from("subscription_members")
           .select("*")
-          .eq("customer_id", customer.id);
+          .eq("customer_id", customer.id)
+          .eq("carwash_id", activeCarwashId)
+          .eq("branch_id", activeBranchId);
 
         if (memberError) {
           console.error(memberError);
@@ -77,7 +94,8 @@ export default function CustomerSubscriptionsPage() {
         const { data, error } = await supabase
           .from("subscription_plans")
           .select("*")
-          .eq("carwash_id", carwash_id)
+          .eq("carwash_id", activeCarwashId)
+          .eq("branch_id", activeBranchId)
           .order("id", { ascending: false });
 
         if (error) {
@@ -113,7 +131,7 @@ export default function CustomerSubscriptionsPage() {
 
     fetchData();
     fetchInvoices();
-  }, []);
+  }, [isReady, activeCarwashId, activeBranchId]);
 
   //subscribe
   const handleSubscribe = async (plan: Plan) => {
@@ -131,7 +149,9 @@ export default function CustomerSubscriptionsPage() {
         .from("customers")
         .select("id, carwash_id, branch_id")
         .eq("profile_id", user.id)
-        .single();
+        .eq("carwash_id", activeCarwashId)
+        .eq("branch_id", activeBranchId)
+        .maybeSingle();
 
       if (!customer) return;
 
@@ -187,6 +207,10 @@ export default function CustomerSubscriptionsPage() {
 
   //fetch invoices
   const fetchInvoices = async () => {
+    if (!isReady) return;
+
+    if (!activeCarwashId || !activeBranchId) return;
+
     try {
       const {
         data: { user },
@@ -198,10 +222,15 @@ export default function CustomerSubscriptionsPage() {
         .from("customers")
         .select("id, carwash_id, branch_id")
         .eq("profile_id", user.id)
-        .single();
+        .eq("carwash_id", activeCarwashId)
+        .eq("branch_id", activeBranchId)
+        .maybeSingle();
 
       if (customerError || !customer) {
-        console.error(customerError);
+        alert(JSON.stringify(customerError));
+        console.log("Current user:", user.id);
+        console.log("Customer:", customer);
+        console.log("Customer Error:", customerError);
         return;
       }
 
@@ -209,7 +238,8 @@ export default function CustomerSubscriptionsPage() {
         .from("invoices")
         .select("*")
         .eq("customer_id", customer.id)
-        .eq("carwash_id", customer.carwash_id)
+        .eq("carwash_id", activeCarwashId)
+        .eq("branch_id", activeBranchId)
         .order("created_at", { ascending: false })
         .limit(7);
 

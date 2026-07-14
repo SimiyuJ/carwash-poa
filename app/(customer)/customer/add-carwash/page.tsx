@@ -106,12 +106,23 @@ export default function AddCarwashPage() {
         .from("customers")
         .select("id")
         .eq("profile_id", user.id)
-        .eq("branch_id", branch.id)
         .maybeSingle();
 
       if (customerError) throw customerError;
 
       let customerId = customer?.id;
+
+      if (customerId) {
+        const { error: updateCustomerError } = await supabase
+          .from("customers")
+          .update({
+            carwash_id: carwashId,
+            branch_id: branch.id,
+          })
+          .eq("id", customerId);
+
+        if (updateCustomerError) throw updateCustomerError;
+      }
 
       if (!customerId) {
         const { data: profile, error: profileError } = await supabase
@@ -152,6 +163,7 @@ export default function AddCarwashPage() {
         .select("id")
         .eq("customer_id", user.id)
         .eq("carwash_id", carwashId)
+        .eq("branch_id", branch.id)
         .maybeSingle();
 
       if (existingError) throw existingError;
@@ -160,13 +172,16 @@ export default function AddCarwashPage() {
        * Create link
        */
       if (!existing) {
-        const { error: insertError } = await supabase
+        const { data, error: insertError } = await supabase
           .from("customer_carwashes")
           .insert({
             customer_id: user.id,
             carwash_id: carwashId,
             branch_id: branch.id,
-          });
+          })
+          .select();
+
+        console.log("Inserted customer_carwash:", data);
 
         if (insertError) throw insertError;
       }
@@ -174,12 +189,16 @@ export default function AddCarwashPage() {
       /*
        * Save active workspace
        */
-      setActiveBranch({
+      const activeWorkspace = {
         id: branch.id,
         name: branch.name,
         carwashId,
         customerId,
-      });
+      };
+
+      console.log("Saving Active Branch:", activeWorkspace);
+
+      setActiveBranch(activeWorkspace);
 
       router.push("/customer/dashboard");
     } catch (error: any) {

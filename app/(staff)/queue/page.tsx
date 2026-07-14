@@ -496,37 +496,130 @@ export default function QueuePage() {
   return (
     <div className="min-h-screen bg-[#020817] text-white p-4 md:p-6 space-y-6 overflow-x-hidden">
       {/* =========================================================
-         HEADER
-      ========================================================= */}
+    HEADER
+========================================================= */}
 
-      <div className="flex flex-col 2xl:flex-row 2xl:items-center 2xl:justify-between gap-5">
-        <div>
-          <h1 className="text-4xl font-black flex items-center gap-3">
-            <div className="p-3 rounded-3xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/20">
-              <Car className="w-7 h-7" />
+      <div
+        className="
+    relative
+    overflow-hidden
+    rounded-[30px]
+    border
+    border-white/10
+    bg-gradient-to-br
+    from-[#0B172C]
+    via-[#08111F]
+    to-[#050B16]
+    p-4
+    sm:p-6
+    lg:p-7
+  "
+      >
+        {/* Ambient Glow */}
+        <div className="pointer-events-none absolute -top-16 -right-10 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl" />
+
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          {/* ================= LEFT ================= */}
+
+          <div className="flex items-start gap-4">
+            {/* Icon */}
+            <div
+              className="
+          flex
+          h-14
+          w-14
+          sm:h-16
+          sm:w-16
+          shrink-0
+          items-center
+          justify-center
+          rounded-3xl
+          bg-gradient-to-br
+          from-cyan-500
+          via-sky-500
+          to-blue-600
+          shadow-[0_15px_35px_rgba(6,182,212,.35)]
+        "
+            >
+              <Car className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
             </div>
-            Queue Management
-          </h1>
 
-          <p className="mt-2 text-slate-400">
-            Multi-branch intelligent queue workflow & real-time wash operations.
-          </p>
-        </div>
+            {/* Text */}
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                  Queue Management
+                </h1>
 
-        <div className="flex flex-wrap gap-3">
-          <select
-            value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
-            className="h-12 rounded-2xl border border-white/10 bg-[#0B1220] px-4"
-          >
-            <option value="all">All Branches</option>
+                <span
+                  className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              border
+              border-emerald-500/20
+              bg-emerald-500/10
+              px-3
+              py-1
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.18em]
+              text-emerald-400
+            "
+                >
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  Live
+                </span>
+              </div>
 
-            {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
+              <p className="mt-2 max-w-xl text-sm text-slate-400 leading-relaxed">
+                Monitor vehicle queues, assign wash bays, and track every wash
+                in real time across all branches.
+              </p>
+            </div>
+          </div>
+
+          {/* ================= RIGHT ================= */}
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+            {/* Branch Selector */}
+            <div className="relative flex-1 lg:flex-none">
+              <select
+                value={selectedBranch}
+                onChange={(e) => setSelectedBranch(e.target.value)}
+                className="
+            h-12
+            w-full
+            sm:min-w-[240px]
+            rounded-2xl
+            border
+            border-white/10
+            bg-white/[0.04]
+            backdrop-blur-xl
+            px-4
+            text-sm
+            text-white
+            transition-all
+            duration-300
+            focus:border-cyan-400
+            focus:ring-2
+            focus:ring-cyan-400/20
+            hover:border-cyan-500/30
+          "
+              >
+                <option value="all">All Branches</option>
+
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 

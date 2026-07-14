@@ -814,9 +814,11 @@ export default function LoyaltyPage() {
             </div>
           </div>
 
-          {/* Rewards */}
+          {/* =========================================================
+    REWARDS
+========================================================= */}
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {rewards.map((reward) => {
               const canRedeem = loyalty.currentPoints >= reward.points_required;
 
@@ -833,211 +835,238 @@ export default function LoyaltyPage() {
               return (
                 <Card
                   key={reward.id}
-                  className="
-            group
-
-            overflow-hidden
-
-            rounded-[34px]
-
-            border
-            border-cyan-500/15
-
-            bg-gradient-to-br
-            from-[#081A33]
-            via-[#091B37]
-            to-[#07142B]
-
-            shadow-[0_20px_50px_rgba(0,0,0,.30)]
-
-            transition-all
-            duration-300
-
-            hover:-translate-y-1
-            hover:border-cyan-500/30
-          "
+                  className={`
+          group
+          relative
+          overflow-hidden
+          rounded-[30px]
+          border
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          ${
+            canRedeem
+              ? `
+              border-amber-400/30
+              bg-gradient-to-br
+              from-[#2B2006]
+              via-[#1B1710]
+              to-[#0B1324]
+              shadow-[0_0_45px_rgba(251,191,36,.18)]
+            `
+              : `
+              border-cyan-500/15
+              bg-gradient-to-br
+              from-[#081A33]
+              via-[#091B37]
+              to-[#07142B]
+              hover:border-cyan-500/30
+            `
+          }
+        `}
                 >
-                  <CardContent className="p-7">
-                    {/* Badge */}
+                  {/* Glow */}
 
-                    <div className="flex items-center justify-between">
+                  <div
+                    className={`
+            absolute
+            inset-0
+            ${
+              canRedeem
+                ? "bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,.18),transparent_45%)]"
+                : "bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.12),transparent_45%)]"
+            }
+          `}
+                  />
+
+                  <CardContent className="relative p-5">
+                    {/* =========================================================
+              HEADER
+          ========================================================= */}
+
+                    <div className="flex items-start justify-between">
                       <div
-                        className="
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-
-                  rounded-3xl
-
-                  bg-cyan-500/10
-
-                  border
-                  border-cyan-500/20
-                "
+                        className={`
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-3xl
+                border
+                ${
+                  canRedeem
+                    ? "border-amber-400/30 bg-amber-500/15"
+                    : "border-cyan-500/20 bg-cyan-500/10"
+                }
+              `}
                       >
-                        <Gift className="h-7 w-7 text-cyan-400" />
+                        <Gift
+                          className={`h-7 w-7 ${
+                            canRedeem ? "text-amber-300" : "text-cyan-400"
+                          }`}
+                        />
                       </div>
 
-                      <span
+                      <div
                         className={`
+                rounded-full
+                px-3
+                py-1.5
+                text-[11px]
+                font-bold
+                uppercase
+                tracking-wide
+                ${
+                  canRedeem
+                    ? "bg-amber-500/15 border border-amber-400/30 text-amber-300"
+                    : "bg-cyan-500/10 border border-cyan-500/20 text-cyan-300"
+                }
+              `}
+                      >
+                        {canRedeem ? "🏆 Reward Unlocked" : "Collect Points"}
+                      </div>
+                    </div>
+
+                    {/* =========================================================
+              REWARD
+          ========================================================= */}
+
+                    <div className="mt-6">
+                      <h3 className="text-2xl font-black text-white">
+                        {reward.title}
+                      </h3>
+
+                      <p className="mt-3 text-sm leading-7 text-slate-400">
+                        {reward.description}
+                      </p>
+                    </div>
+
+                    {/* =========================================================
+              POINTS
+          ========================================================= */}
+
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-400">
+                          Reward Cost
+                        </span>
+
+                        <span
+                          className={`
                   rounded-full
-
-                  px-4
-                  py-2
-
-                  text-xs
+                  px-3
+                  py-1
+                  text-sm
                   font-bold
-
                   ${
                     canRedeem
-                      ? `
-                        bg-emerald-500/15
-                        text-emerald-400
-                        border
-                        border-emerald-500/20
-                      `
-                      : `
-                        bg-yellow-500/10
-                        text-yellow-400
-                        border
-                        border-yellow-500/20
-                      `
+                      ? "bg-amber-500/15 text-amber-300"
+                      : "bg-cyan-500/10 text-cyan-400"
                   }
                 `}
-                      >
-                        {canRedeem ? "Available" : "Keep Earning"}
-                      </span>
+                        >
+                          {reward.points_required.toLocaleString()} pts
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Reward */}
+                    {/* =========================================================
+              PROGRESS
+          ========================================================= */}
 
-                    <h3 className="mt-6 text-2xl font-black text-white">
-                      {reward.title}
-                    </h3>
-
-                    <p className="mt-3 leading-7 text-slate-400">
-                      {reward.description}
-                    </p>
-
-                    {/* Cost */}
-
-                    <div
-                      className="
-                mt-6
-
-                flex
-                items-center
-                justify-between
-              "
-                    >
-                      <span className="text-slate-400">Redemption Cost</span>
-
-                      <span
-                        className="
-                  rounded-full
-
-                  bg-cyan-500/10
-
-                  border
-                  border-cyan-500/20
-
-                  px-4
-                  py-2
-
-                  font-bold
-                  text-cyan-400
-                "
-                      >
-                        {reward.points_required.toLocaleString()} pts
-                      </span>
-                    </div>
-
-                    {/* Progress */}
-
-                    <div className="mt-7">
+                    <div className="mt-6">
                       <div className="mb-2 flex justify-between text-sm">
-                        <span className="text-slate-400">Progress</span>
+                        <span className="text-slate-400">Your Progress</span>
 
-                        <span className="font-semibold text-cyan-400">
-                          {rewardProgress.toFixed(0)}%
+                        <span className="font-semibold text-white">
+                          {Math.min(
+                            loyalty.currentPoints,
+                            reward.points_required,
+                          ).toLocaleString()}
+                          {" / "}
+                          {reward.points_required.toLocaleString()} pts
                         </span>
                       </div>
 
                       <div className="h-3 overflow-hidden rounded-full bg-white/5">
                         <div
-                          className="
-                    h-full
-
-                    rounded-full
-
-                    bg-gradient-to-r
-                    from-cyan-500
-                    via-sky-500
-                    to-blue-600
-
-                    transition-all
-                    duration-700
-                  "
+                          className={`
+                  h-full
+                  rounded-full
+                  transition-all
+                  duration-700
+                  ${
+                    canRedeem
+                      ? "bg-gradient-to-r from-amber-400 to-yellow-500"
+                      : "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600"
+                  }
+                `}
                           style={{
                             width: `${rewardProgress}%`,
                           }}
                         />
                       </div>
 
-                      <p className="mt-3 text-sm">
-                        {canRedeem ? (
-                          <span className="font-semibold text-emerald-400">
-                            🎉 Ready to redeem this reward!
-                          </span>
-                        ) : (
-                          <span className="text-yellow-400">
-                            Only <strong>{remaining.toLocaleString()}</strong>{" "}
-                            more points to unlock.
-                          </span>
-                        )}
-                      </p>
+                      {!canRedeem && (
+                        <p className="mt-3 text-sm text-yellow-300">
+                          Earn <strong>{remaining.toLocaleString()}</strong>{" "}
+                          more points to unlock this reward.
+                        </p>
+                      )}
                     </div>
 
-                    {/* Button */}
+                    {/* =========================================================
+              UNLOCKED NOTICE
+          ========================================================= */}
 
-                    <Button
-                      onClick={() => redeemReward(reward.id)}
-                      disabled={!canRedeem}
-                      className={`
-                mt-8
+                    {canRedeem ? (
+                      <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-4">
+                        <h4 className="font-bold text-amber-300">
+                          🎉 Congratulations!
+                        </h4>
 
-                h-14
+                        <div className="mt-4 space-y-2 text-sm">
+                          <div className="flex items-center gap-2 text-slate-300">
+                            ✓ Enjoy your reward
+                          </div>
+                        </div>
+
+                        <Button
+                          disabled
+                          className="
+                  mt-5
+                  h-12
+                  w-full
+                  rounded-2xl
+                  cursor-default
+                  bg-gradient-to-r
+                  from-amber-500
+                  to-yellow-500
+                  text-black
+                  font-bold
+                  opacity-100
+                "
+                        >
+                          Visit Carwash to Claim
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        disabled
+                        className="
+                mt-6
+                h-12
                 w-full
-
                 rounded-2xl
-
-                font-bold
-
-                transition-all
-
-                ${
-                  canRedeem
-                    ? `
-                      bg-gradient-to-r
-                      from-cyan-500
-                      via-sky-500
-                      to-blue-600
-
-                      hover:scale-[1.02]
-                    `
-                    : `
-                      bg-[#10264A]
-                      text-slate-400
-                    `
-                }
-              `}
-                    >
-                      {canRedeem ? "Redeem Reward" : "Keep Collecting"}
-
-                      <ArrowUpRight className="ml-2 h-5 w-5" />
-                    </Button>
+                bg-[#10264A]
+                text-slate-400
+                opacity-100
+              "
+                      >
+                        Keep Collecting Points
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               );

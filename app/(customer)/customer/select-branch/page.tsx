@@ -38,6 +38,19 @@ export default function SelectCarWashPage() {
         return;
       }
 
+      const { data: customer, error: customerError } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("profile_id", user.id)
+        .maybeSingle();
+
+      if (customerError) throw customerError;
+
+      if (!customer) {
+        setBranches([]);
+        return;
+      }
+
       const { data: customerCarwashes, error } = await supabase
         .from("customer_carwashes")
         .select(
@@ -45,16 +58,17 @@ export default function SelectCarWashPage() {
       customer_id,
       carwash_id,
       branch_id,
-
       branches(
-          id,
-          name,
-          location,
-          carwash_id
+        id,
+        name,
+        location,
+        carwash_id
       )
   `,
         )
         .eq("customer_id", user.id);
+
+      console.log(customerCarwashes);
 
       if (error) throw error;
 
@@ -64,7 +78,7 @@ export default function SelectCarWashPage() {
           name: item.branches.name,
           location: item.branches.location,
           carwashId: item.branches.carwash_id,
-          customerId: item.customer_id,
+          customerId: customer.id,
         })) ?? [];
 
       setBranches(formatted);

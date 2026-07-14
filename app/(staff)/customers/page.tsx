@@ -523,18 +523,35 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div
+      className="
+    relative
+    space-y-6
+    rounded-3xl
+    border
+    border-white/10
+    bg-white/[0.03]
+    backdrop-blur-xl
+    shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+    p-4
+    sm:p-6
+    lg:p-8
+  "
+    >
       {/* ================= HEADER ================= */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left */}
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">
+            Customers
+          </h1>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Customers</h1>
-
-          <p className="text-gray-500 text-sm">
-            Manage customers & registered vehicles
+          <p className="mt-1 text-sm text-slate-400">
+            Manage customers and their registered vehicles.
           </p>
         </div>
 
+        {/* Right */}
         <Button
           onClick={() => {
             setEditingCustomer(null);
@@ -553,29 +570,61 @@ export default function CustomersPage() {
 
             setShowModal(true);
           }}
-          className="gap-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-2xl shadow-lg hover:shadow-cyan-500/40 transition-all duration-300"
+          className="
+      w-full
+      sm:w-auto
+      h-11
+      px-5
+      rounded-2xl
+      bg-cyan-500
+      hover:bg-cyan-600
+      text-white
+      font-medium
+      shadow-lg
+      hover:shadow-cyan-500/30
+      transition-all
+      duration-300
+      flex
+      items-center
+      justify-center
+      gap-2
+    "
         >
-          <Plus className="h-4 w-4" />
-          Add Customer
+          <Plus className="h-4 w-4 shrink-0" />
+          <span>Add Customer</span>
         </Button>
       </div>
 
       {/* ================= SEARCH ================= */}
-
       <form
         onSubmit={(e) => {
           e.preventDefault();
           setShowSuggestions(false);
         }}
-        className="relative max-w-xl"
+        className="relative w-full max-w-2xl"
       >
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
 
             <Input
-              className="pl-12 h-12 rounded-2xl border-gray-200 focus-visible:ring-cyan-500"
-              placeholder="Search customer, phone or email..."
+              className="
+          h-12
+          pl-12
+          pr-4
+          rounded-2xl
+          border-white/10
+          bg-white/5
+          text-white
+          placeholder:text-slate-400
+          backdrop-blur-md
+          focus-visible:ring-2
+          focus-visible:ring-cyan-500
+          focus-visible:border-cyan-500
+          transition-all
+        "
+              placeholder="Search customer, phone or vehicle..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -584,10 +633,26 @@ export default function CustomersPage() {
             />
           </div>
 
+          {/* Search Button */}
           <Button
             type="submit"
-            className="rounded-2xl px-6 bg-[#0B1220] hover:bg-cyan-500 transition-all duration-300"
+            className="
+        h-12
+        w-full
+        sm:w-auto
+        px-6
+        rounded-2xl
+        bg-cyan-500
+        hover:bg-cyan-600
+        text-white
+        font-medium
+        shadow-lg
+        hover:shadow-cyan-500/30
+        transition-all
+        duration-300
+      "
           >
+            <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
         </div>
@@ -621,200 +686,204 @@ export default function CustomersPage() {
 
       {/* ================= LIST ================= */}
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredCustomers.map((c) => {
-          return (
-            <Card
-              key={c.id}
-              className="
-              group
-              relative
-              flex
-              flex-col
-              overflow-hidden
-              cursor-pointer
-              rounded-[2rem]
-              border
-              border-cyan-500/10
-              bg-[#0B1220]
-              text-white
-              transition-all
-              duration-500
-              hover:-translate-y-2
-              hover:border-cyan-400/40
-              hover:shadow-[0_0_45px_rgba(0,255,255,0.35)]
-              "
-            >
-              {/* ================= GLOW EDGE ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5 lg:gap-6">
+        {filteredCustomers.map((c) => (
+          <Card
+            key={c.id}
+            className="
+        group
+        relative
+        overflow-hidden
+        rounded-3xl
+        border
+        border-white/10
+        bg-gradient-to-br
+        from-[#0B1220]
+        via-[#0E172A]
+        to-[#0B1220]
+        text-white
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-cyan-400/30
+        hover:shadow-[0_20px_50px_rgba(6,182,212,.18)]
+      "
+          >
+            {/* Glow */}
+            <div className="absolute inset-0 rounded-3xl border border-white/5 pointer-events-none" />
 
-              <div className="absolute inset-0 rounded-[2rem] border border-white/5 pointer-events-none" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none" />
 
-              <div className="absolute -inset-[1px] rounded-[2rem] opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-cyan-500/20 via-blue-500/10 to-cyan-400/20 blur-xl" />
+            <CardContent className="relative p-5 sm:p-6 flex flex-col h-full">
+              {/* ================= TOP ================= */}
 
-              {/* ================= TOP LIGHT ================= */}
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div
+                  className="
+      h-12
+      w-12
+      sm:h-14
+      sm:w-14
+      shrink-0
+      rounded-2xl
+      border
+      border-cyan-400/20
+      bg-cyan-500/15
+      flex
+      items-center
+      justify-center
+      text-lg
+      sm:text-xl
+      font-bold
+      text-cyan-400
+      shadow-[0_0_20px_rgba(34,211,238,.12)]
+    "
+                >
+                  {c.name?.charAt(0).toUpperCase()}
+                </div>
 
-              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-cyan-500/10 to-transparent pointer-events-none" />
+                {/* Customer Details */}
+                <div className="flex-1 min-w-0">
+                  <h2 className=" text-lg sm:text-xl font-semibold text-white leading-tight break-words">
+                    {c.name}
+                  </h2>
 
-              <CardContent className="relative z-10 p-6 flex flex-col h-full">
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-4">
-                    <div
-                      className="
-                      h-14
-                      w-14
-                      rounded-2xl
-                      bg-cyan-500/15
-                      border
-                      border-cyan-400/20
-                      flex
-                      items-center
-                      justify-center
-                      text-cyan-400
-                      font-bold
-                      text-xl
-                      shadow-[0_0_20px_rgba(0,255,255,0.15)]
-                    "
+                  {/* Status */}
+                  <div className="mt-2">
+                    <Badge
+                      className={`
+                        inline-flex
+                        w-fit
+                        items-center
+                        gap-1.5
+                        rounded-full
+                        px-3
+                        py-1
+                        text-[11px]
+                        font-semibold
+                        tracking-wide
+                        ${getTagColor(c.tag)}
+                        `}
                     >
-                      {c.name?.[0]}
-                    </div>
-
-                    <div>
-                      <h2 className="font-bold text-lg tracking-wide">
-                        {c.name}
-                      </h2>
-
-                      <div className="space-y-1 mt-2 text-sm text-gray-400">
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-cyan-400" />
-                          {c.phone}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-cyan-400" />
-                          {c.email || "No email"}
-                        </div>
-                      </div>
-                    </div>
+                      {getTagIcon(c.tag)}
+                      {(c.tag || "Regular").toUpperCase()}
+                    </Badge>
                   </div>
 
-                  <Badge
-                    className={`
-                      flex
-                      items-center
-                      gap-1
-                      rounded-xl
-                      px-3
-                      py-1
-                      shadow-md
-                      ${getTagColor(c.tag)}
-                    `}
-                  >
-                    {getTagIcon(c.tag)}
-                    {(c.tag || "regular").toUpperCase()}
-                  </Badge>
-                </div>
+                  {/* Contact */}
+                  <div className="mt-4 space-y-2 text-sm text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 shrink-0 text-cyan-400" />
+                      <span className="truncate">{c.phone}</span>
+                    </div>
 
-                {/* ================= VEHICLES ================= */}
-
-                <div className="mt-6">
-                  <p className="text-xs text-gray-400 mb-3 uppercase tracking-[0.2em]">
-                    Registered Vehicles
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    {c.vehicles && c.vehicles.length > 0 ? (
-                      c.vehicles.map((v, i) => (
-                        <div
-                          key={i}
-                          className="
-                              rounded-2xl
-                              border
-                              border-cyan-500/10
-                              bg-[#F8FAFC]/5
-                              px-3
-                              py-2
-                              backdrop-blur-sm
-                              transition-all
-                              duration-300
-                              hover:border-cyan-400/30
-                              hover:bg-cyan-500/10
-                              hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]
-                            "
-                        >
-                          <p className="text-sm font-semibold">
-                            {v.plate_number}
-                          </p>
-
-                          <p className="text-xs text-gray-400">
-                            {v.type} • {v.color}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">No vehicles</p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 shrink-0 text-cyan-400" />
+                      <span className="truncate">{c.email || "No email"}</span>
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                {/* ================= ACTIONS ================= */}
+              {/* ================= VEHICLES ================= */}
 
-                <div className="mt-auto pt-6 flex justify-end gap-3">
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    title="Edit Customer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditCustomer(c);
-                    }}
-                    className="
-                    border-cyan-500/20
-                    text-cyan-400
+              <div className="mt-6">
+                <p className="mb-3 text-[11px] uppercase tracking-[0.25em] text-slate-500">
+                  Registered Vehicles
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {c.vehicles?.length ? (
+                    c.vehicles.map((v, i) => (
+                      <div
+                        key={i}
+                        className="
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/[0.04]
+                    backdrop-blur-sm
+                    px-3
+                    py-2
+                    transition-all
+                    hover:border-cyan-400/30
                     hover:bg-cyan-500/10
-                    "
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                  "
+                      >
+                        <p className="text-sm font-semibold">
+                          {v.plate_number}
+                        </p>
 
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    title="Add Vehicle"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className="
-                    border-emerald-500/20
-                    text-emerald-400
-                    hover:bg-emerald-500/10
-                    "
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    title="Delete Customer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-
-                      deleteCustomer(c.id, c.name);
-                    }}
-                    className="
-                    border-red-500/20
-                    text-red-400
-                    hover:bg-red-500/10
-                    hover:text-red-300
-                    "
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                        <p className="text-xs text-slate-400">
+                          {v.type} • {v.color}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-slate-700 px-4 py-3 text-sm text-slate-500">
+                      No registered vehicles
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+              </div>
+
+              {/* ================= ACTIONS ================= */}
+
+              <div className="mt-auto pt-6 grid grid-cols-3 gap-2">
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditCustomer(c);
+                  }}
+                  className="
+              h-10
+              rounded-xl
+              border-cyan-500/20
+              text-cyan-400
+              hover:bg-cyan-500/10
+            "
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="
+              h-10
+              rounded-xl
+              border-emerald-500/20
+              text-emerald-400
+              hover:bg-emerald-500/10
+            "
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteCustomer(c.id, c.name);
+                  }}
+                  className="
+              h-10
+              rounded-xl
+              border-red-500/20
+              text-red-400
+              hover:bg-red-500/10
+            "
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* ================= DRAWER ================= */}

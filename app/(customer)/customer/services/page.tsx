@@ -111,7 +111,7 @@ export default function CustomerServicesPage() {
     if (!isReady) return;
 
     if (!activeBranch?.id) {
-      router.replace("/customer/select-branch");
+      router.replace("/customer/dashboard");
       return;
     }
 

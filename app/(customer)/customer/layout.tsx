@@ -24,7 +24,6 @@ export default function CustomerLayout({
     "/signup",
     "/customer/auth",
     "/customer-signup",
-    "/customer/select-branch",
     "/customer/select-carwash",
     "/customer/add-carwash",
   ];

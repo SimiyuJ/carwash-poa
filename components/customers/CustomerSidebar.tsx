@@ -104,7 +104,7 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
         .maybeSingle();
 
       if (!profile?.branch_id) {
-        router.replace("/customer/select-branch");
+        router.replace("/customer/dashboard");
         return;
       }
 
@@ -337,35 +337,6 @@ export default function CustomerSidebar({ open, setOpen }: Props) {
               )}
             </div>
           </div>
-
-          <Button
-            onClick={() => router.push("/customer/select-branch")}
-            className={`
-            mt-5
-
-            ${open ? "w-full" : "w-12 mx-auto"}
-
-            rounded-2xl
-
-            bg-cyan-500/10
-
-            border
-            border-cyan-500/20
-
-            hover:bg-cyan-500/20
-
-            text-cyan-300
-          `}
-          >
-            {open ? (
-              <>
-                <Car className="mr-2 h-4 w-4" />
-                Switch Car Wash
-              </>
-            ) : (
-              <Car className="h-5 w-5" />
-            )}
-          </Button>
         </div>
 
         {/* ================= NAVIGATION ================= */}
