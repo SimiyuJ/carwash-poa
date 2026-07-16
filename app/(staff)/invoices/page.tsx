@@ -253,31 +253,17 @@ export default function InvoicesPage() {
     ];
   }, [invoices]);
 
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <input
       type="date"
       value={selectedDate}
       onChange={(e) => setSelectedDate(e.target.value)}
-      className="
-      bg-slate-950
-      border
-      border-slate-700
-      rounded-2xl
-      px-4
-      h-12
-    "
+      className="h-12 rounded-2xl border border-slate-700 bg-slate-950 px-4"
     />
 
     <button
       onClick={() => setSelectedDate(new Date().toISOString().split("T")[0])}
-      className="
-      px-4
-      h-12
-      rounded-2xl
-      bg-cyan-500
-      text-black
-      font-semibold
-    "
+      className="h-12 rounded-2xl bg-cyan-500 px-4 font-semibold text-black"
     >
       Today
     </button>
@@ -536,7 +522,7 @@ Thank you for choosing us.
     <div className="min-h-screen bg-[#020817] text-white">
       {/* Background Glow */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-180px] top-[-180px] h-96 w-96 rounded-full bg-cyan-500/10 blur-[140px]" />
+        <div className="absolute top-[-180px] left-[-180px] h-96 w-96 rounded-full bg-cyan-500/10 blur-[140px]" />
 
         <div className="absolute right-[-180px] bottom-[-180px] h-96 w-96 rounded-full bg-blue-600/10 blur-[160px]" />
 
@@ -572,7 +558,7 @@ Thank you for choosing us.
           {/* Right Side */}
 
           <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-3">
-            <p className="text-xs uppercase tracking-wider text-cyan-300">
+            <p className="text-xs tracking-wider text-cyan-300 uppercase">
               Viewing Date
             </p>
 
@@ -606,36 +592,20 @@ Thank you for choosing us.
             {/* Search */}
 
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+              <Search className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search invoice, customer or plate..."
-                className="
-          h-12
-          w-full
-          rounded-2xl
-          border
-          border-slate-700
-          bg-slate-950
-          pl-12
-          pr-4
-          text-white
-          placeholder:text-slate-500
-          outline-none
-          transition
-          focus:border-cyan-500
-          focus:ring-2
-          focus:ring-cyan-500/20
-        "
+                className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-950 pr-4 pl-12 text-white transition outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20"
               />
             </div>
 
             {/* Date Controls */}
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-950 px-3 h-12">
+              <div className="flex h-12 items-center gap-2 rounded-2xl border border-slate-700 bg-slate-950 px-3">
                 <label className="text-sm whitespace-nowrap text-slate-400">
                   Date
                 </label>
@@ -644,29 +614,13 @@ Thank you for choosing us.
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="
-            border-0
-            bg-transparent
-            shadow-none
-            focus-visible:ring-0
-            h-10
-            w-auto
-            p-0
-          "
+                  className="h-10 w-auto border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
                 />
               </div>
 
               <Button
                 onClick={() => setSelectedDate(today)}
-                className="
-          h-12
-          rounded-2xl
-          bg-cyan-500
-          px-6
-          font-semibold
-          text-slate-950
-          hover:bg-cyan-400
-        "
+                className="h-12 rounded-2xl bg-cyan-500 px-6 font-semibold text-slate-950 hover:bg-cyan-400"
               >
                 Today
               </Button>
@@ -678,7 +632,7 @@ Thank you for choosing us.
 
         {loading && (
           <div className="flex justify-center py-20">
-            <Loader2 className="animate-spin h-10 w-10" />
+            <Loader2 className="h-10 w-10 animate-spin" />
           </div>
         )}
 
@@ -732,27 +686,7 @@ Thank you for choosing us.
           {filteredInvoices.map((invoice) => (
             <div
               key={invoice.id}
-              className="
-              group
-              relative
-              overflow-hidden
-              rounded-3xl
-              border
-              border-slate-800/80
-              bg-gradient-to-br
-              from-[#0B1220]
-              via-[#0F172A]
-              to-[#081A33]
-              p-5
-              shadow-lg
-              shadow-black/30
-              transition-all
-              duration-300
-              hover:-translate-y-1
-              hover:border-cyan-500/30
-              hover:shadow-2xl
-              hover:shadow-cyan-500/10
-              "
+              className="group relative overflow-hidden rounded-3xl border border-slate-800/80 bg-gradient-to-br from-[#0B1220] via-[#0F172A] to-[#081A33] p-5 shadow-lg shadow-black/30 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/30 hover:shadow-2xl hover:shadow-cyan-500/10"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex items-center gap-4">
@@ -761,7 +695,7 @@ Thank you for choosing us.
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+                    <p className="text-xs font-semibold tracking-[0.25em] text-slate-500 uppercase">
                       Invoice
                     </p>
 
@@ -781,12 +715,11 @@ Thank you for choosing us.
 
                 <div className="flex justify-start sm:justify-end">
                   <div
-                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all
-      ${
-        invoice.payment_status === "PAID"
-          ? "border-green-500/20 bg-green-500/10 text-green-400"
-          : "border-yellow-500/20 bg-yellow-500/10 text-yellow-300"
-      }`}
+                    className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all ${
+                      invoice.payment_status === "PAID"
+                        ? "border-green-500/20 bg-green-500/10 text-green-400"
+                        : "border-yellow-500/20 bg-yellow-500/10 text-yellow-300"
+                    }`}
                   >
                     {invoice.payment_status === "PAID" ? (
                       <CheckCircle2 className="h-4 w-4" />
@@ -806,7 +739,7 @@ Thank you for choosing us.
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                       Customer
                     </p>
 
@@ -822,7 +755,7 @@ Thank you for choosing us.
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                       Vehicle
                     </p>
 
@@ -838,7 +771,7 @@ Thank you for choosing us.
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                       Branch
                     </p>
 
@@ -854,7 +787,7 @@ Thank you for choosing us.
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                       Carwash
                     </p>
 
@@ -865,8 +798,8 @@ Thank you for choosing us.
                 </div>
               </div>
 
-              <div className="mt-5 rounded-2xl bg-slate-950/70 border border-slate-800 p-4">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-cyan-400">
+              <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                <p className="mb-3 text-xs font-semibold tracking-widest text-cyan-400 uppercase">
                   Services
                 </p>
 
@@ -906,7 +839,7 @@ Thank you for choosing us.
                 )}
               </div>
 
-              <div className="mt-5 bg-slate-950 rounded-2xl p-4">
+              <div className="mt-5 rounded-2xl bg-slate-950 p-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>KSh {invoice.subtotal || invoice.total}</span>
@@ -927,7 +860,7 @@ Thank you for choosing us.
                   <span>KSh {invoice.amount_paid || 0}</span>
                 </div>
 
-                <div className="border-t border-slate-700 mt-3 pt-3 flex justify-between">
+                <div className="mt-3 flex justify-between border-t border-slate-700 pt-3">
                   <span>Total</span>
 
                   <span className="font-black text-cyan-400">
@@ -937,8 +870,8 @@ Thank you for choosing us.
               </div>
 
               {/* =========================================
-    CASHIER & NOTES
-========================================= */}
+              CASHIER & NOTES
+              ========================================= */}
 
               <div className="mt-5 space-y-3">
                 {/* Cashier */}
@@ -946,12 +879,12 @@ Thank you for choosing us.
                 {invoice.cashier && (
                   <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-950 to-[#081A33] p-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10">
                         <User className="h-5 w-5 text-cyan-400" />
                       </div>
 
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                        <p className="text-xs font-semibold tracking-[0.2em] text-slate-500 uppercase">
                           Cashier
                         </p>
 
@@ -972,12 +905,12 @@ Thank you for choosing us.
                     <div className="mb-3 flex items-center gap-2">
                       <FileText className="h-5 w-5 text-cyan-400" />
 
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                      <p className="text-xs font-semibold tracking-[0.2em] text-cyan-400 uppercase">
                         Notes
                       </p>
                     </div>
 
-                    <p className="leading-6 text-sm text-slate-300">
+                    <p className="text-sm leading-6 text-slate-300">
                       {invoice.notes}
                     </p>
                   </div>
@@ -1028,200 +961,208 @@ Thank you for choosing us.
 ========================================= */}
 
         {payingInvoice && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
-            <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-b from-[#081A33] to-[#0B1220] shadow-[0_25px_80px_rgba(0,0,0,.55)]">
-              {/* Header */}
+          <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#020617]/85 backdrop-blur-xl">
+            <div className="flex min-h-screen items-center justify-center p-4 sm:p-8">
+              {" "}
+              {/* Center Container */}
+              <div className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-8 lg:px-12">
+                <div className="animate-in fade-in zoom-in-95 relative w-full max-w-2xl overflow-hidden rounded-[32px] border border-cyan-500/20 bg-gradient-to-br from-[#081A33] via-[#091B34] to-[#07142B] shadow-[0_35px_120px_rgba(0,0,0,.65)] backdrop-blur-2xl duration-300">
+                  <div className="animate-in zoom-in-95 fade-in relative w-full max-w-3xl overflow-hidden rounded-[34px] border border-cyan-500/20 bg-gradient-to-br from-[#081A33] via-[#09172D] to-[#050B18] shadow-[0_40px_120px_rgba(0,0,0,.65)] duration-300">
+                    {/* Header */}
 
-              <div className="border-b border-slate-800 p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/20">
-                      <Wallet className="h-7 w-7 text-cyan-400" />
-                    </div>
+                    <div className="relative overflow-hidden border-b border-white/10 px-8 py-7">
+                      <div className="absolute top-0 right-0 h-52 w-52 rounded-full bg-cyan-500/10 blur-3xl" />
 
-                    <div>
-                      <h2 className="text-2xl font-black text-white">
-                        Complete Payment
-                      </h2>
+                      <div className="relative flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-cyan-500/20 bg-cyan-500/10">
+                            <Wallet className="h-8 w-8 text-cyan-400" />
+                          </div>
 
-                      <p className="mt-1 text-sm text-slate-400">
-                        Select a payment method to complete this invoice.
-                      </p>
-                    </div>
-                  </div>
+                          <div>
+                            <h2 className="text-3xl font-black text-white">
+                              Complete Payment
+                            </h2>
 
-                  <button
-                    onClick={() => setPayingInvoice(null)}
-                    className="rounded-xl border border-slate-700 bg-slate-900 p-2 transition hover:border-red-500 hover:bg-red-500/10"
-                  >
-                    <X className="h-5 w-5 text-slate-400" />
-                  </button>
-                </div>
-              </div>
+                            <p className="mt-1 text-slate-400">
+                              Verify the invoice and choose a payment method.
+                            </p>
+                          </div>
+                        </div>
 
-              {/* =========================================
-    INVOICE SUMMARY
-========================================= */}
-
-              <div className="border-b border-slate-800 bg-gradient-to-r from-slate-950 via-[#081A33] to-slate-950 p-5">
-                <div className="rounded-2xl border border-cyan-500/10 bg-white/[0.03] p-5">
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                    {/* Left */}
-
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
-                        <Receipt className="h-7 w-7 text-cyan-400" />
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-                          Invoice Number
-                        </p>
-
-                        <h3 className="mt-1 text-xl font-black text-white">
-                          {payingInvoice.invoice_number}
-                        </h3>
-
-                        <p className="mt-1 text-sm text-slate-400">
-                          {new Date(payingInvoice.created_at).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right */}
-
-                    <div className="text-left sm:text-right">
-                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-                        Amount Due
-                      </p>
-
-                      <h2 className="mt-2 text-3xl font-black text-green-400">
-                        KSh {Number(payingInvoice.total).toLocaleString()}
-                      </h2>
-
-                      <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1">
-                        <Wallet className="h-4 w-4 text-green-400" />
-
-                        <span className="text-xs font-semibold text-green-300">
-                          Ready for Payment
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Methods */}
-
-              <div className="space-y-3 p-5">
-                <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">
-                  Payment Method
-                </p>
-
-                {[
-                  {
-                    id: "CASH",
-                    icon: Banknote,
-                    label: "Cash",
-                    subtitle: "Receive payment in cash",
-                  },
-                  {
-                    id: "CARD",
-                    icon: CreditCard,
-                    label: "Card",
-                    subtitle: "Debit or Credit Card",
-                  },
-                  {
-                    id: "MPESA",
-                    icon: Smartphone,
-                    label: "M-Pesa",
-                    subtitle: "Pay using M-Pesa",
-                  },
-                  {
-                    id: "OTHER",
-                    icon: Wallet,
-                    label: "Other",
-                    subtitle: "Other payment method",
-                  },
-                ].map((method) => {
-                  const Icon = method.icon;
-
-                  const selected = paymentMethod === method.id;
-
-                  return (
-                    <button
-                      key={method.id}
-                      onClick={() =>
-                        setPaymentMethod(method.id as PaymentMethod)
-                      }
-                      className={`group flex w-full items-center justify-between rounded-2xl border p-4 transition-all duration-300
-
-              ${
-                selected
-                  ? "border-cyan-500 bg-cyan-500/10 ring-2 ring-cyan-500/20"
-                  : "border-slate-700 bg-slate-900 hover:border-cyan-400 hover:bg-slate-800"
-              }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`flex h-12 w-12 items-center justify-center rounded-xl
-
-                  ${
-                    selected
-                      ? "bg-cyan-500 text-white"
-                      : "bg-slate-800 text-cyan-400"
-                  }`}
+                        <button
+                          onClick={() => setPayingInvoice(null)}
+                          className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900/60 transition hover:border-red-500 hover:bg-red-500/10"
                         >
-                          <Icon className="h-6 w-6" />
-                        </div>
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
 
-                        <div className="text-left">
-                          <h4 className="font-semibold text-white">
-                            {method.label}
-                          </h4>
+                    {/* =========================================
+                    INVOICE SUMMARY
+                    ========================================= */}
 
-                          <p className="text-sm text-slate-400">
-                            {method.subtitle}
-                          </p>
+                    <div className="border-b border-slate-800 bg-gradient-to-r from-slate-950 via-[#081A33] to-slate-950 p-5">
+                      <div className="rounded-2xl border border-cyan-500/10 bg-white/[0.03] p-5">
+                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                          {/* Left */}
+
+                          <div className="flex items-center gap-4">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
+                              <Receipt className="h-7 w-7 text-cyan-400" />
+                            </div>
+
+                            <div>
+                              <p className="text-xs font-semibold tracking-[0.25em] text-slate-500 uppercase">
+                                Invoice Number
+                              </p>
+
+                              <h3 className="mt-1 text-xl font-black text-white">
+                                {payingInvoice.invoice_number}
+                              </h3>
+
+                              <p className="mt-1 text-sm text-slate-400">
+                                {new Date(
+                                  payingInvoice.created_at,
+                                ).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Right */}
+
+                          <div className="text-left sm:text-right">
+                            <p className="text-xs font-semibold tracking-[0.25em] text-slate-500 uppercase">
+                              Amount Due
+                            </p>
+
+                            <h2 className="mt-2 text-3xl font-black text-green-400">
+                              KSh {Number(payingInvoice.total).toLocaleString()}
+                            </h2>
+
+                            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1">
+                              <Wallet className="h-4 w-4 text-green-400" />
+
+                              <span className="text-xs font-semibold text-green-300">
+                                Ready for Payment
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    </div>
 
-                      <div
-                        className={`h-5 w-5 rounded-full border-2 transition
+                    {/* Payment Methods */}
 
-                ${
-                  selected ? "border-cyan-400 bg-cyan-400" : "border-slate-600"
-                }`}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
+                    <div className="space-y-3 p-5">
+                      <p className="text-xs font-semibold tracking-widest text-cyan-300 uppercase">
+                        Payment Method
+                      </p>
 
-              {/* Footer */}
+                      {[
+                        {
+                          id: "CASH",
+                          icon: Banknote,
+                          label: "Cash",
+                          subtitle: "Receive payment in cash",
+                        },
+                        {
+                          id: "CARD",
+                          icon: CreditCard,
+                          label: "Card",
+                          subtitle: "Debit or Credit Card",
+                        },
+                        {
+                          id: "MPESA",
+                          icon: Smartphone,
+                          label: "M-Pesa",
+                          subtitle: "Pay using M-Pesa",
+                        },
+                        {
+                          id: "OTHER",
+                          icon: Wallet,
+                          label: "Other",
+                          subtitle: "Other payment method",
+                        },
+                      ].map((method) => {
+                        const Icon = method.icon;
 
-              <div className="border-t border-slate-800 bg-[#07142B] p-5">
-                <div className="flex flex-col-reverse gap-3 sm:flex-row">
-                  <button
-                    onClick={() => setPayingInvoice(null)}
-                    className="flex-1 rounded-2xl border border-slate-700 py-3 font-semibold text-slate-300 transition hover:bg-slate-800"
-                  >
-                    Cancel
-                  </button>
+                        const selected = paymentMethod === method.id;
 
-                  <button
-                    onClick={confirmPayment}
-                    disabled={
-                      !paymentMethod || processingId === payingInvoice.id
-                    }
-                    className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 py-3 font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <Wallet className="h-5 w-5" />
+                        return (
+                          <button
+                            key={method.id}
+                            onClick={() =>
+                              setPaymentMethod(method.id as PaymentMethod)
+                            }
+                            className={`group flex w-full items-center justify-between rounded-2xl border p-4 transition-all duration-300 ${
+                              selected
+                                ? "border-cyan-500 bg-cyan-500/10 ring-2 ring-cyan-500/20"
+                                : "border-slate-700 bg-slate-900 hover:border-cyan-400 hover:bg-slate-800"
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div
+                                className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                                  selected
+                                    ? "bg-cyan-500 text-white"
+                                    : "bg-slate-800 text-cyan-400"
+                                }`}
+                              >
+                                <Icon className="h-6 w-6" />
+                              </div>
 
-                    {processingId === payingInvoice.id
-                      ? "Processing Payment..."
-                      : "Confirm Payment"}
-                  </button>
+                              <div className="text-left">
+                                <h4 className="font-semibold text-white">
+                                  {method.label}
+                                </h4>
+
+                                <p className="text-sm text-slate-400">
+                                  {method.subtitle}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div
+                              className={`h-5 w-5 rounded-full border-2 transition ${
+                                selected
+                                  ? "border-cyan-400 bg-cyan-400"
+                                  : "border-slate-600"
+                              }`}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Footer */}
+
+                    <div className="border-t border-slate-800 bg-[#07142B] p-5">
+                      <div className="flex flex-col-reverse gap-3 sm:flex-row">
+                        <button
+                          onClick={() => setPayingInvoice(null)}
+                          className="flex-1 rounded-2xl border border-slate-700 py-3 font-semibold text-slate-300 transition hover:bg-slate-800"
+                        >
+                          Cancel
+                        </button>
+
+                        <button
+                          onClick={confirmPayment}
+                          disabled={
+                            !paymentMethod || processingId === payingInvoice.id
+                          }
+                          className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 py-3 font-bold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          <Wallet className="h-5 w-5" />
+
+                          {processingId === payingInvoice.id
+                            ? "Processing Payment..."
+                            : "Confirm Payment"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1236,10 +1177,10 @@ Thank you for choosing us.
 
 function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="rounded-3xl bg-slate-900 border border-slate-800 p-5">
-      <p className="text-slate-400 text-sm">{title}</p>
+    <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+      <p className="text-sm text-slate-400">{title}</p>
 
-      <h3 className="text-3xl font-black mt-2">{value}</h3>
+      <h3 className="mt-2 text-3xl font-black">{value}</h3>
     </div>
   );
 }
