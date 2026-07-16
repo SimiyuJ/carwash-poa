@@ -11,7 +11,9 @@ import {
   Sparkles,
   Settings2,
   Trash2,
+  TrendingUp,
   Pencil,
+  LucideIcon,
   CheckCircle2,
   XCircle,
   Loader2,
@@ -614,6 +616,83 @@ export default function ServicesPage() {
     };
   }, [services, branches, categories]);
 
+  type KPIItemProps = {
+    icon: LucideIcon;
+    value: number | string;
+    label: string;
+    color: "cyan" | "emerald" | "amber" | "violet" | "blue" | "rose";
+  };
+
+  const colors = {
+    cyan: {
+      border: "border-cyan-500/20",
+      bg: "bg-cyan-500/10",
+      icon: "bg-cyan-500/15 text-cyan-400",
+      value: "text-cyan-300",
+    },
+
+    emerald: {
+      border: "border-emerald-500/20",
+      bg: "bg-emerald-500/10",
+      icon: "bg-emerald-500/15 text-emerald-400",
+      value: "text-emerald-300",
+    },
+
+    amber: {
+      border: "border-yellow-500/20",
+      bg: "bg-yellow-500/10",
+      icon: "bg-yellow-500/15 text-yellow-400",
+      value: "text-yellow-300",
+    },
+
+    violet: {
+      border: "border-purple-500/20",
+      bg: "bg-purple-500/10",
+      icon: "bg-purple-500/15 text-purple-400",
+      value: "text-purple-300",
+    },
+
+    blue: {
+      border: "border-blue-500/20",
+      bg: "bg-blue-500/10",
+      icon: "bg-blue-500/15 text-blue-400",
+      value: "text-blue-300",
+    },
+
+    rose: {
+      border: "border-rose-500/20",
+      bg: "bg-rose-500/10",
+      icon: "bg-rose-500/15 text-rose-400",
+      value: "text-rose-300",
+    },
+  };
+
+  function KPIItem({ icon: Icon, value, label, color }: KPIItemProps) {
+    const c = colors[color];
+
+    return (
+      <div
+        className={`group rounded-2xl border ${c.border} ${c.bg} p-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
+      >
+        <div className="flex flex-col items-center text-center">
+          <div
+            className={`mb-2 flex h-8 w-8 items-center justify-center rounded-xl ${c.icon}`}
+          >
+            <Icon className="h-4 w-4" />
+          </div>
+
+          <h3 className={`text-base leading-none font-black ${c.value}`}>
+            {value}
+          </h3>
+
+          <p className="mt-1 truncate text-[9px] font-semibold tracking-wider text-slate-500 uppercase">
+            {label}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   /* =========================================================
      LOADING
   ========================================================= */
@@ -639,12 +718,12 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-[#020617] text-white">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-[-10%] top-0 h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="absolute right-[-10%] top-[20%] h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute top-0 left-[-10%] h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute top-[20%] right-[-10%] h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-3xl" />
         <div className="absolute bottom-[-20%] left-[20%] h-[400px] w-[400px] rounded-full bg-purple-500/10 blur-3xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1800px] p-4 md:p-6 space-y-6">
+      <div className="relative z-10 mx-auto max-w-[1800px] space-y-6 p-4 md:p-6">
         {/* HERO HEADER */}
 
         <motion.div
@@ -652,25 +731,25 @@ export default function ServicesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-[#0B1220] via-[#07101F] to-[#020617] p-6 md:p-8"
         >
-          <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
 
           <div className="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2">
-                <Sparkles className="h-4 w-4 text-cyan-400" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
 
-                <span className="text-sm font-semibold text-cyan-300">
-                  Multi Branch Smart Services
+                <span className="text-[11px] font-semibold tracking-wide text-cyan-300 uppercase">
+                  Smart Multi-Branch
                 </span>
               </div>
 
-              <h1 className="mt-5 text-4xl md:text-6xl font-black tracking-tight">
+              <h1 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
                 Services Management
               </h1>
 
-              <p className="mt-4 max-w-3xl text-base md:text-lg text-slate-400">
-                Enterprise-ready multi-branch carwash services with branch
-                pricing.
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
+                Manage services, pricing and availability across all branches
+                from one dashboard.
               </p>
             </div>
 
@@ -792,10 +871,6 @@ export default function ServicesPage() {
                         </select>
                       </div>
 
-                      {/* PRICE */}
-
-                      {/* VEHICLE TYPE PRICING */}
-
                       {/* SERVICE PRICING MATRIX */}
 
                       <div className="space-y-6">
@@ -814,11 +889,11 @@ export default function ServicesPage() {
 
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-wider text-cyan-400">
+                            <h4 className="text-sm font-bold tracking-wider text-cyan-400 uppercase">
                               Vehicle Type Pricing
                             </h4>
 
-                            <Badge className="bg-cyan-500/10 text-cyan-300 border-cyan-500/20">
+                            <Badge className="border-cyan-500/20 bg-cyan-500/10 text-cyan-300">
                               {vehicleTypes.length} Vehicle Types
                             </Badge>
                           </div>
@@ -906,11 +981,11 @@ export default function ServicesPage() {
 
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold uppercase tracking-wider text-purple-400">
+                            <h4 className="text-sm font-bold tracking-wider text-purple-400 uppercase">
                               Additional Services
                             </h4>
 
-                            <Badge className="bg-purple-500/10 text-purple-300 border-purple-500/20">
+                            <Badge className="border-purple-500/20 bg-purple-500/10 text-purple-300">
                               Optional
                             </Badge>
                           </div>
@@ -1048,55 +1123,52 @@ export default function ServicesPage() {
           </div>
         </motion.div>
 
-        {/* STATS */}
+        {/* =========================================
+    KPI STATS
+========================================= */}
 
-        <div
-          className="
-          rounded-[40px]
-          border
-          border-cyan-500/10
-          bg-gradient-to-r
-          from-[#061225]
-          via-[#08152A]
-          to-[#061225]
-          p-4
-          md:p-6
-          "
-        >
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+        <div className="mb-5 rounded-3xl border border-cyan-500/10 bg-gradient-to-r from-[#061225] via-[#08152A] to-[#061225] p-2.5 shadow-lg shadow-black/20">
+          <div className="grid grid-cols-6 gap-2">
             <KPIItem
               icon={Droplets}
               value={stats.total}
               label="Total"
-              color="text-white"
+              color="cyan"
             />
 
             <KPIItem
               icon={CheckCircle2}
               value={stats.active}
               label="Active"
-              color="text-cyan-400"
+              color="emerald"
             />
 
             <KPIItem
               icon={XCircle}
               value={stats.inactive}
               label="Inactive"
-              color="text-yellow-400"
+              color="amber"
             />
 
             <KPIItem
               icon={GitBranch}
               value={stats.branches}
               label="Branches"
-              color="text-purple-400"
+              color="violet"
             />
 
             <KPIItem
               icon={Layers3}
               value={stats.categories}
               label="Categories"
-              color="text-emerald-400"
+              color="blue"
+            />
+
+            <KPIItem
+              icon={TrendingUp}
+              value={`${Math.round((stats.active / Math.max(stats.total, 1)) * 100)}%`}
+              label="Active %"
+              color="rose"
             />
           </div>
         </div>
@@ -1113,31 +1185,13 @@ export default function ServicesPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: index * 0.03 }}
               >
-                <Card
-                  className="
-group
-relative
-overflow-hidden
-rounded-[30px]
-border-white/10
-bg-[#0B1220]/90
-text-white
-backdrop-blur-xl
-"
-                >
-                  <CardContent className="p-6 space-y-5">
+                <Card className="group relative overflow-hidden rounded-[30px] border-white/10 bg-[#0B1220]/90 text-white backdrop-blur-xl">
+                  <CardContent className="space-y-5 p-6">
                     <div className="flex items-start justify-between">
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500" />
+                      <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500" />
 
                       <div className="flex items-center gap-4">
-                        <div
-                          className="
-                        flex h-14 w-14 items-center justify-center
-                        rounded-2xl
-                        bg-cyan-500/10
-                        border border-cyan-500/20
-                        "
-                        >
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
                           <Droplets className="h-7 w-7 text-cyan-400" />
                         </div>
 
@@ -1146,7 +1200,7 @@ backdrop-blur-xl
                             {service.name}
                           </h2>
 
-                          <p className="text-xs text-slate-400 mt-1">
+                          <p className="mt-1 text-xs text-slate-400">
                             {service.description}
                           </p>
                         </div>
@@ -1155,8 +1209,8 @@ backdrop-blur-xl
                       <Badge
                         className={
                           service.status === "active"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-red-500/10 text-red-400 border-red-500/20"
+                            ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+                            : "border-red-500/20 bg-red-500/10 text-red-400"
                         }
                       >
                         {service.status}
@@ -1296,28 +1350,14 @@ function KPIItem({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-white/[0.02] p-3">
-      <div
-        className="
-    flex
-    h-10
-    w-10
-    md:h-12
-    md:w-12
-          items-center
-          justify-center
-          rounded-2xl
-          border
-          border-cyan-500/20
-          bg-cyan-500/5
-        "
-      >
+      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/5 md:h-12 md:w-12">
         <Icon className={`h-6 w-6 ${color}`} />
       </div>
 
       <div>
-        <h3 className={`text-2xl md:text-3xl font-black ${color}`}>{value}</h3>
+        <h3 className={`text-2xl font-black md:text-3xl ${color}`}>{value}</h3>
 
-        <p className="text-slate-400 text-sm">{label}</p>
+        <p className="text-sm text-slate-400">{label}</p>
       </div>
     </div>
   );
