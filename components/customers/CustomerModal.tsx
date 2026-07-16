@@ -2,17 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createPortal } from "react-dom";
 
 import {
+  User,
+  Phone,
+  Mail,
+  Car,
+  Palette,
   CheckCircle2,
   AlertTriangle,
+  Crown,
+  Users,
+  X,
+  UserCircle2,
 } from "lucide-react";
 
-export type Tag =
-  | "regular"
-  | "vip"
-  | "corporate"
-  | "new";
+export type Tag = "regular" | "vip" | "corporate" | "new";
 
 type CustomerModalProps = {
   role?: string;
@@ -47,10 +53,7 @@ type CustomerModalProps = {
 
   message: string;
 
-  messageType:
-  | "success"
-  | "error"
-  | "";
+  messageType: "success" | "error" | "";
 
   onSubmit: () => void;
 };
@@ -91,354 +94,540 @@ export default function CustomerModal({
 
   onSubmit,
 }: CustomerModalProps) {
+  if (!open) return null;
+
+  const canManageCategories = ["staff", "manager", "admin", "owner"].includes(
+    role ?? "",
+  );
 
   if (!open) return null;
 
-  const canManageCategories = [
-    "staff",
-    "manager",
-    "admin",
-    "owner",
-  ].includes(role ?? "");
-
-  return (
+  return createPortal(
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="
+    fixed
+    inset-0
+    z-[9999]
+    flex
+    items-center
+    justify-center
+    bg-black/70
+    backdrop-blur-md
+    p-3
+    sm:p-5
+  "
     >
       <div
-        onClick={(e) =>
-          e.stopPropagation()
-        }
+        onClick={(e) => e.stopPropagation()}
         className="
-    bg-slate-950
+      relative
+      w-full
+      max-w-3xl
+      max-h-[94vh]
+      overflow-y-auto
 
-    rounded-[2rem]
-    p-6
-    w-[700px]
-    max-w-full
-    space-y-4
+      rounded-[32px]
 
-    border
-    border-white/10
+      border
+      border-cyan-500/15
 
-    shadow-[0_20px_80px_rgba(0,0,0,0.7)]
+      bg-gradient-to-br
+      from-[#07142B]
+      via-[#081A33]
+      to-[#040B18]
 
-    max-h-[90vh]
-    overflow-y-auto
-  "
+      shadow-[0_35px_90px_rgba(0,0,0,.65)]
+
+      scrollbar-thin
+      scrollbar-thumb-cyan-500/20
+    "
       >
-        <h2 className="text-2xl font-bold text-white">
-          {editingCustomer
-            ? "Edit Customer"
-            : "Add Vehicles"}
-        </h2>
+        {/* Decorative Glow */}
 
-        {/* ================= CUSTOMER DETAILS ================= */}
+        <div className="absolute inset-0 overflow-hidden rounded-[32px] pointer-events-none">
+          <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-cyan-500/10 blur-[90px]" />
 
-        <div className="rounded-3xl border bg-white/[0.03] border-white/10 backdrop-blur-md p-5 space-y-5">
-          <div>
-            <h3 className="font-semibold text-white">
-              Customer Details
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">
-                Customer Name *
-              </label>
-
-              <Input
-                placeholder="e.g. John Mwangi"
-                value={name}
-                onChange={(e) =>
-                  setName(e.target.value)
-                }
-                className="
-  h-12
-  rounded-2xl
-
-  bg-slate-800/80
-  border-white/10
-
-  text-white
-  placeholder:text-slate-500
-
-  focus:border-cyan-400
-"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">
-                Phone Number *
-              </label>
-
-              <Input
-                placeholder="e.g. 0712345678"
-                value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value)
-                }
-                className="
-    h-12
-    rounded-2xl
-    bg-slate-800/80
-    border-white/10
-    text-white
-    placeholder:text-slate-500
-    focus:border-cyan-400
-  "
-              />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-slate-300">
-                Email Address
-              </label>
-
-              <Input
-                placeholder="e.g. john@gmail.com (optional)"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
-                className="
-    h-12
-    rounded-2xl
-    bg-slate-800/80
-    border-white/10
-    text-white
-    placeholder:text-slate-500
-    focus:border-cyan-400
-  "
-              />
-            </div>
-          </div>
+          <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-sky-500/10 blur-[100px]" />
         </div>
 
-        {canManageCategories && (
-          <div
-            className="
-      rounded-3xl
-      border
-      border-white/10
-      bg-slate-900/60
-      backdrop-blur-md
-      p-5
-      space-y-4
-    "
-          >
-            <div>
-              <h3 className="font-semibold text-white">
-                Customer Category
-              </h3>
+        {/* ================= HEADER ================= */}
 
-              <p className="text-sm text-slate-400">
-                Select the customer classification.
-              </p>
+        <div
+          className="
+        relative
+        overflow-hidden
+
+        border-b
+        border-white/10
+
+        px-5
+        py-5
+
+        sm:px-7
+        sm:py-6
+      "
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent" />
+
+          <div className="relative flex items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div
+                className="
+              flex
+              h-14
+              w-14
+              shrink-0
+              items-center
+              justify-center
+
+              rounded-3xl
+
+              border
+              border-cyan-500/25
+
+              bg-cyan-500/10
+            "
+              >
+                <Users className="h-7 w-7 text-cyan-400" />
+              </div>
+
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-400 font-bold">
+                  CUSTOMER MANAGEMENT
+                </p>
+
+                <h2 className="mt-1 text-2xl sm:text-3xl font-black text-white">
+                  {editingCustomer ? "Edit Customer" : "Add New Customer"}
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-400 max-w-lg">
+                  Register a customer together with their primary vehicle. This
+                  helps speed up future bookings and loyalty rewards.
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {[
-                "regular",
-                "vip",
-                "corporate",
-                "new",
-              ].map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTag(t as Tag)}
-                  className={`
-            px-4
-            py-2
+            <button
+              onClick={onClose}
+              className="
+            flex
+            h-11
+            w-11
+            shrink-0
+            items-center
+            justify-center
+
             rounded-2xl
-            text-sm
-            font-medium
+
+            border
+            border-white/10
+
+            bg-white/5
+
             transition-all
 
-            ${tag === t
-                      ? "bg-cyan-500 text-white shadow-[0_0_20px_rgba(0,255,255,0.35)]"
-                      : "bg-slate-800/80 border border-white/10 text-white hover:border-cyan-400"
-                    }
-          `}
-                >
-                  {t.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="rounded-3xl border bg-white/[0.03] border-white/10 backdrop-blur-md bg-slate-900/60  backdrop-blur-md p-5 space-y-5">
-          <div>
-            <h3 className="font-semibold text-white">
-              Vehicle Details
-            </h3>
-
-            <p className="text-sm text-slate-500">
-              Register the customer's primary vehicle.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">
-                Registration Number
-              </label>
-
-              <Input
-                placeholder="e.g. KDA 123A"
-                value={plate}
-                onChange={(e) =>
-                  setPlate(
-                    e.target.value.toUpperCase()
-                  )
-                }
-                className="
-  h-12
-  rounded-2xl
-
-  bg-slate-800/80
-  border-white/10
-
-  text-white
-  placeholder:text-slate-500
-
-  focus:border-cyan-400
-"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">
-                Vehicle Type
-              </label>
-
-              <select
-                value={vehicleType}
-                onChange={(e) =>
-                  setVehicleType(
-                    e.target.value
-                  )
-                }
-                className="
-                  w-full
-                  h-11
-                  rounded-2xl
-                  border
-                  border-slate-200
-                  px-3
-                  bg-slate-800/80
-                  text-white
-                  border-white/10
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-cyan-500
-                "
-              >
-                <option value="Sedan">
-                  Sedan
-                </option>
-                <option value="Hatchback">
-                  Hatchback
-                </option>
-                <option value="SUV">
-                  SUV
-                </option>
-                <option value="Pickup">
-                  Pickup
-                </option>
-                <option value="Truck">
-                  Truck
-                </option>
-                <option value="Van">
-                  Van
-                </option>
-                <option value="Bus">
-                  Bus
-                </option>
-                <option value="Motorcycle">
-                  Motorcycle
-                </option>
-                <option value="Trailer">
-                  Trailer
-                </option>
-                <option value="Other">
-                  Other
-                </option>
-              </select>
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-slate-300">
-                Vehicle Color
-              </label>
-
-              <Input
-                placeholder="e.g. Black"
-                value={color}
-                onChange={(e) =>
-                  setColor(
-                    e.target.value
-                  )
-                }
-                className="
-  h-12
-  rounded-2xl
-
-  bg-slate-800/80
-  border-white/10
-
-  text-white
-  placeholder:text-slate-500
-
-  focus:border-cyan-400
-"
-              />
-            </div>
+            hover:border-cyan-500/30
+            hover:bg-cyan-500/10
+          "
+            >
+              <X className="h-5 w-5 text-slate-300" />
+            </button>
           </div>
         </div>
 
-        {/* ================= MESSAGE ================= */}
+        {/* ================= CONTENT ================= */}
 
-        {message && (
+        <div className="relative p-4 sm:p-6 space-y-6">
+          {/* =========================================================
+    CUSTOMER DETAILS
+========================================================= */}
+
           <div
-            className={`
+            className="
+    rounded-[30px]
+    border
+    border-white/10
+    bg-gradient-to-br
+    from-white/[0.05]
+    to-white/[0.02]
+    backdrop-blur-xl
+    p-5
+    sm:p-6
+    space-y-6
+  "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="
+        flex
+        h-12
+        w-12
+        items-center
+        justify-center
+        rounded-2xl
+        border
+        border-cyan-500/20
+        bg-cyan-500/10
+      "
+              >
+                <UserCircle2 className="h-6 w-6 text-cyan-400" />
+              </div>
+
+              <div>
+                <h3 className="font-bold text-lg text-white">
+                  Customer Details
+                </h3>
+
+                <p className="text-sm text-slate-400">
+                  Enter the customer's personal information.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* NAME */}
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  Customer Name *
+                </label>
+
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Mwangi"
+                    className="
+            h-12
+            rounded-2xl
+            pl-12
+            border-white/10
+            bg-[#0E1B33]
+            text-white
+            placeholder:text-slate-500
+            focus:border-cyan-400
+            focus:ring-cyan-400/30
+          "
+                  />
+                </div>
+              </div>
+
+              {/* PHONE */}
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  Phone Number *
+                </label>
+
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+
+                  <Input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0712 345 678"
+                    className="
+            h-12
+            rounded-2xl
+            pl-12
+            border-white/10
+            bg-[#0E1B33]
+            text-white
+            placeholder:text-slate-500
+            focus:border-cyan-400
+          "
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL */}
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium text-slate-300">
+                  Email Address
+                </label>
+
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="john@email.com (optional)"
+                    className="
+            h-12
+            rounded-2xl
+            pl-12
+            border-white/10
+            bg-[#0E1B33]
+            text-white
+            placeholder:text-slate-500
+            focus:border-cyan-400
+          "
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* =========================================================
+    CUSTOMER CATEGORY
+========================================================= */}
+
+          {canManageCategories && (
+            <div
+              className="
+      rounded-[30px]
+      border
+      border-white/10
+      bg-gradient-to-br
+      from-white/[0.05]
+      to-white/[0.02]
+      backdrop-blur-xl
+      p-5
+      sm:p-6
+      space-y-5
+    "
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="
+          flex
+          h-12
+          w-12
+          items-center
+          justify-center
+          rounded-2xl
+          border
+          border-amber-500/20
+          bg-amber-500/10
+        "
+                >
+                  <Crown className="h-6 w-6 text-amber-400" />
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-lg text-white">
+                    Customer Category
+                  </h3>
+
+                  <p className="text-sm text-slate-400">
+                    Choose how this customer will be classified.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {["regular", "vip", "corporate", "new"].map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTag(t as Tag)}
+                    className={`
+            h-12
+            rounded-2xl
+            text-sm
+            font-semibold
+            transition-all
+            duration-300
+
+            ${
+              tag === t
+                ? `
+                  bg-gradient-to-r
+                  from-cyan-500
+                  to-blue-600
+                  text-white
+                  shadow-[0_0_30px_rgba(34,211,238,.35)]
+                `
+                : `
+                  border
+                  border-white/10
+                  bg-[#0E1B33]
+                  text-slate-300
+                  hover:border-cyan-400/40
+                `
+            }
+          `}
+                  >
+                    {t.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+    VEHICLE DETAILS
+========================================================= */}
+
+          <div
+            className="
+    rounded-[30px]
+    border
+    border-white/10
+    bg-gradient-to-br
+    from-white/[0.05]
+    to-white/[0.02]
+    backdrop-blur-xl
+    p-5
+    sm:p-6
+    space-y-6
+  "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="
+        flex
+        h-12
+        w-12
+        items-center
+        justify-center
+        rounded-2xl
+        border
+        border-cyan-500/20
+        bg-cyan-500/10
+      "
+              >
+                <Car className="h-6 w-6 text-cyan-400" />
+              </div>
+
+              <div>
+                <h3 className="font-bold text-lg text-white">
+                  Primary Vehicle
+                </h3>
+
+                <p className="text-sm text-slate-400">
+                  Register the customer's main vehicle.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* PLATE */}
+
+              <div className="space-y-2">
+                <label className="text-sm text-slate-300">
+                  Registration Number
+                </label>
+
+                <div className="relative">
+                  <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+
+                  <Input
+                    value={plate}
+                    onChange={(e) => setPlate(e.target.value.toUpperCase())}
+                    placeholder="KDA 123A"
+                    className="
+            h-12
+            rounded-2xl
+            pl-12
+            border-white/10
+            bg-[#0E1B33]
+            text-white
+          "
+                  />
+                </div>
+              </div>
+
+              {/* TYPE */}
+
+              <div className="space-y-2">
+                <label className="text-sm text-slate-300">Vehicle Type</label>
+
+                <select
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
+                  className="
+          h-12
+          w-full
+          rounded-2xl
+          border
+          border-white/10
+          bg-[#0E1B33]
+          px-4
+          text-white
+          focus:outline-none
+          focus:ring-2
+          focus:ring-cyan-500
+        "
+                >
+                  <option>Sedan</option>
+                  <option>Hatchback</option>
+                  <option>SUV</option>
+                  <option>Pickup</option>
+                  <option>Truck</option>
+                  <option>Van</option>
+                  <option>Bus</option>
+                  <option>Motorcycle</option>
+                  <option>Trailer</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              {/* COLOR */}
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm text-slate-300">Vehicle Color</label>
+
+                <div className="relative">
+                  <Palette className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+
+                  <Input
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    placeholder="Black"
+                    className="
+            h-12
+            rounded-2xl
+            pl-12
+            border-white/10
+            bg-[#0E1B33]
+            text-white
+          "
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ================= MESSAGE ================= */}
+
+          {message && (
+            <div
+              className={`
               rounded-3xl
               p-4
               flex
               items-start
               gap-3
               border
-              ${messageType ===
-                "success"
-                ? "bg-green-50 border-green-200 text-green-700"
-                : "bg-red-50 border-red-200 text-red-700"
+              ${
+                messageType === "success"
+                  ? "bg-green-50 border-green-200 text-green-700"
+                  : "bg-red-50 border-red-200 text-red-700"
               }
             `}
-          >
-            {messageType ===
-              "success" ? (
-              <CheckCircle2 className="h-5 w-5 mt-0.5" />
-            ) : (
-              <AlertTriangle className="h-5 w-5 mt-0.5" />
-            )}
+            >
+              {messageType === "success" ? (
+                <CheckCircle2 className="h-5 w-5 mt-0.5" />
+              ) : (
+                <AlertTriangle className="h-5 w-5 mt-0.5" />
+              )}
 
-            <span className="text-sm font-medium">
-              {message}
-            </span>
-          </div>
-        )}
+              <span className="text-sm font-medium">{message}</span>
+            </div>
+          )}
 
-        {/* ================= BUTTON ================= */}
+          {/* ================= BUTTON ================= */}
 
-        <Button
-          onClick={onSubmit}
-          disabled={loading}
-          className="
+          <Button
+            onClick={onSubmit}
+            disabled={loading}
+            className="
             w-full
             bg-cyan-500
             hover:bg-cyan-600
@@ -449,14 +638,16 @@ export default function CustomerModal({
             duration-300
             hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]
           "
-        >
-          {loading
-            ? "Saving..."
-            : editingCustomer
-              ? "Update Customer"
-              : "Save Customer"}
-        </Button>
+          >
+            {loading
+              ? "Saving..."
+              : editingCustomer
+                ? "Update Customer"
+                : "Save Customer"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

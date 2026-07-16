@@ -45,7 +45,6 @@ type Branch = {
 type Profile = {
   id: string;
   role: Role;
-  tenant_id: string;
   branch_id?: string;
 };
 
@@ -231,7 +230,6 @@ function AppSidebar() {
       const { data: branchData } = await supabase
         .from("branches")
         .select("id, name")
-        .eq("tenant_id", profileData.tenant_id)
         .order("name");
 
       setBranches(branchData || []);
@@ -311,7 +309,6 @@ function AppSidebar() {
         const { data: branchData } = await supabase
           .from("branches")
           .select("id, name")
-          .eq("tenant_id", profileData.tenant_id)
           .order("name");
 
         if (!mounted) return;

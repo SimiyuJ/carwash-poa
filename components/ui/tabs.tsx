@@ -21,19 +21,39 @@ function useTabs() {
 
 interface TabsProps {
   children: React.ReactNode;
-  defaultValue: string;
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+
   className?: string;
 }
 
 export function Tabs({
   children,
-  defaultValue,
+  defaultValue = "",
+  value: controlledValue,
+  onValueChange,
   className = "",
 }: TabsProps) {
-  const [value, setValue] = React.useState(defaultValue);
+  const [internalValue, setInternalValue] = React.useState(defaultValue);
+
+  const value = controlledValue ?? internalValue;
+
+  const setValue = (newValue: string) => {
+    if (controlledValue === undefined) {
+      setInternalValue(newValue);
+    }
+
+    onValueChange?.(newValue);
+  };
 
   return (
-    <TabsContext.Provider value={{ value, setValue }}>
+    <TabsContext.Provider
+      value={{
+        value,
+        setValue,
+      }}
+    >
       <div className={className}>{children}</div>
     </TabsContext.Provider>
   );
@@ -48,7 +68,7 @@ export function TabsList({
 }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-xl bg-zinc-900 p-1 ${className}`}
+      className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 shadow-[0_10px_40px_rgba(0,0,0,.25)] backdrop-blur-xl transition-all ${className} `}
     >
       {children}
     </div>
@@ -73,12 +93,13 @@ export function TabsTrigger({
   return (
     <button
       type="button"
+      data-state={active ? "active" : "inactive"}
       onClick={() => setValue(value)}
-      className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+      className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
         active
-          ? "bg-white text-black"
-          : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-      } ${className}`}
+          ? `bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_10px_25px_rgba(34,211,238,.25)]`
+          : `text-slate-400 hover:bg-white/[0.05] hover:text-white`
+      } ${className} `}
     >
       {children}
     </button>

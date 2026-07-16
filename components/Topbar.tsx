@@ -1,24 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-import {
-  Plus,
-  User,
-  Bell,
-  Search,
-  ChevronDown,
-  LogOut,
-} from "lucide-react";
+import { Plus, User, Bell, Search, ChevronDown, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 type Profile = {
   id: string;
   role: string;
-  tenant_id: string;   // carwash_id
   branch_id: string;
 };
 
@@ -117,13 +103,11 @@ export default function Topbar() {
         supabase
           .from("vehicles")
           .select("id")
-          .eq("tenant_id", profile.tenant_id)
           .eq("branch_id", profile.branch_id),
 
         supabase
           .from("invoices")
           .select("id,total,payment_status,created_at")
-          .eq("tenant_id", profile.tenant_id)
           .eq("branch_id", profile.branch_id)
           .gte("created_at", `${today}T00:00:00`)
           .lte("created_at", `${today}T23:59:59`),
@@ -131,37 +115,29 @@ export default function Topbar() {
         supabase
           .from("appointments")
           .select("id")
-          .eq("tenant_id", profile.tenant_id)
           .eq("branch_id", profile.branch_id)
           .eq("status", "pending"),
 
         supabase
           .from("orders")
           .select("id")
-          .eq("tenant_id", profile.tenant_id)
           .eq("branch_id", profile.branch_id)
           .in("status", ["pending", "processing", "washing"]),
 
-        supabase
-          .from("customers")
-          .select("id")
-          .eq("tenant_id", profile.tenant_id),
+        supabase.from("customers").select("id"),
       ]);
 
       const invoices = invoicesRes.data ?? [];
 
       const paid = invoices.filter(
-        (i: any) => String(i.payment_status).toUpperCase() === "PAID"
+        (i: any) => String(i.payment_status).toUpperCase() === "PAID",
       );
 
       const unpaid = invoices.filter(
-        (i: any) => String(i.payment_status).toUpperCase() !== "PAID"
+        (i: any) => String(i.payment_status).toUpperCase() !== "PAID",
       );
 
-      const revenue = paid.reduce(
-        (sum, i) => sum + Number(i.total || 0),
-        0
-      );
+      const revenue = paid.reduce((sum, i) => sum + Number(i.total || 0), 0);
 
       setStats({
         vehiclesInQueue: vehiclesRes.data?.length ?? 0,
@@ -178,7 +154,12 @@ export default function Topbar() {
           : []),
 
         ...(appointmentsRes.data?.length
-          ? [{ id: 2, title: `${appointmentsRes.data.length} pending appointments` }]
+          ? [
+              {
+                id: 2,
+                title: `${appointmentsRes.data.length} pending appointments`,
+              },
+            ]
           : []),
       ]);
     } catch (err) {
@@ -205,18 +186,30 @@ export default function Topbar() {
 
     const channel = supabase
       .channel("topbar-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "invoices" }, () => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(loadDashboardData, 300);
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(loadDashboardData, 300);
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, () => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(loadDashboardData, 300);
-      })
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "invoices" },
+        () => {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(loadDashboardData, 300);
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        () => {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(loadDashboardData, 300);
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "appointments" },
+        () => {
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          debounceRef.current = setTimeout(loadDashboardData, 300);
+        },
+      )
       .subscribe();
 
     return () => {
@@ -239,11 +232,8 @@ export default function Topbar() {
       const { data } = await supabase
         .from("vehicles")
         .select("id,plate_number,customer_name")
-        .eq("tenant_id", profile.tenant_id)
         .eq("branch_id", profile.branch_id)
-        .or(
-          `plate_number.ilike.%${search}%,customer_name.ilike.%${search}%`
-        )
+        .or(`plate_number.ilike.%${search}%,customer_name.ilike.%${search}%`)
         .limit(8);
 
       setSearchResults(data || []);
@@ -264,10 +254,7 @@ export default function Topbar() {
         setOpen(false);
       }
 
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(e.target as Node)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSearchResults(false);
       }
     };
@@ -290,7 +277,6 @@ export default function Topbar() {
   return (
     <div className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#020617]/90 backdrop-blur-xl px-4 py-4">
       <div className="flex items-center justify-between gap-4">
-
         <Button
           onClick={() => router.push("/pos")}
           className="hidden sm:flex bg-cyan-500 hover:bg-cyan-600 text-white"
@@ -326,7 +312,6 @@ export default function Topbar() {
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
-
           <button
             onClick={() => router.push("/appointments")}
             className="relative h-11 w-11 bg-white/5 rounded-2xl flex items-center justify-center"
@@ -361,7 +346,6 @@ export default function Topbar() {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </div>
