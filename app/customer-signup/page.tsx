@@ -208,18 +208,43 @@ export default function CustomerAuthPage() {
   }
 
   /* =========================
-     LOADING
-  ========================= */
+   LOADING
+========================= */
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-3xl bg-black text-white flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#07142B] via-[#081A33] to-[#040B18]">
+        {/* Background Glow */}
+
+        <div className="absolute top-0 -left-32 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
+
+        <div className="absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+
+        <div className="relative flex w-full max-w-sm flex-col items-center rounded-[32px] border border-cyan-500/15 bg-gradient-to-br from-[#0A1529] via-[#091B34] to-[#07111F] p-10 shadow-[0_25px_80px_rgba(0,0,0,.45)] backdrop-blur-xl">
+          {/* Spinner */}
+
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-cyan-500/20 bg-cyan-500/10">
+            <div className="absolute inset-0 rounded-full border-2 border-cyan-500/20" />
+
+            <Loader2 className="h-10 w-10 animate-spin text-cyan-400" />
           </div>
 
-          <p className="text-gray-500">Checking session...</p>
+          {/* Text */}
+
+          <h2 className="mt-8 text-2xl font-black text-white">
+            Preparing Your Dashboard
+          </h2>
+
+          <p className="mt-3 text-center text-sm leading-relaxed text-slate-400">
+            Verifying your account, loading your carwash and getting everything
+            ready...
+          </p>
+
+          {/* Progress Bar */}
+
+          <div className="mt-8 h-2 w-full overflow-hidden rounded-full bg-white/5">
+            <div className="h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500" />
+          </div>
         </div>
       </div>
     );
@@ -230,93 +255,115 @@ export default function CustomerAuthPage() {
   ========================= */
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50 flex items-center justify-center p-6">
-      <Card className="w-full max-w-lg overflow-hidden rounded-3xl border border-gray-200 shadow-2xl">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#07142B] via-[#081A33] to-[#040B18] px-4 py-10">
+      {/* Background Glow */}
+
+      <div className="absolute top-0 -left-32 h-96 w-96 rounded-full bg-cyan-500/10 blur-3xl" />
+
+      <div className="absolute -right-40 bottom-0 h-[28rem] w-[28rem] rounded-full bg-blue-500/10 blur-3xl" />
+
+      <Card className="relative w-full max-w-xl overflow-hidden rounded-[34px] border border-cyan-500/15 bg-gradient-to-br from-[#0A1529] via-[#091B34] to-[#07111F] shadow-[0_25px_80px_rgba(0,0,0,.45)] backdrop-blur-xl">
         {/* Header */}
 
-        <div className="bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-500 p-8 text-white">
-          <div className="w-16 h-16 rounded-3xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
-            <Car className="w-8 h-8" />
+        <div className="relative overflow-hidden border-b border-white/10 p-8">
+          <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
+
+          <div className="flex h-20 w-20 items-center justify-center rounded-[26px] border border-cyan-500/20 bg-cyan-500/10 shadow-[0_0_35px_rgba(34,211,238,.15)]">
+            <Car className="h-10 w-10 text-cyan-400" />
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            Create Your Account
+          <h1 className="mt-6 text-3xl font-black text-white">
+            Create Customer Account
           </h1>
 
-          <p className="mt-2 text-blue-100 leading-relaxed">
-            Join your preferred carwash, earn loyalty points, manage your
-            vehicles and enjoy exclusive offers.
+          <p className="mt-3 leading-relaxed text-slate-400">
+            Register your account to book washes, collect loyalty points, manage
+            your vehicles and enjoy member-only offers.
           </p>
         </div>
 
-        {/* Form */}
-
-        <CardContent className="p-8 space-y-5">
-          {/* Full Name */}
+        <CardContent className="space-y-6 p-8">
+          {/* ================= NAME ================= */}
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-slate-300">
               Full Name
             </label>
 
+            <p className="text-xs text-slate-500">
+              Enter the name that appears on your ID or driving licence.
+            </p>
+
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <User className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-cyan-400" />
 
               <Input
-                placeholder="John Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="h-12 rounded-2xl pl-11"
+                placeholder="Example: John Mwangi"
+                className="h-13 rounded-2xl border-white/10 bg-white/[0.04] pl-12 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/30"
               />
             </div>
           </div>
 
-          {/* Email */}
+          {/* ================= EMAIL ================= */}
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-slate-300">
               Email Address
             </label>
 
+            <p className="text-xs text-slate-500">
+              We'll use this email to sign you in and send receipts.
+            </p>
+
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Mail className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-cyan-400" />
 
               <Input
                 type="email"
-                placeholder="john@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 rounded-2xl pl-11"
+                placeholder="Example: john@gmail.com"
+                className="h-13 rounded-2xl border-white/10 bg-white/[0.04] pl-12 text-white placeholder:text-slate-500"
               />
             </div>
           </div>
 
-          {/* Password */}
+          {/* ================= PASSWORD ================= */}
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-slate-300">
               Password
             </label>
 
+            <p className="text-xs text-slate-500">
+              Use at least 8 characters with letters and numbers.
+            </p>
+
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-cyan-400" />
 
               <Input
                 type="password"
-                placeholder="Create a secure password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 rounded-2xl pl-11"
+                placeholder="Create a secure password"
+                className="h-13 rounded-2xl border-white/10 bg-white/[0.04] pl-12 text-white placeholder:text-slate-500"
               />
             </div>
           </div>
 
-          {/* Region */}
+          {/* ================= REGION ================= */}
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Region
+            <label className="text-sm font-semibold text-slate-300">
+              Your Region
             </label>
+
+            <p className="text-xs text-slate-500">
+              Choose the county or town where you normally wash your vehicle.
+            </p>
 
             <select
               value={selectedRegion}
@@ -324,35 +371,43 @@ export default function CustomerAuthPage() {
                 setSelectedRegion(e.target.value);
                 setSelectedCarwash("");
               }}
-              className="w-full h-12 rounded-2xl border border-gray-300 bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-13 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-white outline-none focus:border-cyan-500"
             >
               <option value="">Select your region</option>
 
               {regions.map((region) => (
-                <option key={region} value={region}>
+                <option key={region} value={region} className="bg-[#081A33]">
                   {region}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Carwash */}
+          {/* ================= CARWASH ================= */}
 
           {selectedRegion && (
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-sm font-semibold text-slate-300">
                 Preferred Carwash
               </label>
+
+              <p className="text-xs text-slate-500">
+                Select the carwash you visit most often.
+              </p>
 
               <select
                 value={selectedCarwash}
                 onChange={(e) => setSelectedCarwash(e.target.value)}
-                className="w-full h-12 rounded-2xl border border-gray-300 bg-white px-4 outline-none focus:ring-2 focus:ring-blue-500"
+                className="h-13 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-white outline-none focus:border-cyan-500"
               >
-                <option value="">Select your preferred carwash</option>
+                <option value="">Choose your preferred carwash</option>
 
                 {filteredCarwashes.map((carwash) => (
-                  <option key={carwash.id} value={carwash.id}>
+                  <option
+                    key={carwash.id}
+                    value={carwash.id}
+                    className="bg-[#081A33]"
+                  >
                     {carwash.carwashes?.name}
                   </option>
                 ))}
@@ -363,7 +418,7 @@ export default function CustomerAuthPage() {
           {/* Error */}
 
           {error && (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {error}
             </div>
           )}
@@ -373,23 +428,23 @@ export default function CustomerAuthPage() {
           <Button
             onClick={handleSignup}
             disabled={loading}
-            className="h-12 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-base font-semibold shadow-lg hover:opacity-95"
+            className="h-14 w-full rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-base font-bold shadow-[0_10px_35px_rgba(34,211,238,.35)] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_15px_40px_rgba(34,211,238,.45)]"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              "Create Account"
+              "Create My Account"
             )}
           </Button>
 
           {/* Footer */}
 
-          <div className="border-t pt-5 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="border-t border-white/10 pt-6 text-center">
+            <p className="text-sm text-slate-400">
               Already have an account?
               <a
                 href="/auth"
-                className="ml-1 font-semibold text-blue-600 hover:underline"
+                className="ml-2 font-semibold text-cyan-400 transition hover:text-cyan-300"
               >
                 Sign In
               </a>

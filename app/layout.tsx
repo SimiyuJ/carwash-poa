@@ -3,6 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { Toaster } from "sonner";
+
 import { cn } from "@/lib/utils";
 
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -83,7 +85,22 @@ export default function RootLayout({
 
         <IdleLogout />
 
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+
+          <Toaster
+            position="top-center"
+            richColors
+            closeButton
+            expand
+            duration={3500}
+            theme="dark"
+            toastOptions={{
+              className:
+                "!bg-[#07142B] !border !border-cyan-500/20 !text-white !rounded-3xl !shadow-[0_20px_60px_rgba(0,0,0,.45)]",
+            }}
+          />
+        </AuthProvider>
       </body>
     </html>
   );

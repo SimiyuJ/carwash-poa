@@ -527,564 +527,334 @@ export default function CustomersPage() {
   }, [showModal]);
 
   return (
-    <div
-      className="
-    relative
-    space-y-6
-    rounded-3xl
-    border
-    border-white/10
-    bg-white/[0.03]
-    backdrop-blur-xl
-    shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-    p-4
-    sm:p-6
-    lg:p-8
-  "
-    >
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Left */}
-        <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">
-            Customers
-          </h1>
+    <div className="relative isolate space-y-8 overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900/95 via-slate-900/85 to-slate-950/95 p-4 shadow-[0_25px_80px_rgba(0,0,0,.40)] backdrop-blur-3xl sm:p-6 lg:p-8">
+      {/* Top Glow */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-cyan-500/10 via-blue-500/5 to-transparent" />
 
-          <p className="mt-1 text-sm text-slate-400">
-            Manage customers and their registered vehicles.
-          </p>
-        </div>
+      {/* Left Orb */}
+      <div className="pointer-events-none absolute top-20 -left-16 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
 
-        {/* Right */}
-        <Button
-          onClick={() => {
-            setEditingCustomer(null);
+      {/* Right Orb */}
+      <div className="pointer-events-none absolute -right-16 bottom-0 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl" />
 
-            setName("");
-            setPhone("");
-            setEmail("");
-            setTag("regular");
+      {/* Inner Border */}
+      <div className="pointer-events-none absolute inset-0 rounded-[32px] border border-white/5" />
 
-            setPlate("");
-            setVehicleType("Sedan");
-            setColor("");
+      {/* CONTENT */}
+      <div className="relative z-10 space-y-8">
+        {/* ================= HEADER ================= */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Left */}
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl">
+              Customers
+            </h1>
 
-            setMessage("");
-            setMessageType("");
-
-            console.log("Opening modal");
-
-            setShowModal(true);
-          }}
-          className="
-      w-full
-      sm:w-auto
-      h-11
-      px-5
-      rounded-2xl
-      bg-cyan-500
-      hover:bg-cyan-600
-      text-white
-      font-medium
-      shadow-lg
-      hover:shadow-cyan-500/30
-      transition-all
-      duration-300
-      flex
-      items-center
-      justify-center
-      gap-2
-    "
-        >
-          <Plus className="h-4 w-4 shrink-0" />
-          <span>Add Customer</span>
-        </Button>
-      </div>
-
-      {/* ================= SEARCH ================= */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setShowSuggestions(false);
-        }}
-        className="relative w-full max-w-2xl"
-      >
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Search Input */}
-
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
-
-            <Input
-              placeholder="Search customer, phone or vehicle..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setShowSuggestions(true);
-              }}
-              className="
-        h-12
-        sm:h-13
-
-        w-full
-
-        rounded-2xl
-
-        border
-        border-cyan-500/15
-
-        bg-gradient-to-r
-        from-white/5
-        to-white/[0.02]
-
-        pl-11
-        pr-4
-
-        text-sm
-        sm:text-base
-
-        text-white
-        placeholder:text-slate-500
-
-        backdrop-blur-xl
-
-        transition-all
-        duration-300
-
-        focus-visible:ring-2
-        focus-visible:ring-cyan-500/40
-        focus-visible:border-cyan-400
-
-        hover:border-cyan-500/25
-      "
-            />
+            <p className="mt-1 text-sm text-slate-400">
+              Manage customers and their registered vehicles.
+            </p>
           </div>
 
-          {/* Search Button */}
-
+          {/* Right */}
           <Button
-            type="submit"
-            className="
-            h-12
-            shrink-0
-            ounded-2xl
-            px-4
-            sm:px-6
-            bg-gradient-to-r
-            from-cyan-500
-            via-sky-500
-            to-blue-600
-            font-semibold
-            text-white
-            shadow-lg
-            shadow-cyan-500/20
-            transition-all
-            duration-300
-            hover:-translate-y-0.5
-            hover:shadow-cyan-500/40
-            active:scale-95
-            "
-          >
-            <Search className="h-4 w-4 sm:mr-2" />
+            onClick={() => {
+              setEditingCustomer(null);
 
-            <span className="hidden sm:inline">Search</span>
+              setName("");
+              setPhone("");
+              setEmail("");
+              setTag("regular");
+
+              setPlate("");
+              setVehicleType("Sedan");
+              setColor("");
+
+              setMessage("");
+              setMessageType("");
+
+              console.log("Opening modal");
+
+              setShowModal(true);
+            }}
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 font-medium text-white shadow-lg transition-all duration-300 hover:bg-cyan-600 hover:shadow-cyan-500/30 sm:w-auto"
+          >
+            <Plus className="h-4 w-4 shrink-0" />
+            <span>Add Customer</span>
           </Button>
         </div>
-      </form>
 
-      {/* ================= CUSTOMER LIST ================= */}
-
-      <div
-        className="
-    grid
-    grid-cols-2
-    md:grid-cols-2
-    xl:grid-cols-3
-    2xl:grid-cols-4
-    gap-3
-    md:gap-5
-  "
-      >
-        {filteredCustomers.map((c) => (
-          <Card
-            key={c.id}
-            className="
-        group
-        relative
-        overflow-hidden
-        rounded-[28px]
-        border
-        border-cyan-500/10
-        bg-gradient-to-br
-        from-[#081A33]
-        via-[#0A1D38]
-        to-[#061425]
-        transition-all
-        duration-300
-
-        hover:-translate-y-1
-        hover:border-cyan-400/40
-        hover:shadow-[0_20px_60px_rgba(34,211,238,.18)]
-      "
-          >
-            {/* Glow */}
-
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.10),transparent_55%)] pointer-events-none" />
-
-            <CardContent className="relative p-3 sm:p-6 flex flex-col h-full">
-              {/* HEADER */}
-
-              <div className="flex items-start gap-3">
-                {/* Avatar */}
-
-                <div
-                  className="
-              h-11
-              w-11
-              sm:h-14
-              sm:w-14
-
-              shrink-0
-
-              rounded-2xl
-
-              bg-gradient-to-br
-              from-cyan-500
-              to-sky-500
-
-              flex
-              items-center
-              justify-center
-
-              text-sm
-              sm:text-xl
-
-              font-black
-              text-white
-
-              shadow-[0_10px_30px_rgba(34,211,238,.30)]
-            "
-                >
-                  {c.name?.charAt(0).toUpperCase()}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <h2 className="font-bold text-white text-sm sm:text-xl truncate">
-                      {c.name}
-                    </h2>
-
-                    <Badge
-                      className={`
-                  shrink-0
-                  rounded-full
-                  px-2
-                  sm:px-3
-                  py-1
-                  text-[10px]
-                  sm:text-[11px]
-                  ${getTagColor(c.tag)}
-                `}
-                    >
-                      {getTagIcon(c.tag)}
-                      <span className="hidden sm:inline ml-1">
-                        {(c.tag || "Regular").toUpperCase()}
-                      </span>
-                    </Badge>
-                  </div>
-
-                  <div className="mt-3 space-y-2">
-                    <div className="flex items-center gap-2 text-[11px] sm:text-sm text-slate-400">
-                      <Phone className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-                      <span className="truncate">{c.phone}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-[11px] sm:text-sm text-slate-400">
-                      <Mail className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-                      <span className="truncate">{c.email || "No email"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* QUICK STATS */}
-
-              <div
-                className="
-            mt-5
-
-            grid
-            grid-cols-2
-
-            gap-2
-          "
-              >
-                <div
-                  className="
-              rounded-2xl
-              border
-              border-white/5
-              bg-white/[0.04]
-              p-3
-              text-center
-            "
-                >
-                  <p className="text-lg font-black text-cyan-400">
-                    {c.vehicles?.length || 0}
-                  </p>
-
-                  <p className="text-[10px] uppercase tracking-wider text-slate-500">
-                    Vehicles
-                  </p>
-                </div>
-
-                <div
-                  className="
-              rounded-2xl
-              border
-              border-white/5
-              bg-white/[0.04]
-              p-3
-              text-center
-            "
-                >
-                  <p className="text-lg font-black text-emerald-400">Active</p>
-
-                  <p className="text-[10px] uppercase tracking-wider text-slate-500">
-                    Status
-                  </p>
-                </div>
-              </div>
-
-              {/* VEHICLES */}
-
-              <div className="mt-5">
-                <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-slate-500">
-                  Registered Vehicles
-                </p>
-
-                <div className="space-y-2">
-                  {c.vehicles?.length ? (
-                    c.vehicles.map((v, i) => (
-                      <div
-                        key={i}
-                        className="
-                    flex
-                    items-center
-                    justify-between
-
-                    rounded-2xl
-
-                    border
-                    border-cyan-500/10
-
-                    bg-cyan-500/[0.03]
-
-                    px-3
-                    py-3
-
-                    transition-all
-
-                    hover:bg-cyan-500/[0.06]
-                    hover:border-cyan-500/30
-                  "
-                      >
-                        <div className="min-w-0">
-                          <p className="font-semibold text-white text-sm truncate">
-                            {v.plate_number}
-                          </p>
-
-                          <p className="text-xs text-slate-400 truncate">
-                            {v.type} • {v.color}
-                          </p>
-                        </div>
-
-                        <Car className="h-5 w-5 text-cyan-400 shrink-0" />
-                      </div>
-                    ))
-                  ) : (
-                    <div
-                      className="
-                  rounded-2xl
-                  border
-                  border-dashed
-                  border-slate-700
-                  bg-white/[0.03]
-                  py-6
-                  text-center
-                  text-xs
-                  text-slate-500
-                "
-                    >
-                      No registered vehicles
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* ACTIONS */}
-
-              <div className="mt-auto pt-5 grid grid-cols-3 gap-2">
-                <Button
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openEditCustomer(c);
-                  }}
-                  className="
-              h-11
-              rounded-2xl
-              border-cyan-500/20
-              bg-cyan-500/5
-              text-cyan-400
-              hover:bg-cyan-500/15
-              hover:border-cyan-400
-            "
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={(e) => e.stopPropagation()}
-                  className="
-              h-11
-              rounded-2xl
-              border-emerald-500/20
-              bg-emerald-500/5
-              text-emerald-400
-              hover:bg-emerald-500/15
-            "
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteCustomer(c.id, c.name);
-                  }}
-                  className="
-              h-11
-              rounded-2xl
-              border-red-500/20
-              bg-red-500/5
-              text-red-400
-              hover:bg-red-500/15
-            "
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* ================= DRAWER ================= */}
-
-      {activeCustomer && (
-        <div
-          onClick={() => setActiveCustomer(null)}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-end z-50"
+        {/* ================= SEARCH ================= */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setShowSuggestions(false);
+          }}
+          className="relative w-full max-w-2xl"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-[420px] max-w-full bg-[#0B1220] text-white h-full p-6 overflow-y-auto border-l border-cyan-500/20 shadow-[0_0_40px_rgba(0,255,255,0.15)]"
-          >
-            <h2 className="text-2xl font-bold">{activeCustomer.name}</h2>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search Input */}
 
-            <p className="text-gray-400 mt-1">{activeCustomer.phone}</p>
+            <div className="relative flex-1">
+              <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-cyan-400 sm:h-5 sm:w-5" />
 
-            <p className="text-gray-400">{activeCustomer.email}</p>
+              <Input
+                placeholder="Search customer, phone or vehicle..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                className="h-12 w-full rounded-2xl border border-cyan-500/15 bg-gradient-to-r from-white/5 to-white/[0.02] pr-4 pl-11 text-sm text-white backdrop-blur-xl transition-all duration-300 placeholder:text-slate-500 hover:border-cyan-500/25 focus-visible:border-cyan-400 focus-visible:ring-2 focus-visible:ring-cyan-500/40 sm:h-13 sm:text-base"
+              />
+            </div>
 
-            <div className="mt-6">
-              <h3 className="font-semibold mb-3">Vehicles</h3>
+            {/* Search Button */}
 
-              <div className="space-y-3">
-                {activeCustomer.vehicles?.map((v, i) => (
-                  <div
-                    key={i}
-                    className="
-    rounded-2xl
-    border
-    border-cyan-500/10
-    bg-[#F8FAFC]/5
-    px-3
-    py-2
-    backdrop-blur-sm
-    transition-all
-    duration-300
-    hover:border-cyan-400/30
-    hover:bg-cyan-500/10
-    hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]
-    flex
-    justify-between
-    items-start
-    gap-3
-  "
-                  >
-                    <div>
-                      <p className="text-sm font-semibold">{v.plate_number}</p>
+            <Button
+              type="submit"
+              className="ounded-2xl h-12 shrink-0 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 px-4 font-semibold text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-cyan-500/40 active:scale-95 sm:px-6"
+            >
+              <Search className="h-4 w-4 sm:mr-2" />
 
-                      <p className="text-xs text-gray-400">
-                        {v.type} • {v.color}
-                      </p>
+              <span className="hidden sm:inline">Search</span>
+            </Button>
+          </div>
+        </form>
+
+        {/* ================= CUSTOMER LIST ================= */}
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-5 xl:grid-cols-3 2xl:grid-cols-4">
+          {filteredCustomers.map((c) => (
+            <Card
+              key={c.id}
+              className="group relative overflow-hidden rounded-[28px] border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0A1D38] to-[#061425] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:shadow-[0_20px_60px_rgba(34,211,238,.18)]"
+            >
+              {/* Glow */}
+
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.10),transparent_55%)]" />
+
+              <CardContent className="relative flex h-full flex-col p-3 sm:p-6">
+                {/* HEADER */}
+
+                <div className="flex items-start gap-3">
+                  {/* Avatar */}
+
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-500 text-sm font-black text-white shadow-[0_10px_30px_rgba(34,211,238,.30)] sm:h-14 sm:w-14 sm:text-xl">
+                    {c.name?.charAt(0).toUpperCase()}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h2 className="truncate text-sm font-bold text-white sm:text-xl">
+                        {c.name}
+                      </h2>
+
+                      <Badge
+                        className={`shrink-0 rounded-full px-2 py-1 text-[10px] sm:px-3 sm:text-[11px] ${getTagColor(c.tag)} `}
+                      >
+                        {getTagIcon(c.tag)}
+                        <span className="ml-1 hidden sm:inline">
+                          {(c.tag || "Regular").toUpperCase()}
+                        </span>
+                      </Badge>
                     </div>
 
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      title="Delete Vehicle"
-                      onClick={(e) => {
-                        e.stopPropagation();
+                    <div className="mt-3 space-y-2">
+                      <div className="flex items-center gap-2 text-[11px] text-slate-400 sm:text-sm">
+                        <Phone className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                        <span className="truncate">{c.phone}</span>
+                      </div>
 
-                        deleteVehicle(activeCustomer.id, v.plate_number);
-                      }}
-                      className="
-                          h-8
-                          w-8
-                          text-red-400
-                          hover:text-red-300
-                          hover:bg-red-500/10
-                          "
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      <div className="flex items-center gap-2 text-[11px] text-slate-400 sm:text-sm">
+                        <Mail className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                        <span className="truncate">
+                          {c.email || "No email"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                {/* QUICK STATS */}
+
+                <div className="mt-5 grid grid-cols-2 gap-2">
+                  <div className="rounded-2xl border border-white/5 bg-white/[0.04] p-3 text-center">
+                    <p className="text-lg font-black text-cyan-400">
+                      {c.vehicles?.length || 0}
+                    </p>
+
+                    <p className="text-[10px] tracking-wider text-slate-500 uppercase">
+                      Vehicles
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/5 bg-white/[0.04] p-3 text-center">
+                    <p className="text-lg font-black text-emerald-400">
+                      Active
+                    </p>
+
+                    <p className="text-[10px] tracking-wider text-slate-500 uppercase">
+                      Status
+                    </p>
+                  </div>
+                </div>
+
+                {/* VEHICLES */}
+
+                <div className="mt-5">
+                  <p className="mb-3 text-[10px] tracking-[0.25em] text-slate-500 uppercase">
+                    Registered Vehicles
+                  </p>
+
+                  <div className="space-y-2">
+                    {c.vehicles?.length ? (
+                      c.vehicles.map((v, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between rounded-2xl border border-cyan-500/10 bg-cyan-500/[0.03] px-3 py-3 transition-all hover:border-cyan-500/30 hover:bg-cyan-500/[0.06]"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-white">
+                              {v.plate_number}
+                            </p>
+
+                            <p className="truncate text-xs text-slate-400">
+                              {v.type} • {v.color}
+                            </p>
+                          </div>
+
+                          <Car className="h-5 w-5 shrink-0 text-cyan-400" />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-2xl border border-dashed border-slate-700 bg-white/[0.03] py-6 text-center text-xs text-slate-500">
+                        No registered vehicles
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* ACTIONS */}
+
+                <div className="mt-auto grid grid-cols-3 gap-2 pt-5">
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditCustomer(c);
+                    }}
+                    className="h-11 rounded-2xl border-cyan-500/20 bg-cyan-500/5 text-cyan-400 hover:border-cyan-400 hover:bg-cyan-500/15"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-11 rounded-2xl border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/15"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteCustomer(c.id, c.name);
+                    }}
+                    className="h-11 rounded-2xl border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/15"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* ================= DRAWER ================= */}
+
+        {activeCustomer && (
+          <div
+            onClick={() => setActiveCustomer(null)}
+            className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="h-full w-[420px] max-w-full overflow-y-auto border-l border-cyan-500/20 bg-[#0B1220] p-6 text-white shadow-[0_0_40px_rgba(0,255,255,0.15)]"
+            >
+              <h2 className="text-2xl font-bold">{activeCustomer.name}</h2>
+
+              <p className="mt-1 text-gray-400">{activeCustomer.phone}</p>
+
+              <p className="text-gray-400">{activeCustomer.email}</p>
+
+              <div className="mt-6">
+                <h3 className="mb-3 font-semibold">Vehicles</h3>
+
+                <div className="space-y-3">
+                  {activeCustomer.vehicles?.map((v, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start justify-between gap-3 rounded-2xl border border-cyan-500/10 bg-[#F8FAFC]/5 px-3 py-2 backdrop-blur-sm transition-all duration-300 hover:border-cyan-400/30 hover:bg-cyan-500/10 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)]"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold">
+                          {v.plate_number}
+                        </p>
+
+                        <p className="text-xs text-gray-400">
+                          {v.type} • {v.color}
+                        </p>
+                      </div>
+
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Delete Vehicle"
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          deleteVehicle(activeCustomer.id, v.plate_number);
+                        }}
+                        className="h-8 w-8 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ================= SUGGESTIONS ================= */}
+        {/* ================= SUGGESTIONS ================= */}
 
-      <CustomerModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        editingCustomer={editingCustomer}
-        name={name}
-        setName={setName}
-        phone={phone}
-        setPhone={setPhone}
-        email={email}
-        setEmail={setEmail}
-        tag={tag}
-        setTag={setTag}
-        plate={plate}
-        setPlate={setPlate}
-        vehicleType={vehicleType}
-        setVehicleType={setVehicleType}
-        color={color}
-        setColor={setColor}
-        loading={loading}
-        message={message}
-        messageType={messageType}
-        onSubmit={editingCustomer ? updateCustomer : addCustomer}
-      />
+        <CustomerModal
+          open={showModal}
+          onClose={() => setShowModal(false)}
+          editingCustomer={editingCustomer}
+          name={name}
+          setName={setName}
+          phone={phone}
+          setPhone={setPhone}
+          email={email}
+          setEmail={setEmail}
+          tag={tag}
+          setTag={setTag}
+          plate={plate}
+          setPlate={setPlate}
+          vehicleType={vehicleType}
+          setVehicleType={setVehicleType}
+          color={color}
+          setColor={setColor}
+          loading={loading}
+          message={message}
+          messageType={messageType}
+          onSubmit={editingCustomer ? updateCustomer : addCustomer}
+        />
+      </div>
     </div>
   );
 }

@@ -105,47 +105,15 @@ export default function CustomerModal({
   return createPortal(
     <div
       onClick={onClose}
-      className="
-    fixed
-    inset-0
-    z-[9999]
-    flex
-    items-center
-    justify-center
-    bg-black/70
-    backdrop-blur-md
-    p-3
-    sm:p-5
-  "
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-3 backdrop-blur-md sm:p-5"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="
-      relative
-      w-full
-      max-w-3xl
-      max-h-[94vh]
-      overflow-y-auto
-
-      rounded-[32px]
-
-      border
-      border-cyan-500/15
-
-      bg-gradient-to-br
-      from-[#07142B]
-      via-[#081A33]
-      to-[#040B18]
-
-      shadow-[0_35px_90px_rgba(0,0,0,.65)]
-
-      scrollbar-thin
-      scrollbar-thumb-cyan-500/20
-    "
+        className="scrollbar-thin scrollbar-thumb-cyan-500/20 relative max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-cyan-500/15 bg-gradient-to-br from-[#07142B] via-[#081A33] to-[#040B18] shadow-[0_35px_90px_rgba(0,0,0,.65)]"
       >
         {/* Decorative Glow */}
 
-        <div className="absolute inset-0 overflow-hidden rounded-[32px] pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[32px]">
           <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-cyan-500/10 blur-[90px]" />
 
           <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-sky-500/10 blur-[100px]" />
@@ -153,55 +121,25 @@ export default function CustomerModal({
 
         {/* ================= HEADER ================= */}
 
-        <div
-          className="
-        relative
-        overflow-hidden
-
-        border-b
-        border-white/10
-
-        px-5
-        py-5
-
-        sm:px-7
-        sm:py-6
-      "
-        >
+        <div className="relative overflow-hidden border-b border-white/10 px-5 py-5 sm:px-7 sm:py-6">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-sky-500/5 to-transparent" />
 
           <div className="relative flex items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div
-                className="
-              flex
-              h-14
-              w-14
-              shrink-0
-              items-center
-              justify-center
-
-              rounded-3xl
-
-              border
-              border-cyan-500/25
-
-              bg-cyan-500/10
-            "
-              >
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl border border-cyan-500/25 bg-cyan-500/10">
                 <Users className="h-7 w-7 text-cyan-400" />
               </div>
 
               <div>
-                <p className="text-[11px] uppercase tracking-[0.35em] text-cyan-400 font-bold">
+                <p className="text-[11px] font-bold tracking-[0.35em] text-cyan-400 uppercase">
                   CUSTOMER MANAGEMENT
                 </p>
 
-                <h2 className="mt-1 text-2xl sm:text-3xl font-black text-white">
+                <h2 className="mt-1 text-2xl font-black text-white sm:text-3xl">
                   {editingCustomer ? "Edit Customer" : "Add New Customer"}
                 </h2>
 
-                <p className="mt-2 text-sm text-slate-400 max-w-lg">
+                <p className="mt-2 max-w-lg text-sm text-slate-400">
                   Register a customer together with their primary vehicle. This
                   helps speed up future bookings and loyalty rewards.
                 </p>
@@ -210,26 +148,7 @@ export default function CustomerModal({
 
             <button
               onClick={onClose}
-              className="
-            flex
-            h-11
-            w-11
-            shrink-0
-            items-center
-            justify-center
-
-            rounded-2xl
-
-            border
-            border-white/10
-
-            bg-white/5
-
-            transition-all
-
-            hover:border-cyan-500/30
-            hover:bg-cyan-500/10
-          "
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 transition-all hover:border-cyan-500/30 hover:bg-cyan-500/10"
             >
               <X className="h-5 w-5 text-slate-300" />
             </button>
@@ -238,44 +157,19 @@ export default function CustomerModal({
 
         {/* ================= CONTENT ================= */}
 
-        <div className="relative p-4 sm:p-6 space-y-6">
+        <div className="relative space-y-6 p-4 sm:p-6">
           {/* =========================================================
     CUSTOMER DETAILS
 ========================================================= */}
 
-          <div
-            className="
-    rounded-[30px]
-    border
-    border-white/10
-    bg-gradient-to-br
-    from-white/[0.05]
-    to-white/[0.02]
-    backdrop-blur-xl
-    p-5
-    sm:p-6
-    space-y-6
-  "
-          >
+          <div className="space-y-6 rounded-[30px] border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] p-5 backdrop-blur-xl sm:p-6">
             <div className="flex items-center gap-4">
-              <div
-                className="
-        flex
-        h-12
-        w-12
-        items-center
-        justify-center
-        rounded-2xl
-        border
-        border-cyan-500/20
-        bg-cyan-500/10
-      "
-              >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
                 <UserCircle2 className="h-6 w-6 text-cyan-400" />
               </div>
 
               <div>
-                <h3 className="font-bold text-lg text-white">
+                <h3 className="text-lg font-bold text-white">
                   Customer Details
                 </h3>
 
@@ -294,23 +188,13 @@ export default function CustomerModal({
                 </label>
 
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <User className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="John Mwangi"
-                    className="
-            h-12
-            rounded-2xl
-            pl-12
-            border-white/10
-            bg-[#0E1B33]
-            text-white
-            placeholder:text-slate-500
-            focus:border-cyan-400
-            focus:ring-cyan-400/30
-          "
+                    className="h-12 rounded-2xl border-white/10 bg-[#0E1B33] pl-12 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-cyan-400/30"
                   />
                 </div>
               </div>
@@ -323,22 +207,13 @@ export default function CustomerModal({
                 </label>
 
                 <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <Phone className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                   <Input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="0712 345 678"
-                    className="
-            h-12
-            rounded-2xl
-            pl-12
-            border-white/10
-            bg-[#0E1B33]
-            text-white
-            placeholder:text-slate-500
-            focus:border-cyan-400
-          "
+                    className="h-12 rounded-2xl border-white/10 bg-[#0E1B33] pl-12 text-white placeholder:text-slate-500 focus:border-cyan-400"
                   />
                 </div>
               </div>
@@ -351,22 +226,13 @@ export default function CustomerModal({
                 </label>
 
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <Mail className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                   <Input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="john@email.com (optional)"
-                    className="
-            h-12
-            rounded-2xl
-            pl-12
-            border-white/10
-            bg-[#0E1B33]
-            text-white
-            placeholder:text-slate-500
-            focus:border-cyan-400
-          "
+                    className="h-12 rounded-2xl border-white/10 bg-[#0E1B33] pl-12 text-white placeholder:text-slate-500 focus:border-cyan-400"
                   />
                 </div>
               </div>
@@ -378,39 +244,14 @@ export default function CustomerModal({
 ========================================================= */}
 
           {canManageCategories && (
-            <div
-              className="
-      rounded-[30px]
-      border
-      border-white/10
-      bg-gradient-to-br
-      from-white/[0.05]
-      to-white/[0.02]
-      backdrop-blur-xl
-      p-5
-      sm:p-6
-      space-y-5
-    "
-            >
+            <div className="space-y-5 rounded-[30px] border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] p-5 backdrop-blur-xl sm:p-6">
               <div className="flex items-center gap-4">
-                <div
-                  className="
-          flex
-          h-12
-          w-12
-          items-center
-          justify-center
-          rounded-2xl
-          border
-          border-amber-500/20
-          bg-amber-500/10
-        "
-                >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-500/20 bg-amber-500/10">
                   <Crown className="h-6 w-6 text-amber-400" />
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-lg text-white">
+                  <h3 className="text-lg font-bold text-white">
                     Customer Category
                   </h3>
 
@@ -426,32 +267,11 @@ export default function CustomerModal({
                     key={t}
                     type="button"
                     onClick={() => setTag(t as Tag)}
-                    className={`
-            h-12
-            rounded-2xl
-            text-sm
-            font-semibold
-            transition-all
-            duration-300
-
-            ${
-              tag === t
-                ? `
-                  bg-gradient-to-r
-                  from-cyan-500
-                  to-blue-600
-                  text-white
-                  shadow-[0_0_30px_rgba(34,211,238,.35)]
-                `
-                : `
-                  border
-                  border-white/10
-                  bg-[#0E1B33]
-                  text-slate-300
-                  hover:border-cyan-400/40
-                `
-            }
-          `}
+                    className={`h-12 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                      tag === t
+                        ? `bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_30px_rgba(34,211,238,.35)]`
+                        : `border border-white/10 bg-[#0E1B33] text-slate-300 hover:border-cyan-400/40`
+                    } `}
                   >
                     {t.toUpperCase()}
                   </button>
@@ -464,39 +284,14 @@ export default function CustomerModal({
     VEHICLE DETAILS
 ========================================================= */}
 
-          <div
-            className="
-    rounded-[30px]
-    border
-    border-white/10
-    bg-gradient-to-br
-    from-white/[0.05]
-    to-white/[0.02]
-    backdrop-blur-xl
-    p-5
-    sm:p-6
-    space-y-6
-  "
-          >
+          <div className="space-y-6 rounded-[30px] border border-white/10 bg-gradient-to-br from-white/[0.05] to-white/[0.02] p-5 backdrop-blur-xl sm:p-6">
             <div className="flex items-center gap-4">
-              <div
-                className="
-        flex
-        h-12
-        w-12
-        items-center
-        justify-center
-        rounded-2xl
-        border
-        border-cyan-500/20
-        bg-cyan-500/10
-      "
-              >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
                 <Car className="h-6 w-6 text-cyan-400" />
               </div>
 
               <div>
-                <h3 className="font-bold text-lg text-white">
+                <h3 className="text-lg font-bold text-white">
                   Primary Vehicle
                 </h3>
 
@@ -515,20 +310,13 @@ export default function CustomerModal({
                 </label>
 
                 <div className="relative">
-                  <Car className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <Car className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                   <Input
                     value={plate}
                     onChange={(e) => setPlate(e.target.value.toUpperCase())}
                     placeholder="KDA 123A"
-                    className="
-            h-12
-            rounded-2xl
-            pl-12
-            border-white/10
-            bg-[#0E1B33]
-            text-white
-          "
+                    className="h-12 rounded-2xl border-white/10 bg-[#0E1B33] pl-12 text-white"
                   />
                 </div>
               </div>
@@ -541,19 +329,7 @@ export default function CustomerModal({
                 <select
                   value={vehicleType}
                   onChange={(e) => setVehicleType(e.target.value)}
-                  className="
-          h-12
-          w-full
-          rounded-2xl
-          border
-          border-white/10
-          bg-[#0E1B33]
-          px-4
-          text-white
-          focus:outline-none
-          focus:ring-2
-          focus:ring-cyan-500
-        "
+                  className="h-12 w-full rounded-2xl border border-white/10 bg-[#0E1B33] px-4 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
                 >
                   <option>Sedan</option>
                   <option>Hatchback</option>
@@ -574,20 +350,13 @@ export default function CustomerModal({
                 <label className="text-sm text-slate-300">Vehicle Color</label>
 
                 <div className="relative">
-                  <Palette className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                  <Palette className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                   <Input
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
                     placeholder="Black"
-                    className="
-            h-12
-            rounded-2xl
-            pl-12
-            border-white/10
-            bg-[#0E1B33]
-            text-white
-          "
+                    className="h-12 rounded-2xl border-white/10 bg-[#0E1B33] pl-12 text-white"
                   />
                 </div>
               </div>
@@ -598,24 +367,16 @@ export default function CustomerModal({
 
           {message && (
             <div
-              className={`
-              rounded-3xl
-              p-4
-              flex
-              items-start
-              gap-3
-              border
-              ${
+              className={`flex items-start gap-3 rounded-3xl border p-4 ${
                 messageType === "success"
-                  ? "bg-green-50 border-green-200 text-green-700"
-                  : "bg-red-50 border-red-200 text-red-700"
-              }
-            `}
+                  ? "border-green-200 bg-green-50 text-green-700"
+                  : "border-red-200 bg-red-50 text-red-700"
+              } `}
             >
               {messageType === "success" ? (
-                <CheckCircle2 className="h-5 w-5 mt-0.5" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5" />
               ) : (
-                <AlertTriangle className="h-5 w-5 mt-0.5" />
+                <AlertTriangle className="mt-0.5 h-5 w-5" />
               )}
 
               <span className="text-sm font-medium">{message}</span>
@@ -627,17 +388,7 @@ export default function CustomerModal({
           <Button
             onClick={onSubmit}
             disabled={loading}
-            className="
-            w-full
-            bg-cyan-500
-            hover:bg-cyan-600
-            text-white
-            rounded-2xl
-            h-11
-            transition-all
-            duration-300
-            hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]
-          "
+            className="h-11 w-full rounded-2xl bg-cyan-500 text-white transition-all duration-300 hover:bg-cyan-600 hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]"
           >
             {loading
               ? "Saving..."

@@ -104,7 +104,7 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#020817] flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#020817]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 animate-spin text-cyan-400" />
 
@@ -120,7 +120,7 @@ export default function DashboardLayout({
 
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-[#020817] flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#020817]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
 

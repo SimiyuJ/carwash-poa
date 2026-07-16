@@ -15,16 +15,12 @@ import {
   ArrowRight,
   LayoutDashboard,
   ClipboardList,
-  CreditCard,
-  Sparkles,
-  UserCog,
+  AlertTriangle,
   User,
   Eye,
   EyeOff,
   CheckCircle2,
-  Activity,
-  BarChart3,
-  Users,
+  Sparkles,
 } from "lucide-react";
 
 /* =========================================
@@ -271,78 +267,29 @@ function AuthPageContent() {
   if (!mounted) return null;
 
   return (
-    <main
-      className="
-    min-h-screen
-    bg-[#020617]
-    text-white
-    flex
-    items-center
-    justify-center
-    px-4
-    py-6
-    overflow-hidden
-  "
-    >
+    <main className="flex min-h-screen items-center justify-center overflow-hidden bg-[#020617] px-4 py-6 text-white">
       {/* BACKGROUND */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 h-[450px] w-[450px] rounded-full bg-cyan-500/20 blur-[160px]" />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-fuchsia-500/20 blur-[160px]" />
-        <div className="absolute left-1/2 top-1/3 h-[300px] w-[300px] rounded-full bg-blue-500/10 blur-[140px]" />
+        <div className="absolute right-0 bottom-0 h-[400px] w-[400px] rounded-full bg-fuchsia-500/20 blur-[160px]" />
+        <div className="absolute top-1/3 left-1/2 h-[300px] w-[300px] rounded-full bg-blue-500/10 blur-[140px]" />
       </div>
 
       {/* MAIN CARD */}
-      <div
-        className="
-      relative z-10
-      w-full max-w-7xl
-      h-[92vh]
-      overflow-hidden
-      rounded-[40px]
-      border border-white/10
-      bg-white/[0.03]
-      backdrop-blur-2xl
-      shadow-[0_25px_120px_rgba(0,0,0,0.55)]
-      grid grid-cols-1 xl:grid-cols-2
-    "
-      >
+      <div className="relative z-10 grid h-[92vh] w-full max-w-7xl grid-cols-1 overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.03] shadow-[0_25px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:grid-cols-2">
         {/* LEFT SIDE */}
 
-        <div
-          className="
-            hidden
-            xl:flex
-            flex-col
-            justify-between
-            border-r border-white/10
-            bg-gradient-to-br
-            from-cyan-500/10
-            via-transparent
-            to-fuchsia-500/10
-            p-12
-          "
-        >
+        <div className="hidden flex-col justify-between border-r border-white/10 bg-gradient-to-br from-cyan-500/10 via-transparent to-fuchsia-500/10 p-12 xl:flex">
           <div>
             {/* LOGO */}
 
             <div className="flex items-center gap-5">
-              <div
-                className="
-                  flex
-                  h-24
-                  w-24
-                  items-center
-                  justify-center
-                  rounded-[28px]
-                  border border-cyan-400/20
-                  bg-cyan-500/10
-                "
-              >
+              <div className="flex h-24 w-24 items-center justify-center rounded-[28px] border border-cyan-400/20 bg-cyan-500/10">
                 <Car className="h-11 w-11 text-cyan-400" />
               </div>
 
               <div>
-                <h1 className="text-3xl md:text-4xl xl:text-5xl font-black">
+                <h1 className="text-3xl font-black md:text-4xl xl:text-5xl">
                   Carwash System
                 </h1>
 
@@ -377,221 +324,144 @@ function AuthPageContent() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className=" flex flex-col h-full overflow-y-auto px-5 py-8 sm:px-8 lg:px-10 xl:px-12 ">
-          <div
-            className="
-    flex
-    flex-col
-    p-5
-    sm:p-8
-    lg:p-10
-    xl:p-12
-    overflow-y-auto
-  "
-          >
+        <div className="flex h-full flex-col overflow-y-auto px-5 py-8 sm:px-8 lg:px-10 xl:px-12">
+          <div className="flex flex-col overflow-y-auto p-5 sm:p-8 lg:p-10 xl:p-12">
             {/* MOBILE BRAND */}
 
-            <div className="mb-10 flex xl:hidden items-center gap-4">
-              <div
-                className="
-                flex
-                h-16
-                w-16
-                items-center
-                justify-center
-                rounded-3xl
-                border border-cyan-500/20
-                bg-cyan-500/10
-              "
-              >
-                <Car className="h-8 w-8 text-cyan-400" />
+            <div className="mb-8 flex items-center gap-4 xl:hidden">
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/15 to-blue-500/10 shadow-[0_0_30px_rgba(34,211,238,.15)]">
+                <div className="absolute inset-0 rounded-3xl bg-cyan-500/10 blur-xl" />
+
+                <Car className="relative h-7 w-7 text-cyan-400" />
               </div>
 
               <div>
-                <h1 className="text-3xl font-black">WashFlow Pro</h1>
+                <h1 className="bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-2xl font-black text-transparent">
+                  WashFlow Pro
+                </h1>
 
-                <p className="text-sm text-gray-400">Smart Wash System</p>
+                <p className="mt-0.5 text-xs font-medium tracking-[0.15em] text-slate-400 uppercase">
+                  Smart Wash System
+                </p>
               </div>
             </div>
 
             {/* HEADER */}
 
-            <div className="mb-8">
-              <div
-                className="
-      inline-flex
-      items-center
-      gap-2
-      rounded-full
-      border
-      border-cyan-400/20
-      bg-cyan-500/10
-      px-4
-      py-2
-      text-xs
-      font-semibold
-      tracking-wide
-      text-cyan-300
-      backdrop-blur-xl
-      "
-              >
-                <Sparkles className="h-4 w-4" />
-                Enterprise Carwash Platform
+            <div className="mb-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 text-[11px] font-semibold tracking-[0.15em] text-cyan-300 uppercase backdrop-blur-xl">
+                <Sparkles className="h-3.5 w-3.5" />
+                Enterprise Platform
               </div>
 
-              <h2
-                className="
-      mt-5
-      text-3xl
-      sm:text-4xl
-      xl:text-5xl
-      font-black
-      leading-[1.05]
-      tracking-tight
-      "
-              >
+              <h2 className="mt-4 text-3xl leading-[1.05] font-black tracking-tight sm:text-4xl">
                 {isLogin ? (
                   <>
-                    Welcome Back to
-                    <span
-                      className="
-            block
-            mt-2
-            bg-gradient-to-r
-            from-cyan-300
-            via-sky-400
-            to-blue-500
-            bg-clip-text
-            text-transparent
-          "
-                    >
+                    Welcome Back
+                    <span className="mt-1 block bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 bg-clip-text text-transparent">
                       WashFlow Pro
                     </span>
                   </>
                 ) : (
                   <>
                     Create Your
-                    <span
-                      className="
-            block
-            mt-2
-            bg-gradient-to-r
-            from-cyan-300
-            via-sky-400
-            to-blue-500
-            bg-clip-text
-            text-transparent
-          "
-                    >
+                    <span className="mt-1 block bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 bg-clip-text text-transparent">
                       Carwash Account
                     </span>
                   </>
                 )}
               </h2>
 
-              <p
-                className="
-      mt-4
-      max-w-xl
-      text-sm
-      sm:text-base
-      xl:text-lg
-      leading-relaxed
-      text-slate-400
-      "
-              >
+              <p className="mt-3 max-w-md text-sm leading-6 text-slate-400">
                 {isLogin
-                  ? "Access your dashboard, manage staff, track revenue and monitor carwash operations in real time."
-                  : "Launch your carwash business with powerful POS, vehicle tracking, staff management, queue control and advanced reporting."}
+                  ? "Manage memberships, staff, queues, and revenue from one intelligent dashboard."
+                  : "Launch your carwash with POS, subscriptions, loyalty rewards, and real-time analytics."}
               </p>
             </div>
 
             {/* ALERTS */}
 
-            {errorMessage && (
-              <div
-                className="
-                mb-5
-                rounded-2xl
-                border border-red-500/20
-                bg-red-500/10
-                px-5 py-4
-                text-sm
-                text-red-300
-              "
-              >
-                {errorMessage}
-              </div>
-            )}
+            <div className="space-y-4">
+              {errorMessage && (
+                <div className="group animate-in slide-in-from-top-2 relative overflow-hidden rounded-3xl border border-red-500/20 bg-gradient-to-r from-red-500/10 via-red-500/5 to-transparent p-4 shadow-[0_15px_40px_rgba(239,68,68,.08)] backdrop-blur-2xl duration-300">
+                  {/* Glow */}
+                  <div className="absolute top-1/2 -left-10 h-24 w-24 -translate-y-1/2 rounded-full bg-red-500/20 blur-3xl" />
 
-            {successMessage && (
-              <div
-                className="
-                mb-5
-                flex
-                items-center
-                gap-2
-                rounded-2xl
-                border border-emerald-500/20
-                bg-emerald-500/10
-                px-5 py-4
-                text-sm
-                text-emerald-300
-              "
-              >
-                <CheckCircle2 className="h-4 w-4" />
+                  <div className="relative flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-red-400/20 bg-red-500/10">
+                      <AlertTriangle className="h-5 w-5 text-red-400" />
+                    </div>
 
-                {successMessage}
-              </div>
-            )}
+                    <div className="flex-1">
+                      <p className="text-xs font-bold tracking-[0.2em] text-red-300 uppercase">
+                        Authentication Error
+                      </p>
 
-            {/* FORM */}
+                      <p className="mt-1 text-sm leading-6 text-red-100">
+                        {errorMessage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            <div className="max-w-xl mx-auto w-full">
-              <div className="space-y-4">
+              {successMessage && (
+                <div className="group animate-in slide-in-from-top-2 relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent p-4 shadow-[0_15px_40px_rgba(34,197,94,.08)] backdrop-blur-2xl duration-300">
+                  {/* Glow */}
+                  <div className="absolute top-1/2 -left-10 h-24 w-24 -translate-y-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+
+                  <div className="relative flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-500/10">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="text-xs font-bold tracking-[0.2em] text-emerald-300 uppercase">
+                        Success
+                      </p>
+
+                      <p className="mt-1 text-sm leading-6 text-emerald-100">
+                        {successMessage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mx-auto w-full max-w-xl">
+              <div className="relative space-y-5 overflow-hidden rounded-[30px] border border-white/10 bg-gradient-to-b from-white/[0.05] via-white/[0.03] to-transparent p-5 shadow-[0_20px_80px_rgba(0,0,0,.35)] backdrop-blur-2xl sm:p-6">
+                <div className="absolute -top-20 left-1/2 h-52 w-52 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[90px]" />
+
                 {/* FULL NAME */}
-
                 {!isLogin && (
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
+                  <div className="group">
+                    <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
                       Full Name
                     </label>
 
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                      <User className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                       <input
                         type="text"
                         placeholder="Enter full name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="
-                      h-12 md:h-14
-                      w-full
-                      rounded-2xl
-                      border border-white/10
-                      bg-[#0B1220]
-                      pl-12
-                      pr-4
-                      text-white
-                      outline-none
-                      transition-all
-                      focus:border-cyan-400
-                    "
+                        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] pr-4 pl-12 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400 focus:shadow-[0_0_25px_rgba(34,211,238,.15)]"
                       />
                     </div>
                   </div>
                 )}
 
                 {/* EMAIL */}
-
-                <div>
-                  <label className="mb-2 block text-sm text-gray-400">
+                <div className="group">
+                  <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
                     Email Address
                   </label>
 
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                    <Mail className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                     <input
                       type="email"
@@ -599,101 +469,70 @@ function AuthPageContent() {
                       placeholder="Enter email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="
-                    h-12 md:h-14
-                    w-full
-                    rounded-2xl
-                    border border-white/10
-                    bg-[#0B1220]
-                    pl-12
-                    pr-4
-                    text-white
-                    outline-none
-                    transition-all
-                    focus:border-cyan-400
-                  "
+                      className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] pr-4 pl-12 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400 focus:shadow-[0_0_25px_rgba(34,211,238,.15)]"
                     />
                   </div>
                 </div>
 
+                {/* SIGNUP FIELDS */}
                 {!isLogin && (
                   <>
-                    {/* location */}
                     <div>
-                      <label className="mb-2 block text-sm text-gray-400">
+                      <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
                         Location
                       </label>
 
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Enter branch location"
-                          value={location}
-                          onChange={(e) => setLocation(e.target.value)}
-                          className="h-12 md:h-14 w-full rounded-2xl border border-white/10 bg-[#0B1220] px-4 text-white focus:border-cyan-400 outline-none"
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        placeholder="Enter branch location"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400"
+                      />
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-sm text-gray-400">
+                      <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
                         Phone Number
                       </label>
 
+                      <input
+                        type="tel"
+                        placeholder="Enter phone number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400"
+                      />
+                    </div>
+
+                    <div className="group">
+                      <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
+                        Carwash Name
+                      </label>
+
                       <div className="relative">
+                        <Car className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
+
                         <input
-                          type="tel"
-                          placeholder="Enter phone number"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="h-12 md:h-14 w-full rounded-2xl border border-white/10 bg-[#0B1220] px-4 text-white focus:border-cyan-400 outline-none"
+                          type="text"
+                          placeholder="Enter carwash name"
+                          value={carwashName}
+                          onChange={(e) => setCarwashName(e.target.value)}
+                          className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] pr-4 pl-12 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400"
                         />
                       </div>
                     </div>
                   </>
                 )}
 
-                {!isLogin && (
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Carwash Name
-                    </label>
-
-                    <div className="relative">
-                      <Car className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
-
-                      <input
-                        type="text"
-                        placeholder="Enter carwash name"
-                        value={carwashName}
-                        onChange={(e) => setCarwashName(e.target.value)}
-                        className="
-                      h-12 md:h-14
-                      w-full
-                      rounded-2xl
-                      border border-white/10
-                      bg-[#0B1220]
-                      pl-12
-                      pr-4
-                      text-white
-                      outline-none
-                      transition-all
-                      focus:border-cyan-400
-                      "
-                      />
-                    </div>
-                  </div>
-                )}
-
                 {/* PASSWORD */}
-
                 <div>
-                  <label className="mb-2 block text-sm text-gray-400">
+                  <label className="mb-2 block text-xs font-semibold tracking-[0.15em] text-slate-500 uppercase">
                     Password
                   </label>
 
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                    <Lock className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                     <input
                       type={showPassword ? "text" : "password"}
@@ -703,32 +542,13 @@ function AuthPageContent() {
                       placeholder="Enter password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="
-                    h-12 md:h-14
-                    w-full
-                    rounded-2xl
-                    border border-white/10
-                    bg-[#0B1220]
-                    pl-12
-                    pr-14
-                    text-white
-                    outline-none
-                    transition-all
-                    focus:border-cyan-400
-                  "
+                      className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.03] pr-14 pl-12 text-white transition-all outline-none placeholder:text-slate-500 hover:border-cyan-500/20 focus:border-cyan-400 focus:shadow-[0_0_25px_rgba(34,211,238,.15)]"
                     />
 
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="
-                    absolute
-                    right-4
-                    top-1/2
-                    -translate-y-1/2
-                    text-gray-500
-                    hover:text-cyan-400
-                  "
+                      className="absolute top-1/2 right-4 -translate-y-1/2 text-slate-500 transition hover:text-cyan-400"
                     >
                       {showPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -739,11 +559,13 @@ function AuthPageContent() {
                   </div>
 
                   {!isLogin && password && (
-                    <div className="mt-3">
-                      <div className="mb-2 flex items-center justify-between text-xs text-gray-400">
-                        <span>Password Strength</span>
+                    <div className="mt-3 rounded-2xl border border-white/5 bg-black/20 p-3">
+                      <div className="mb-2 flex items-center justify-between text-xs">
+                        <span className="text-slate-500">
+                          Password Strength
+                        </span>
 
-                        <span>
+                        <span className="font-semibold text-cyan-400">
                           {
                             ["Weak", "Fair", "Good", "Strong", "Excellent"][
                               passwordStrength
@@ -756,16 +578,11 @@ function AuthPageContent() {
                         {[1, 2, 3, 4].map((bar) => (
                           <div
                             key={bar}
-                            className={`
-                              h-2
-                              flex-1
-                              rounded-full
-                              ${
-                                passwordStrength >= bar
-                                  ? "bg-cyan-400"
-                                  : "bg-white/10"
-                              }
-                            `}
+                            className={`h-2 flex-1 rounded-full transition-all ${
+                              passwordStrength >= bar
+                                ? "bg-gradient-to-r from-cyan-500 to-blue-500"
+                                : "bg-white/10"
+                            }`}
                           />
                         ))}
                       </div>
@@ -774,22 +591,21 @@ function AuthPageContent() {
                 </div>
 
                 {/* REMEMBER */}
-
                 {isLogin && (
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-3 text-sm text-gray-400">
+                  <div className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.02] p-4">
+                    <label className="flex items-center gap-3 text-sm text-slate-400">
                       <input
                         type="checkbox"
                         checked={rememberMe}
                         onChange={() => setRememberMe(!rememberMe)}
-                        className="h-4 w-4"
+                        className="h-4 w-4 accent-cyan-500"
                       />
                       Remember me
                     </label>
 
                     <button
                       type="button"
-                      className="text-sm text-cyan-400 hover:text-cyan-300"
+                      className="text-sm font-medium text-cyan-400 transition hover:text-cyan-300"
                     >
                       Forgot password?
                     </button>
@@ -797,27 +613,10 @@ function AuthPageContent() {
                 )}
 
                 {/* SUBMIT */}
-
                 <button
                   onClick={isLogin ? handleLogin : handleSignup}
                   disabled={loading}
-                  className="
-                flex
-                h-12 md:h-14
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-2xl
-                bg-cyan-400
-                text-lg
-                font-bold
-                text-white
-                transition-all
-                hover:bg-cyan-500
-                disabled:opacity-60
-                shadow-[0_0_35px_rgba(0,255,255,0.25)]
-              "
+                  className="group flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 font-bold text-white shadow-[0_15px_40px_rgba(34,211,238,.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(34,211,238,.35)] disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -826,24 +625,19 @@ function AuthPageContent() {
                     </>
                   ) : (
                     <>
-                      {isLogin ? "Login" : "Create Account"}
+                      {isLogin ? "Login to Dashboard" : "Create Account"}
 
-                      <ArrowRight className="h-5 w-5" />
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </>
                   )}
                 </button>
 
                 {/* SWITCH */}
-
-                <div className="text-center mt-8">
+                <div className="pt-2 text-center">
                   {isLogin ? (
                     <button
                       onClick={() => router.push("/signup")}
-                      className="
-        text-gray-400
-        transition-colors
-        hover:text-cyan-400
-      "
+                      className="text-sm text-slate-400 transition hover:text-cyan-400"
                     >
                       Don't have an account?{" "}
                       <span className="font-semibold text-cyan-400">
@@ -857,11 +651,7 @@ function AuthPageContent() {
                         setErrorMessage("");
                         setSuccessMessage("");
                       }}
-                      className="
-        text-gray-400
-        transition-colors
-        hover:text-cyan-400
-      "
+                      className="text-sm text-slate-400 transition hover:text-cyan-400"
                     >
                       Already have an account?{" "}
                       <span className="font-semibold text-cyan-400">Login</span>
@@ -892,28 +682,16 @@ function Feature({
 }) {
   return (
     <div className="flex items-start gap-5">
-      <div
-        className="
-          flex
-          h-12 md:h-14
-          w-14
-          shrink-0
-          items-center
-          justify-center
-          rounded-2xl
-          border border-cyan-500/10
-          bg-cyan-500/10
-        "
-      >
+      <div className="flex h-12 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/10 bg-cyan-500/10 md:h-14">
         <Icon className="h-6 w-6 text-cyan-400" />
       </div>
 
       <div>
-        <h3 className="text-lg md:text-xl xl:text-2xl font-bold text-white">
+        <h3 className="text-lg font-bold text-white md:text-xl xl:text-2xl">
           {title}
         </h3>
 
-        <p className="mt-2 text-sm md:text-base xl:text-lg leading-relaxed text-gray-400">
+        <p className="mt-2 text-sm leading-relaxed text-gray-400 md:text-base xl:text-lg">
           {text}
         </p>
       </div>
@@ -925,7 +703,7 @@ export default function AuthPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+        <div className="flex min-h-screen items-center justify-center bg-[#020617]">
           <Loader2 className="h-10 w-10 animate-spin text-cyan-400" />
         </div>
       }
@@ -949,14 +727,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div
-      className="
-        rounded-3xl
-        border border-white/10
-        bg-white/[0.03]
-        p-5
-      "
-    >
+    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
       <Icon className="h-6 w-6 text-cyan-400" />
 
       <h3 className="mt-4 text-2xl font-black text-white">{value}</h3>

@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/providers/AuthProvider";
 import CustomerModal from "@/components/customers/CustomerModal";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import {
   Droplets,
@@ -847,7 +848,9 @@ SUBSCRIPTION SERVICES
 ========================================================= */
   const completePayment = async () => {
     if (!invoiceId) {
-      alert("Generate invoice first");
+      toast.warning("Generate an invoice first", {
+        description: "Create an invoice before processing payment.",
+      });
       return;
     }
 
@@ -1262,7 +1265,10 @@ SUBSCRIPTION SERVICES
 
       setDiscount(0);
 
-      alert(`Receipt generated successfully.\nVehicle added to queue.`);
+      toast.success("Payment Successful", {
+        description:
+          "Receipt generated successfully. Vehicle added to the queue.",
+      });
     } catch (err) {
       alert("Failed to process payment");
     } finally {
@@ -1304,7 +1310,7 @@ SUBSCRIPTION SERVICES
         {/* HEADER */}
 
         <div className="relative overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-2xl">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl" />
 
           <div className="relative z-10 p-5 sm:p-6 lg:p-8">
@@ -1315,7 +1321,7 @@ SUBSCRIPTION SERVICES
                 </div>
 
                 <div className="min-w-0">
-                  <span className="inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan-300">
+                  <span className="inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-cyan-300 uppercase">
                     Multi Branch POS
                   </span>
 
@@ -1333,7 +1339,7 @@ SUBSCRIPTION SERVICES
                       <Building2 className="h-4 w-4 shrink-0 text-cyan-400 sm:h-5 sm:w-5" />
 
                       <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
                           Branch
                         </p>
 
@@ -1347,7 +1353,7 @@ SUBSCRIPTION SERVICES
                       <MapPin className="h-4 w-4 shrink-0 text-green-400 sm:h-5 sm:w-5" />
 
                       <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
                           Location
                         </p>
 
@@ -1361,7 +1367,7 @@ SUBSCRIPTION SERVICES
                       <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400 sm:h-5 sm:w-5" />
 
                       <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] uppercase tracking-wider text-slate-500 sm:text-[10px]">
+                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
                           Role
                         </p>
 
@@ -1413,61 +1419,20 @@ SUBSCRIPTION SERVICES
 
                   <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
                     <div className="relative">
-                      <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <Search className="pointer-events-none absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                       <input
                         value={plate}
                         onChange={(e) => setPlate(e.target.value.toUpperCase())}
                         placeholder="Enter vehicle registration..."
-                        className="
-            h-14
-            w-full
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-950/60
-            pl-14
-            pr-5
-            text-white
-            placeholder:text-slate-500
-            outline-none
-            transition-all
-            duration-300
-            focus:border-cyan-500
-            focus:ring-4
-            focus:ring-cyan-500/10
-          "
+                        className="h-14 w-full rounded-2xl border border-slate-700 bg-slate-950/60 pr-5 pl-14 text-white transition-all duration-300 outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
                       />
                     </div>
 
                     <button
                       onClick={searchVehicle}
                       disabled={loading}
-                      className="
-          flex
-          h-14
-          w-full
-          items-center
-          justify-center
-          gap-3
-          rounded-2xl
-          bg-gradient-to-r
-          from-cyan-500
-          to-blue-600
-          px-8
-          font-bold
-          text-white
-          shadow-lg
-          shadow-cyan-500/20
-          transition-all
-          duration-300
-          hover:-translate-y-0.5
-          hover:shadow-cyan-500/40
-          disabled:cursor-not-allowed
-          disabled:opacity-60
-          active:scale-[0.98]
-          lg:w-auto
-        "
+                      className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 font-bold text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-cyan-500/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {loading ? (
                         <>
@@ -1485,28 +1450,24 @@ SUBSCRIPTION SERVICES
 
                   {searchMessage && (
                     <div
-                      className={`mt-5 rounded-2xl border p-4 transition-all
-
-        ${
-          searchType === "success"
-            ? "border-green-500/20 bg-green-500/10"
-            : searchType === "error"
-              ? "border-red-500/20 bg-red-500/10"
-              : "border-yellow-500/20 bg-yellow-500/10"
-        }`}
+                      className={`mt-5 rounded-2xl border p-4 transition-all ${
+                        searchType === "success"
+                          ? "border-green-500/20 bg-green-500/10"
+                          : searchType === "error"
+                            ? "border-red-500/20 bg-red-500/10"
+                            : "border-yellow-500/20 bg-yellow-500/10"
+                      }`}
                     >
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-start gap-3">
                           <div
-                            className={`mt-0.5 rounded-xl p-2
-
-              ${
-                searchType === "success"
-                  ? "bg-green-500/20"
-                  : searchType === "error"
-                    ? "bg-red-500/20"
-                    : "bg-yellow-500/20"
-              }`}
+                            className={`mt-0.5 rounded-xl p-2 ${
+                              searchType === "success"
+                                ? "bg-green-500/20"
+                                : searchType === "error"
+                                  ? "bg-red-500/20"
+                                  : "bg-yellow-500/20"
+                            }`}
                           >
                             {searchType === "success" ? (
                               <CheckCircle2 className="h-5 w-5 text-green-400" />
@@ -1519,15 +1480,13 @@ SUBSCRIPTION SERVICES
 
                           <div>
                             <h3
-                              className={`font-bold
-
-                ${
-                  searchType === "success"
-                    ? "text-green-300"
-                    : searchType === "error"
-                      ? "text-red-300"
-                      : "text-yellow-300"
-                }`}
+                              className={`font-bold ${
+                                searchType === "success"
+                                  ? "text-green-300"
+                                  : searchType === "error"
+                                    ? "text-red-300"
+                                    : "text-yellow-300"
+                              }`}
                             >
                               {searchType === "success"
                                 ? "Vehicle Found"
@@ -1548,29 +1507,7 @@ SUBSCRIPTION SERVICES
                               setCustomerPlate(plate);
                               setShowCustomerModal(true);
                             }}
-                            className="
-                flex
-                h-11
-                w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-2xl
-                bg-gradient-to-r
-                from-emerald-500
-                to-green-600
-                px-5
-                font-bold
-                text-white
-                shadow-lg
-                shadow-emerald-500/20
-                transition-all
-                duration-300
-                hover:-translate-y-0.5
-                hover:shadow-emerald-500/40
-                active:scale-[0.98]
-                sm:w-auto
-              "
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 px-5 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-emerald-500/40 active:scale-[0.98] sm:w-auto"
                           >
                             <Plus className="h-4 w-4" />
                             Add Vehicle
@@ -1588,57 +1525,23 @@ SUBSCRIPTION SERVICES
                 <div className="p-4 sm:p-5 lg:p-6">
                   <div className="grid gap-4 lg:grid-cols-[1fr_260px_auto]">
                     <div className="relative">
-                      <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <Search className="absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                       <input
                         value={serviceSearch}
                         onChange={(e) => setServiceSearch(e.target.value)}
                         placeholder="Search services..."
-                        className="
-            h-14
-            w-full
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-950/60
-            pl-14
-            pr-4
-            text-white
-            placeholder:text-slate-500
-            outline-none
-            transition-all
-            duration-300
-            focus:border-cyan-500
-            focus:ring-4
-            focus:ring-cyan-500/10
-          "
+                        className="h-14 w-full rounded-2xl border border-slate-700 bg-slate-950/60 pr-4 pl-14 text-white transition-all duration-300 outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
                       />
                     </div>
 
                     <div className="relative">
-                      <Car className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <Car className="pointer-events-none absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-slate-500" />
 
                       <select
                         value={activeVehicleType}
                         onChange={(e) => setActiveVehicleType(e.target.value)}
-                        className="
-            h-14
-            w-full
-            appearance-none
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-950/60
-            pl-14
-            pr-10
-            text-white
-            outline-none
-            transition-all
-            duration-300
-            focus:border-cyan-500
-            focus:ring-4
-            focus:ring-cyan-500/10
-          "
+                        className="h-14 w-full appearance-none rounded-2xl border border-slate-700 bg-slate-950/60 pr-10 pl-14 text-white transition-all duration-300 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
                       >
                         <option value="">All Vehicles</option>
 
@@ -1649,34 +1552,12 @@ SUBSCRIPTION SERVICES
                         ))}
                       </select>
 
-                      <ChevronDown className="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <ChevronDown className="pointer-events-none absolute top-1/2 right-5 h-5 w-5 -translate-y-1/2 text-slate-500" />
                     </div>
 
                     <button
                       onClick={openInvoices}
-                      className="
-          flex
-          h-14
-          w-full
-          items-center
-          justify-center
-          gap-3
-          rounded-2xl
-          bg-gradient-to-r
-          from-emerald-500
-          to-green-600
-          px-8
-          font-bold
-          text-white
-          shadow-lg
-          shadow-emerald-500/20
-          transition-all
-          duration-300
-          hover:-translate-y-0.5
-          hover:shadow-emerald-500/40
-          active:scale-[0.98]
-          lg:w-auto
-        "
+                      className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 px-8 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-emerald-500/40 active:scale-[0.98] lg:w-auto"
                     >
                       <CheckCircle2 className="h-5 w-5" />
 
@@ -1718,24 +1599,7 @@ SUBSCRIPTION SERVICES
                   return (
                     <div
                       key={i}
-                      className="
-          group
-          overflow-hidden
-          rounded-3xl
-          border
-          border-white/10
-          bg-gradient-to-br
-          from-[#0F172A]
-          via-[#0B1628]
-          to-[#081120]
-          shadow-lg
-          shadow-black/20
-          transition-all
-          duration-300
-          hover:-translate-y-1
-          hover:border-cyan-500/40
-          hover:shadow-cyan-500/10
-        "
+                      className="group overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0F172A] via-[#0B1628] to-[#081120] shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/40 hover:shadow-cyan-500/10"
                     >
                       <div className="p-4">
                         <div className="flex items-start justify-between">
@@ -1743,7 +1607,7 @@ SUBSCRIPTION SERVICES
                             <Icon className="h-7 w-7 text-cyan-400" />
                           </div>
 
-                          <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-300">
+                          <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-3 py-1 text-[10px] font-bold tracking-wider text-yellow-300 uppercase">
                             {item.displayVehicle}
                           </span>
                         </div>
@@ -1762,7 +1626,7 @@ SUBSCRIPTION SERVICES
                         <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-3">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                              <p className="text-[10px] tracking-widest text-slate-500 uppercase">
                                 Price
                               </p>
 
@@ -1775,7 +1639,7 @@ SUBSCRIPTION SERVICES
                             </div>
 
                             <div className="rounded-xl bg-slate-900 px-3 py-2 text-center">
-                              <p className="text-[9px] uppercase tracking-wider text-slate-500">
+                              <p className="text-[9px] tracking-wider text-slate-500 uppercase">
                                 Time
                               </p>
 
@@ -1813,20 +1677,20 @@ SUBSCRIPTION SERVICES
 
             {cart.length > 0 && cartOpen && (
               <div
-                className={`sticky top-4 h-fit overflow-hidden transition-all duration-300 shrink-0 ${
-                  cartOpen ? "max-w-[420px] w-full" : "w-[72px]"
+                className={`sticky top-4 h-fit shrink-0 overflow-hidden transition-all duration-300 ${
+                  cartOpen ? "w-full max-w-[420px]" : "w-[72px]"
                 }`}
               >
                 <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#07111F]">
                   <div className="border-b border-white/10 bg-gradient-to-r from-[#081A33] via-[#0B1220] to-[#07111F] p-4 sm:p-6">
                     <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10 sm:h-14 sm:w-14">
                           <ShoppingCart className="h-6 w-6 text-cyan-400 sm:h-7 sm:w-7" />
                         </div>
 
                         <div className="min-w-0">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-cyan-400 sm:text-xs">
+                          <p className="text-[10px] font-semibold tracking-[0.25em] text-cyan-400 uppercase sm:text-xs">
                             Checkout
                           </p>
 
@@ -1844,26 +1708,7 @@ SUBSCRIPTION SERVICES
 
                       <button
                         onClick={() => setCartOpen(!cartOpen)}
-                        className="
-        flex
-        h-11
-        w-11
-        shrink-0
-        items-center
-        justify-center
-        rounded-2xl
-        border
-        border-white/10
-        bg-white/5
-        text-slate-300
-        transition-all
-        duration-300
-        hover:border-cyan-500/30
-        hover:bg-cyan-500/10
-        hover:text-cyan-400
-        hover:shadow-lg
-        hover:shadow-cyan-500/20
-      "
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-300 transition-all duration-300 hover:border-cyan-500/30 hover:bg-cyan-500/10 hover:text-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20"
                       >
                         {cartOpen ? (
                           <PanelRightClose className="h-5 w-5" />
@@ -1881,7 +1726,7 @@ SUBSCRIPTION SERVICES
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                        <p className="text-[11px] font-semibold tracking-[0.25em] text-cyan-400 uppercase">
                           Customer
                         </p>
 
@@ -1891,7 +1736,7 @@ SUBSCRIPTION SERVICES
 
                         <div className="mt-4 grid grid-cols-2 gap-3">
                           <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-3">
-                            <p className="text-[10px] uppercase tracking-widest text-green-300">
+                            <p className="text-[10px] tracking-widest text-green-300 uppercase">
                               Plate
                             </p>
 
@@ -1901,7 +1746,7 @@ SUBSCRIPTION SERVICES
                           </div>
 
                           <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3">
-                            <p className="text-[10px] uppercase tracking-widest text-cyan-300">
+                            <p className="text-[10px] tracking-widest text-cyan-300 uppercase">
                               Status
                             </p>
 
@@ -1976,7 +1821,7 @@ SUBSCRIPTION SERVICES
 
                                 <div className="mt-3 grid grid-cols-2 gap-3">
                                   <div>
-                                    <p className="text-[10px] uppercase tracking-widest text-emerald-200">
+                                    <p className="text-[10px] tracking-widest text-emerald-200 uppercase">
                                       Remaining
                                     </p>
 
@@ -1986,7 +1831,7 @@ SUBSCRIPTION SERVICES
                                   </div>
 
                                   <div>
-                                    <p className="text-[10px] uppercase tracking-widest text-emerald-200">
+                                    <p className="text-[10px] tracking-widest text-emerald-200 uppercase">
                                       Plan
                                     </p>
 
@@ -2045,22 +1890,7 @@ SUBSCRIPTION SERVICES
                         {cart.map((item, index) => (
                           <div
                             key={index}
-                            className="
-            group
-            rounded-3xl
-            border
-            border-white/10
-            bg-gradient-to-br
-            from-[#0F172A]
-            via-[#0B1220]
-            to-[#081120]
-            p-4
-            transition-all
-            duration-300
-            hover:border-cyan-500/30
-            hover:shadow-lg
-            hover:shadow-cyan-500/10
-          "
+                            className="group rounded-3xl border border-white/10 bg-gradient-to-br from-[#0F172A] via-[#0B1220] to-[#081120] p-4 transition-all duration-300 hover:border-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/10"
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0 flex-1">
@@ -2083,21 +1913,7 @@ SUBSCRIPTION SERVICES
 
                               <button
                                 onClick={() => removeFromCart(index)}
-                                className="
-                flex
-                h-10
-                w-10
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-red-500/20
-                bg-red-500/10
-                text-red-400
-                transition
-                hover:bg-red-500
-                hover:text-white
-              "
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 transition hover:bg-red-500 hover:text-white"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -2106,7 +1922,7 @@ SUBSCRIPTION SERVICES
                             <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/50 p-3">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                  <p className="text-[10px] tracking-widest text-slate-500 uppercase">
                                     Unit Price
                                   </p>
 
@@ -2119,7 +1935,7 @@ SUBSCRIPTION SERVICES
                                 </div>
 
                                 <div>
-                                  <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                  <p className="text-[10px] tracking-widest text-slate-500 uppercase">
                                     Total
                                   </p>
 
@@ -2137,17 +1953,7 @@ SUBSCRIPTION SERVICES
                                   onClick={() =>
                                     updateQuantity(index, "decrease")
                                   }
-                                  className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-xl
-                  text-slate-300
-                  transition
-                  hover:bg-white/10
-                "
+                                  className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-300 transition hover:bg-white/10"
                                 >
                                   <Minus className="h-4 w-4" />
                                 </button>
@@ -2160,19 +1966,7 @@ SUBSCRIPTION SERVICES
                                   onClick={() =>
                                     updateQuantity(index, "increase")
                                   }
-                                  className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-cyan-500/10
-                  text-cyan-400
-                  transition
-                  hover:bg-cyan-500
-                  hover:text-white
-                "
+                                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400 transition hover:bg-cyan-500 hover:text-white"
                                 >
                                   <Plus className="h-4 w-4" />
                                 </button>
@@ -2221,7 +2015,7 @@ SUBSCRIPTION SERVICES
 
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                            <p className="text-xs tracking-[0.2em] text-cyan-400 uppercase">
                               Total Payable
                             </p>
 
@@ -2231,7 +2025,7 @@ SUBSCRIPTION SERVICES
                           </div>
 
                           <div className="text-right">
-                            <h2 className="text-3xl sm:text-4xl font-black text-cyan-400">
+                            <h2 className="text-3xl font-black text-cyan-400 sm:text-4xl">
                               KSh{" "}
                               {hasSubscriptionWash
                                 ? "0"
@@ -2257,22 +2051,15 @@ SUBSCRIPTION SERVICES
                       </div>
                     )}
 
-                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <button
                         onClick={() => generateInvoice()}
                         disabled={processingPayment}
-                        className={`
-        group flex h-14 items-center justify-center gap-3
-        rounded-2xl
-        font-bold
-        transition-all
-        duration-300
-        ${
-          processingPayment
-            ? "cursor-not-allowed bg-slate-700 text-slate-300 opacity-70"
-            : "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30 hover:-translate-y-0.5 hover:shadow-cyan-500/50"
-        }
-      `}
+                        className={`group flex h-14 items-center justify-center gap-3 rounded-2xl font-bold transition-all duration-300 ${
+                          processingPayment
+                            ? "cursor-not-allowed bg-slate-700 text-slate-300 opacity-70"
+                            : "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30 hover:-translate-y-0.5 hover:shadow-cyan-500/50"
+                        } `}
                       >
                         {processingPayment ? (
                           <>
@@ -2289,18 +2076,7 @@ SUBSCRIPTION SERVICES
 
                       <button
                         onClick={() => setCart([])}
-                        className="
-        flex h-14 items-center justify-center gap-3
-        rounded-2xl
-        border border-red-500/20
-        bg-red-500/10
-        font-bold
-        text-red-300
-        transition-all
-        duration-300
-        hover:bg-red-500/20
-        hover:border-red-500/40
-      "
+                        className="flex h-14 items-center justify-center gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 font-bold text-red-300 transition-all duration-300 hover:border-red-500/40 hover:bg-red-500/20"
                       >
                         <Trash2 className="h-5 w-5" />
                         Clear Cart
@@ -2321,7 +2097,7 @@ SUBSCRIPTION SERVICES
           <div className="w-full max-w-2xl rounded-3xl border border-white/10 bg-[#0B1220] p-8">
             <div className="mb-6 flex items-start justify-between">
               <div>
-                <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                <p className="mb-2 text-sm font-semibold tracking-[0.2em] text-cyan-400 uppercase">
                   Vehicle Registration
                 </p>
 
@@ -2359,7 +2135,7 @@ SUBSCRIPTION SERVICES
                   setNewVehiclePlate(e.target.value.toUpperCase())
                 }
                 placeholder="Plate Number"
-                className="h-14 rounded-2xl border border-white/10 bg-[#111827] px-4 uppercase text-white"
+                className="h-14 rounded-2xl border border-white/10 bg-[#111827] px-4 text-white uppercase"
               />
 
               <input
@@ -2373,7 +2149,7 @@ SUBSCRIPTION SERVICES
                 value={newVehicleColor}
                 onChange={(e) => setNewVehicleColor(e.target.value)}
                 placeholder="Vehicle Color"
-                className="md:col-span-2 h-14 rounded-2xl border border-white/10 bg-[#111827] px-4 text-white"
+                className="h-14 rounded-2xl border border-white/10 bg-[#111827] px-4 text-white md:col-span-2"
               />
             </div>
 
@@ -2395,7 +2171,7 @@ SUBSCRIPTION SERVICES
 
               <button
                 onClick={() => setCartOpen(!cartOpen)}
-                className="fixed top-6 right-6 z-[999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan-500 shadow-lg shadow-cyan-500/30 hover:bg-cyan-600 transition"
+                className="fixed top-6 right-6 z-[999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan-500 shadow-lg shadow-cyan-500/30 transition hover:bg-cyan-600"
               >
                 <ShoppingCart className="h-6 w-6 text-white" />
 
@@ -2415,7 +2191,7 @@ SUBSCRIPTION SERVICES
 ========================================================== */}
 
       {showRewardDialog && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-3 backdrop-blur-sm">
           <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-cyan-500/20 bg-[#081A33] shadow-2xl">
             {/* ================= HEADER ================= */}
 
@@ -2450,7 +2226,7 @@ SUBSCRIPTION SERVICES
 
             {/* ================= REWARDS ================= */}
 
-            <div className="max-h-[45vh] overflow-y-auto p-4 space-y-3">
+            <div className="max-h-[45vh] space-y-3 overflow-y-auto p-4">
               {availableRewards.map((reward) => {
                 const selected = selectedReward?.id === reward.id;
 
@@ -2473,35 +2249,31 @@ SUBSCRIPTION SERVICES
                         rewardId: reward.id,
                       });
                     }}
-                    className={`w-full rounded-2xl border text-left transition
-
-              ${
-                selected
-                  ? "border-cyan-500 bg-cyan-500/10 ring-1 ring-cyan-400/30"
-                  : "border-slate-700 bg-[#0B1220] hover:border-cyan-400"
-              }`}
+                    className={`w-full rounded-2xl border text-left transition ${
+                      selected
+                        ? "border-cyan-500 bg-cyan-500/10 ring-1 ring-cyan-400/30"
+                        : "border-slate-700 bg-[#0B1220] hover:border-cyan-400"
+                    }`}
                   >
                     <div className="flex items-center gap-4 p-4">
                       <div
-                        className={`flex h-11 w-11 items-center justify-center rounded-xl
-
-                  ${
-                    selected
-                      ? "bg-cyan-500 text-white"
-                      : "bg-slate-800 text-cyan-300"
-                  }`}
+                        className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+                          selected
+                            ? "bg-cyan-500 text-white"
+                            : "bg-slate-800 text-cyan-300"
+                        }`}
                       >
                         <Sparkles className="h-5 w-5" />
                       </div>
 
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="truncate text-base font-semibold text-white">
                             {reward.title}
                           </h3>
 
                           {selected && (
-                            <BadgeCheck className="h-4 w-4 text-green-400 shrink-0" />
+                            <BadgeCheck className="h-4 w-4 shrink-0 text-green-400" />
                           )}
                         </div>
 
@@ -2522,7 +2294,7 @@ SUBSCRIPTION SERVICES
                       </div>
 
                       <div className="text-right">
-                        <p className="text-[10px] uppercase tracking-wide text-cyan-300">
+                        <p className="text-[10px] tracking-wide text-cyan-300 uppercase">
                           Cost
                         </p>
 
@@ -2542,7 +2314,7 @@ SUBSCRIPTION SERVICES
 
             <div className="border-t border-slate-800 bg-[#07142B] p-4">
               <div className="mb-4 flex items-start gap-2 rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-3">
-                <Star className="mt-0.5 h-4 w-4 text-yellow-300 shrink-0" />
+                <Star className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300" />
 
                 <p className="text-xs text-yellow-100">
                   Redeeming a reward immediately deducts the required loyalty
@@ -2561,7 +2333,7 @@ SUBSCRIPTION SERVICES
                       generateInvoice();
                     }
                   }}
-                  className="flex-1 rounded-xl border border-slate-700 py-3 font-medium text-slate-300 hover:bg-slate-800 transition"
+                  className="flex-1 rounded-xl border border-slate-700 py-3 font-medium text-slate-300 transition hover:bg-slate-800"
                 >
                   Skip
                 </button>
@@ -2578,7 +2350,10 @@ SUBSCRIPTION SERVICES
                     setShowRewardDialog(false);
 
                     if (!selectedRewardService) {
-                      alert("Select a service");
+                      toast.warning("Select a service", {
+                        description:
+                          "Choose at least one wash service before continuing.",
+                      });
                       return;
                     }
 
@@ -2632,42 +2407,11 @@ SUBSCRIPTION SERVICES
       {cart.length > 0 && (
         <button
           onClick={() => setCartOpen(!cartOpen)}
-          className="
-      fixed
-      bottom-6
-      right-6
-      z-50
-      flex
-      h-16
-      w-16
-      items-center
-      justify-center
-      rounded-full
-      bg-cyan-500
-      shadow-xl
-      hover:scale-105
-      transition
-    "
+          className="fixed right-6 bottom-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 shadow-xl transition hover:scale-105"
         >
           <ShoppingCart className="h-7 w-7 text-white" />
 
-          <span
-            className="
-      absolute
-      -top-2
-      -right-2
-      flex
-      h-6
-      w-6
-      items-center
-      justify-center
-      rounded-full
-      bg-red-500
-      text-xs
-      font-bold
-      text-white
-    "
-          >
+          <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
             {cart.length}
           </span>
         </button>

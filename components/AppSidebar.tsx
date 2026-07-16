@@ -409,8 +409,8 @@ function AppSidebar() {
 
   if (initialLoading) {
     return (
-      <div className="hidden lg:flex w-[290px] h-screen bg-[#020817] border-r border-white/5 items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+      <div className="hidden h-screen w-[290px] items-center justify-center border-r border-white/5 bg-[#020817] lg:flex">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent" />
       </div>
     );
   }
@@ -423,11 +423,11 @@ function AppSidebar() {
     <>
       {/* MOBILE TOPBAR */}
 
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-[80] h-16 bg-[#020817]/95 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4">
+      <div className="fixed top-0 right-0 left-0 z-[80] flex h-16 items-center justify-between border-b border-white/5 bg-[#020817]/95 px-4 backdrop-blur-md lg:hidden">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
-            className="h-11 w-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center"
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/5 bg-white/5"
           >
             {mobileOpen ? (
               <X className="h-5 w-5 text-white" />
@@ -437,19 +437,19 @@ function AppSidebar() {
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10">
               <Sparkles className="h-5 w-5 text-cyan-400" />
             </div>
 
             <div>
-              <h1 className="font-black text-white text-sm">Nexus Car Wash</h1>
+              <h1 className="text-sm font-black text-white">Nexus Car Wash</h1>
 
               <p className="text-xs text-cyan-400">Management Platform</p>
             </div>
           </div>
         </div>
 
-        <button className="h-11 w-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center">
+        <button className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/5 bg-white/5">
           <Bell className="h-5 w-5 text-white" />
         </button>
       </div>
@@ -466,7 +466,7 @@ function AppSidebar() {
       {/* SPACER */}
 
       <div
-        className={`hidden lg:block transition-all duration-300 ${
+        className={`hidden transition-all duration-300 lg:block ${
           collapsed ? "w-[90px]" : "w-[290px]"
         }`}
       />
@@ -474,33 +474,23 @@ function AppSidebar() {
       {/* SIDEBAR */}
 
       <aside
-        className={`
-          fixed top-0 left-0 z-[100]
-          h-screen bg-[#020817]
-          border-r border-white/5
-          transition-all duration-300
-          flex flex-col
-
-          ${collapsed ? "w-[90px]" : "w-[290px]"}
-
-          ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
+        className={`fixed top-0 left-0 z-[100] flex h-screen flex-col border-r border-white/5 bg-[#020817] transition-all duration-300 ${collapsed ? "w-[90px]" : "w-[290px]"} ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         {/* HEADER */}
 
-        <div className="h-[82px] border-b border-white/5 px-4 flex items-center justify-between">
+        <div className="flex h-[82px] items-center justify-between border-b border-white/5 px-4">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="h-12 w-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center shrink-0">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10">
               <Sparkles className="h-5 w-5 text-cyan-400" />
             </div>
 
             {!collapsed && (
               <div className="overflow-hidden">
-                <h2 className="font-black text-white truncate">
+                <h2 className="truncate font-black text-white">
                   Nexus Car Wash
                 </h2>
 
-                <p className="text-xs text-cyan-400 truncate">
+                <p className="truncate text-xs text-cyan-400">
                   Management Platform
                 </p>
               </div>
@@ -509,7 +499,7 @@ function AppSidebar() {
 
           <button
             onClick={() => setCollapsed((prev) => !prev)}
-            className="hidden lg:flex h-10 w-10 rounded-2xl bg-white/5 border border-white/5 items-center justify-center"
+            className="hidden h-10 w-10 items-center justify-center rounded-2xl border border-white/5 bg-white/5 lg:flex"
           >
             {collapsed ? (
               <Menu className="h-4 w-4 text-white" />
@@ -521,28 +511,28 @@ function AppSidebar() {
 
         {/* USER */}
 
-        <div className="p-4 border-b border-white/5">
-          <div className="rounded-3xl bg-[#081120] border border-white/5 p-4">
+        <div className="border-b border-white/5 p-4">
+          <div className="rounded-3xl border border-white/5 bg-[#081120] p-4">
             <div
               className={`flex ${
                 collapsed ? "justify-center" : "items-start gap-3"
               }`}
             >
-              <div className="h-12 w-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/10 flex items-center justify-center shrink-0">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/10 bg-cyan-500/10">
                 <ShieldCheck className="h-5 w-5 text-cyan-400" />
               </div>
 
               {!collapsed && (
                 <div className="overflow-hidden">
-                  <h3 className="font-bold text-white truncate">
+                  <h3 className="truncate font-bold text-white">
                     {profile?.role?.toUpperCase()}
                   </h3>
 
-                  <p className="text-xs text-slate-400 truncate mt-1">
+                  <p className="mt-1 truncate text-xs text-slate-400">
                     {userEmail}
                   </p>
 
-                  <div className="flex items-center gap-2 mt-3">
+                  <div className="mt-3 flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-400" />
 
                     <span className="text-xs text-emerald-400">
@@ -564,7 +554,7 @@ function AppSidebar() {
                 section.items.length > 0 && (
                   <div key={section.section}>
                     {!collapsed && (
-                      <p className="px-3 mb-3 text-[11px] font-bold tracking-[0.25em] text-cyan-400">
+                      <p className="mb-3 px-3 text-[11px] font-bold tracking-[0.25em] text-cyan-400">
                         {section.section}
                       </p>
                     )}
@@ -579,18 +569,11 @@ function AppSidebar() {
                           <Link
                             key={item.key}
                             href={item.href}
-                            className={`
-                              group flex items-center
-                              ${collapsed ? "justify-center" : "gap-3"}
-                              rounded-2xl px-4 py-3
-                              transition-all duration-200
-
-                              ${
-                                active
-                                  ? "bg-cyan-500 text-white"
-                                  : "text-slate-300 hover:bg-white/5 hover:text-white"
-                              }
-                            `}
+                            className={`group flex items-center ${collapsed ? "justify-center" : "gap-3"} rounded-2xl px-4 py-3 transition-all duration-200 ${
+                              active
+                                ? "bg-cyan-500 text-white"
+                                : "text-slate-300 hover:bg-white/5 hover:text-white"
+                            } `}
                           >
                             <item.icon
                               className={`h-5 w-5 shrink-0 ${
@@ -623,10 +606,10 @@ function AppSidebar() {
 
         {/* FOOTER */}
 
-        <div className="p-4 border-t border-white/5">
+        <div className="border-t border-white/5 p-4">
           <button
             onClick={handleLogout}
-            className="w-full h-12 rounded-2xl bg-red-500/10 border border-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 flex items-center justify-center gap-3"
+            className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-red-500/10 bg-red-500/10 text-red-400 transition-all duration-200 hover:bg-red-500 hover:text-white"
           >
             <LogOut className="h-5 w-5 shrink-0" />
 
