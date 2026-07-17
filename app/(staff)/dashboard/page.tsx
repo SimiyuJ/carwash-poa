@@ -219,68 +219,65 @@ export default function DashboardPage() {
     <div className="space-y-6 p-6">
       {/* HEADER */}
 
-      <Card className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-2xl">
-        <CardContent className="relative p-5 sm:p-6 lg:p-8">
-          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
-          <div className="absolute -left-16 bottom-0 h-40 w-40 rounded-full bg-blue-600/10 blur-3xl" />
+      <Card className="overflow-hidden rounded-[28px] border border-cyan-500/10 bg-gradient-to-br from-[#071428] via-[#09172D] to-[#06111F] shadow-[0_20px_60px_rgba(0,0,0,.35)]">
+        <CardContent className="relative p-4 sm:p-5 lg:p-6">
+          {/* Glow */}
 
-          <div className="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 shadow-lg shadow-cyan-500/10">
-                <Building2 className="h-10 w-10 text-cyan-400" />
+          <div className="absolute -top-12 -right-12 h-44 w-44 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute bottom-0 -left-10 h-36 w-36 rounded-full bg-blue-600/10 blur-3xl" />
+
+          <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            {/* LEFT */}
+
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/20 to-blue-600/20">
+                <Building2 className="h-7 w-7 text-cyan-400" />
               </div>
 
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-cyan-300 uppercase">
                     Enterprise Dashboard
-                  </h1>
+                  </Badge>
 
-                  <Badge className="border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-emerald-400">
-                    <ShieldCheck className="mr-1 h-3.5 w-3.5" />
-                    Production Ready
+                  <Badge className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-emerald-300 uppercase">
+                    <ShieldCheck className="mr-1 h-3 w-3" />
+                    Live
                   </Badge>
                 </div>
 
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-                  Manage your carwash operations, monitor branches, staff
-                  performance, invoices, revenue and customer activity from one
-                  intelligent dashboard.
+                <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+                  Dashboard Overview
+                </h1>
+
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-400">
+                  Monitor branches, revenue, customers, staff performance and
+                  daily operations from one intelligent dashboard.
                 </p>
 
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <div className="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-2">
-                    <ShieldCheck className="h-4 w-4 text-emerald-400" />
-
-                    <span className="text-sm font-medium text-slate-300">
-                      Secure Platform
-                    </span>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-300">
+                    Multi Branch
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-2">
-                    <Layers3 className="h-4 w-4 text-cyan-400" />
-
-                    <span className="text-sm font-medium text-slate-300">
-                      Multi Branch
-                    </span>
+                  <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-300">
+                    Secure Platform
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-2">
-                    <Car className="h-4 w-4 text-orange-400" />
-
-                    <span className="text-sm font-medium text-slate-300">
-                      SaaS POS
-                    </span>
+                  <div className="rounded-xl border border-orange-500/15 bg-orange-500/10 px-3 py-1.5 text-xs font-semibold text-orange-300">
+                    SaaS POS
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row xl:flex-col">
+            {/* RIGHT */}
+
+            <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
               {profile?.role?.toLowerCase() === "manager" && (
-                <Link href="/staff/add-staff" className="w-full">
-                  <Button className="h-12 w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.02] hover:shadow-cyan-500/30">
-                    <UserPlus className="mr-2 h-5 w-5" />
+                <Link href="/staff/add-staff" className="w-full lg:w-auto">
+                  <Button className="h-11 w-full rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 font-semibold shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02] hover:shadow-cyan-500/40">
+                    <UserPlus className="mr-2 h-4 w-4" />
                     Add Staff
                   </Button>
                 </Link>
@@ -289,25 +286,27 @@ export default function DashboardPage() {
               <Button
                 variant="outline"
                 onClick={loadDashboard}
-                className="h-12 rounded-2xl border-slate-700 bg-slate-900/80 text-white transition hover:border-cyan-500 hover:bg-slate-800"
+                className="h-11 rounded-2xl border-slate-700 bg-[#0B1220] text-white hover:border-cyan-500 hover:bg-cyan-500/10"
               >
-                <RefreshCw className="mr-2 h-5 w-5" />
-                Refresh Dashboard
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-xl">
-        <CardContent className="p-3 sm:p-5">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/5 p-3 transition-all hover:border-orange-400/40 hover:bg-orange-500/10">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10">
+      <Card className="overflow-hidden rounded-[28px] border border-cyan-500/10 bg-gradient-to-br from-[#071428] via-[#09172D] to-[#06111F] shadow-[0_20px_60px_rgba(0,0,0,.35)]">
+        <CardContent className="p-3 sm:p-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {/* Branch */}
+
+            <div className="group rounded-2xl border border-orange-500/15 bg-gradient-to-b from-orange-500/10 to-transparent p-3 transition-all hover:-translate-y-1 hover:border-orange-400/40">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/15">
                 <MapPin className="h-5 w-5 text-orange-400" />
               </div>
 
-              <p className="mt-3 text-center text-[10px] font-semibold uppercase tracking-widest text-slate-500 sm:text-xs">
+              <p className="mt-2 text-center text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
                 Branch
               </p>
 
@@ -316,30 +315,34 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-3 transition-all hover:border-purple-400/40 hover:bg-purple-500/10">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10">
-                <Users className="h-5 w-5 text-purple-400" />
+            {/* Role */}
+
+            <div className="group rounded-2xl border border-violet-500/15 bg-gradient-to-b from-violet-500/10 to-transparent p-3 transition-all hover:-translate-y-1 hover:border-violet-400/40">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/15">
+                <Users className="h-5 w-5 text-violet-400" />
               </div>
 
-              <p className="mt-3 text-center text-[10px] font-semibold uppercase tracking-widest text-slate-500 sm:text-xs">
+              <p className="mt-2 text-center text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
                 Role
               </p>
 
-              <p className="mt-1 truncate text-center text-xs font-bold text-purple-300 capitalize sm:text-sm">
-                {profile?.role || "Loading..."}
+              <p className="mt-1 truncate text-center text-xs font-bold text-violet-300 capitalize sm:text-sm">
+                {profile?.role || "Loading"}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-3 transition-all hover:border-cyan-400/40 hover:bg-cyan-500/10">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10">
+            {/* Carwash */}
+
+            <div className="group rounded-2xl border border-cyan-500/15 bg-gradient-to-b from-cyan-500/10 to-transparent p-3 transition-all hover:-translate-y-1 hover:border-cyan-400/40">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15">
                 <Building2 className="h-5 w-5 text-cyan-400" />
               </div>
 
-              <p className="mt-3 text-center text-[10px] font-semibold uppercase tracking-widest text-slate-500 sm:text-xs">
+              <p className="mt-2 text-center text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
                 Carwash
               </p>
 
-              <p className="mt-1 truncate text-center font-mono text-[11px] font-bold text-cyan-300 sm:text-sm">
+              <p className="mt-1 truncate text-center text-[11px] font-bold text-cyan-300 sm:text-sm">
                 {profile?.carwash_id || "--"}
               </p>
             </div>
@@ -347,107 +350,137 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-3 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-        <Card className="group overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/15">
-              <Wallet className="h-5 w-5 text-emerald-400" />
-            </div>
+      {/* =========================================================
+    FINANCIAL OVERVIEW
+========================================================= */}
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Today
-            </p>
-
-            <h2 className="mt-1 text-sm font-black text-white sm:text-2xl">
-              KSh {kpis.revenueToday.toLocaleString()}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-black tracking-tight text-white">
+              Financial Overview
             </h2>
-          </CardContent>
-        </Card>
 
-        <Card className="group overflow-hidden rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400 hover:shadow-xl hover:shadow-cyan-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-500/15">
-              <TrendingUp className="h-5 w-5 text-cyan-400" />
-            </div>
-
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Month
+            <p className="text-xs text-slate-400">
+              Revenue, profit and business performance
             </p>
+          </div>
+        </div>
 
-            <h2 className="mt-1 text-sm font-black text-white sm:text-2xl">
-              KSh {kpis.revenueMonth.toLocaleString()}
-            </h2>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6">
+          {/* TODAY */}
 
-        <Card className="group overflow-hidden rounded-3xl border border-green-500/20 bg-gradient-to-br from-green-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-green-400 hover:shadow-xl hover:shadow-green-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-green-500/15">
-              <BadgeDollarSign className="h-5 w-5 text-green-400" />
-            </div>
+          <Card className="group rounded-2xl border border-emerald-500/15 bg-gradient-to-b from-emerald-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/15">
+                <Wallet className="h-4 w-4 text-emerald-400" />
+              </div>
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Profit
-            </p>
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Today
+              </p>
 
-            <h2 className="mt-1 text-sm font-black text-green-400 sm:text-2xl">
-              KSh {kpis.netProfit.toLocaleString()}
-            </h2>
-          </CardContent>
-        </Card>
+              <h3 className="mt-1 truncate text-xs font-black text-emerald-300 sm:text-base">
+                KSh {kpis.revenueToday.toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
 
-        <Card className="group overflow-hidden rounded-3xl border border-red-500/20 bg-gradient-to-br from-red-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-red-400 hover:shadow-xl hover:shadow-red-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-500/15">
-              <ReceiptText className="h-5 w-5 text-red-400" />
-            </div>
+          {/* MONTH */}
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Expenses
-            </p>
+          <Card className="group rounded-2xl border border-cyan-500/15 bg-gradient-to-b from-cyan-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/15">
+                <TrendingUp className="h-4 w-4 text-cyan-400" />
+              </div>
 
-            <h2 className="mt-1 text-sm font-black text-red-400 sm:text-2xl">
-              KSh {kpis.expensesMonth.toLocaleString()}
-            </h2>
-          </CardContent>
-        </Card>
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Month
+              </p>
 
-        <Card className="group overflow-hidden rounded-3xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-yellow-400 hover:shadow-xl hover:shadow-yellow-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-yellow-500/15">
-              <Clock3 className="h-5 w-5 text-yellow-400" />
-            </div>
+              <h3 className="mt-1 truncate text-xs font-black text-cyan-300 sm:text-base">
+                KSh {kpis.revenueMonth.toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Pending
-            </p>
+          {/* PROFIT */}
 
-            <h2 className="mt-1 text-sm font-black text-yellow-400 sm:text-2xl">
-              KSh {kpis.pendingPayments.toLocaleString()}
-            </h2>
-          </CardContent>
-        </Card>
+          <Card className="group rounded-2xl border border-lime-500/15 bg-gradient-to-b from-lime-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-lime-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime-500/15">
+                <BadgeDollarSign className="h-4 w-4 text-lime-400" />
+              </div>
 
-        <Card className="group overflow-hidden rounded-3xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 via-[#081A33] to-[#0B1220] text-white transition-all duration-300 hover:-translate-y-1 hover:border-violet-400 hover:shadow-xl hover:shadow-violet-500/10">
-          <CardContent className="p-3 sm:p-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/15">
-              <BarChart3 className="h-5 w-5 text-violet-400" />
-            </div>
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Profit
+              </p>
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-slate-400 sm:text-xs">
-              Avg Ticket
-            </p>
+              <h3 className="mt-1 truncate text-xs font-black text-lime-300 sm:text-base">
+                KSh {kpis.netProfit.toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
 
-            <h2 className="mt-1 text-sm font-black text-violet-400 sm:text-2xl">
-              KSh {Math.round(kpis.averageTicket).toLocaleString()}
-            </h2>
-          </CardContent>
-        </Card>
+          {/* EXPENSES */}
+
+          <Card className="group rounded-2xl border border-rose-500/15 bg-gradient-to-b from-rose-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-rose-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/15">
+                <ReceiptText className="h-4 w-4 text-rose-400" />
+              </div>
+
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Expenses
+              </p>
+
+              <h3 className="mt-1 truncate text-xs font-black text-rose-300 sm:text-base">
+                KSh {kpis.expensesMonth.toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
+
+          {/* PENDING */}
+
+          <Card className="group rounded-2xl border border-amber-500/15 bg-gradient-to-b from-amber-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/15">
+                <Clock3 className="h-4 w-4 text-amber-400" />
+              </div>
+
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Pending
+              </p>
+
+              <h3 className="mt-1 truncate text-xs font-black text-amber-300 sm:text-base">
+                KSh {kpis.pendingPayments.toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
+
+          {/* AVG TICKET */}
+
+          <Card className="group rounded-2xl border border-violet-500/15 bg-gradient-to-b from-violet-500/10 to-[#081321] transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/40">
+            <CardContent className="p-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/15">
+                <BarChart3 className="h-4 w-4 text-violet-400" />
+              </div>
+
+              <p className="mt-2 text-[9px] font-bold tracking-[0.25em] text-slate-500 uppercase">
+                Avg Ticket
+              </p>
+
+              <h3 className="mt-1 truncate text-xs font-black text-violet-300 sm:text-base">
+                KSh {Math.round(kpis.averageTicket).toLocaleString()}
+              </h3>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Card className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-2xl">
         <CardContent className="relative p-5 sm:p-6 lg:p-8">
-          <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-cyan-500/10 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-blue-500/10 blur-3xl" />
 
           <div className="relative z-10">
@@ -477,13 +510,11 @@ export default function DashboardPage() {
                     key={item.value}
                     size="sm"
                     onClick={() => setPeriod(item.value)}
-                    className={`h-10 rounded-xl transition-all
-
-              ${
-                period === item.value
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
-                  : "border border-slate-700 bg-slate-900/80 text-slate-300 hover:border-cyan-500 hover:bg-slate-800"
-              }`}
+                    className={`h-10 rounded-xl transition-all ${
+                      period === item.value
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                        : "border border-slate-700 bg-slate-900/80 text-slate-300 hover:border-cyan-500 hover:bg-slate-800"
+                    }`}
                   >
                     {item.label}
                   </Button>
@@ -576,7 +607,7 @@ export default function DashboardPage() {
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
-                <p className="text-xs uppercase tracking-widest text-green-300">
+                <p className="text-xs tracking-widest text-green-300 uppercase">
                   Total Revenue
                 </p>
 
@@ -586,7 +617,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-4">
-                <p className="text-xs uppercase tracking-widest text-cyan-300">
+                <p className="text-xs tracking-widest text-cyan-300 uppercase">
                   Average Ticket
                 </p>
 
@@ -599,10 +630,10 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Card className="overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-2xl">
           <CardContent className="relative p-5 sm:p-6 lg:p-8">
-            <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
+            <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
             <div className="absolute bottom-0 left-0 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl" />
 
             <div className="relative z-10">
@@ -622,7 +653,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-3">
-                  <p className="text-xs uppercase tracking-widest text-cyan-300">
+                  <p className="text-xs tracking-widest text-cyan-300 uppercase">
                     Methods
                   </p>
 
@@ -759,7 +790,7 @@ export default function DashboardPage() {
 
         <Card className="overflow-hidden rounded-3xl border border-violet-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-2xl">
           <CardContent className="relative p-5 sm:p-6 lg:p-8">
-            <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl" />
+            <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl" />
             <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
 
             <div className="relative z-10">
@@ -779,7 +810,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 px-5 py-3">
-                  <p className="text-xs uppercase tracking-widest text-violet-300">
+                  <p className="text-xs tracking-widest text-violet-300 uppercase">
                     Services
                   </p>
 
@@ -871,7 +902,7 @@ export default function DashboardPage() {
 
               <div className="mt-6 grid grid-cols-3 gap-3">
                 <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
+                  <p className="text-[10px] font-semibold tracking-widest text-cyan-300 uppercase">
                     Top Service
                   </p>
 
@@ -881,7 +912,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-green-300">
+                  <p className="text-[10px] font-semibold tracking-widest text-green-300 uppercase">
                     Revenue
                   </p>
 
@@ -894,7 +925,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+                  <p className="text-[10px] font-semibold tracking-widest text-violet-300 uppercase">
                     Services
                   </p>
 
@@ -910,7 +941,7 @@ export default function DashboardPage() {
 
       <Card className="overflow-hidden rounded-3xl border border-amber-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] text-white shadow-2xl">
         <CardContent className="relative p-5 sm:p-6 lg:p-8">
-          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-amber-500/10 blur-3xl" />
+          <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-amber-500/10 blur-3xl" />
           <div className="absolute bottom-0 left-0 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
 
           <div className="relative z-10">
@@ -930,7 +961,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-5 py-3">
-                <p className="text-xs uppercase tracking-widest text-amber-300">
+                <p className="text-xs tracking-widest text-amber-300 uppercase">
                   Customers
                 </p>
 
@@ -946,19 +977,17 @@ export default function DashboardPage() {
                   key={customer.customer_id}
                   className="group flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/40 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/30 hover:bg-slate-900/70"
                 >
-                  <div className="flex items-center gap-4 min-w-0">
+                  <div className="flex min-w-0 items-center gap-4">
                     <div
-                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-black
-
-                ${
-                  index === 0
-                    ? "bg-yellow-500/20 text-yellow-400"
-                    : index === 1
-                      ? "bg-slate-400/20 text-slate-300"
-                      : index === 2
-                        ? "bg-orange-500/20 text-orange-400"
-                        : "bg-cyan-500/10 text-cyan-400"
-                }`}
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl font-black ${
+                        index === 0
+                          ? "bg-yellow-500/20 text-yellow-400"
+                          : index === 1
+                            ? "bg-slate-400/20 text-slate-300"
+                            : index === 2
+                              ? "bg-orange-500/20 text-orange-400"
+                              : "bg-cyan-500/10 text-cyan-400"
+                      }`}
                     >
                       #{index + 1}
                     </div>
@@ -978,7 +1007,7 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="text-right">
-                    <p className="text-xs uppercase tracking-widest text-slate-500">
+                    <p className="text-xs tracking-widest text-slate-500 uppercase">
                       Total Spent
                     </p>
 
@@ -992,7 +1021,7 @@ export default function DashboardPage() {
 
             <div className="mt-6 grid grid-cols-3 gap-3">
               <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
+                <p className="text-[10px] font-semibold tracking-widest text-cyan-300 uppercase">
                   Top Customer
                 </p>
 
@@ -1002,7 +1031,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-green-300">
+                <p className="text-[10px] font-semibold tracking-widest text-green-300 uppercase">
                   Highest Spend
                 </p>
 
@@ -1013,7 +1042,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-violet-300">
+                <p className="text-[10px] font-semibold tracking-widest text-violet-300 uppercase">
                   Total Listed
                 </p>
 

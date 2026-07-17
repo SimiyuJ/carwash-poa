@@ -391,7 +391,9 @@ export default function POSPage() {
 
         setSearchType("info");
 
-        setSearchMessage("Vehicle not found. Register a new vehicle.");
+        setSearchMessage(
+          "Vehicle not found. Register a new vehicle. Or proceed as walk in customer",
+        );
 
         setCustomerPlate(cleanPlate);
 
@@ -1309,74 +1311,82 @@ SUBSCRIPTION SERVICES
       <div className="min-h-screen bg-[#020817] text-white">
         {/* HEADER */}
 
-        <div className="relative overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-2xl">
-          <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[28px] border border-cyan-500/10 bg-gradient-to-br from-[#071428] via-[#09172D] to-[#06111F] shadow-[0_20px_60px_rgba(0,0,0,.35)]">
+          {/* Glow */}
 
-          <div className="relative z-10 p-5 sm:p-6 lg:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-start gap-4 sm:gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border border-cyan-500/20 bg-cyan-500/10 sm:h-20 sm:w-20">
-                  <Car className="h-8 w-8 text-cyan-400 sm:h-10 sm:w-10" />
+          <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="absolute bottom-0 -left-10 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl" />
+
+          <div className="relative z-10 p-4 sm:p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              {/* Left */}
+
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/20 to-blue-600/20">
+                  <Car className="h-7 w-7 text-cyan-400" />
                 </div>
 
-                <div className="min-w-0">
-                  <span className="inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold tracking-[0.25em] text-cyan-300 uppercase">
-                    Multi Branch POS
-                  </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.2em] text-cyan-300 uppercase">
+                      POS Terminal
+                    </span>
 
-                  <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.2em] text-emerald-300 uppercase">
+                      Online
+                    </span>
+                  </div>
+
+                  <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
                     WashPro Terminal
                   </h1>
 
-                  <p className="mt-2 max-w-2xl text-sm text-slate-400 sm:text-base">
-                    Manage vehicle check-ins, payments, invoices and customer
-                    loyalty from one intelligent dashboard.
+                  <p className="mt-1 text-sm text-slate-400">
+                    Smart billing, check-ins & payments.
                   </p>
+                </div>
+              </div>
 
-                  <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
-                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
-                      <Building2 className="h-4 w-4 shrink-0 text-cyan-400 sm:h-5 sm:w-5" />
+              {/* Right */}
 
-                      <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
-                          Branch
-                        </p>
-
-                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
-                          {currentBranchData?.name || "Main Branch"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
-                      <MapPin className="h-4 w-4 shrink-0 text-green-400 sm:h-5 sm:w-5" />
-
-                      <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
-                          Location
-                        </p>
-
-                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
-                          {currentBranchData?.location || "Not Set"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-800 bg-slate-950/40 p-2.5 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3">
-                      <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400 sm:h-5 sm:w-5" />
-
-                      <div className="min-w-0 text-center sm:text-left">
-                        <p className="text-[9px] tracking-wider text-slate-500 uppercase sm:text-[10px]">
-                          Role
-                        </p>
-
-                        <p className="truncate text-xs font-semibold text-white sm:text-sm">
-                          {profile?.role || "Staff"}
-                        </p>
-                      </div>
-                    </div>
+              <div className="grid w-full grid-cols-3 gap-2 lg:w-auto">
+                <div className="rounded-2xl border border-orange-500/15 bg-orange-500/10 p-3">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4 text-orange-400" />
+                    <span className="text-[9px] font-bold tracking-[0.2em] text-orange-300 uppercase">
+                      Branch
+                    </span>
                   </div>
+
+                  <p className="mt-2 truncate text-xs font-bold text-white">
+                    {currentBranchData?.name || "Main Branch"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/10 p-3">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-emerald-400" />
+                    <span className="text-[9px] font-bold tracking-[0.2em] text-emerald-300 uppercase">
+                      Location
+                    </span>
+                  </div>
+
+                  <p className="mt-2 truncate text-xs font-bold text-white">
+                    {currentBranchData?.location || "Not Set"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-cyan-500/15 bg-cyan-500/10 p-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-cyan-400" />
+                    <span className="text-[9px] font-bold tracking-[0.2em] text-cyan-300 uppercase">
+                      Role
+                    </span>
+                  </div>
+
+                  <p className="mt-2 truncate text-xs font-bold text-white capitalize">
+                    {profile?.role || "Staff"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1398,94 +1408,97 @@ SUBSCRIPTION SERVICES
             <div>
               {/* VEHICLE SEARCH */}
 
-              <div className="mt-6 overflow-hidden rounded-3xl border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-xl">
-                <div className="p-4 sm:p-5 lg:p-6">
-                  <div className="mb-5 flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-500/20 bg-cyan-500/10">
-                      <Car className="h-7 w-7 text-cyan-400" />
+              <div className="mt-4 overflow-hidden rounded-[28px] border border-cyan-500/10 bg-gradient-to-br from-[#081A33] via-[#0B1220] to-[#020817] shadow-lg shadow-cyan-500/5">
+                <div className="p-4 sm:p-5">
+                  {/* Header */}
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/10 ring-1 ring-cyan-500/20">
+                      <Search className="h-5 w-5 text-cyan-400" />
                     </div>
 
-                    <div>
-                      <h2 className="text-xl font-black text-white">
+                    <div className="min-w-0">
+                      <h2 className="text-base font-bold text-white sm:text-lg">
                         Vehicle Search
                       </h2>
 
-                      <p className="mt-1 text-sm text-slate-400">
-                        Find an existing customer by vehicle registration
-                        number.
+                      <p className="text-xs text-slate-400 sm:text-sm">
+                        Search using the vehicle registration number.
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+                  {/* Search */}
+                  <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
                     <div className="relative">
-                      <Search className="pointer-events-none absolute top-1/2 left-5 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                       <input
                         value={plate}
                         onChange={(e) => setPlate(e.target.value.toUpperCase())}
-                        placeholder="Enter vehicle registration..."
-                        className="h-14 w-full rounded-2xl border border-slate-700 bg-slate-950/60 pr-5 pl-14 text-white transition-all duration-300 outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
+                        placeholder="KDA123A"
+                        className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-950/60 pr-4 pl-11 text-sm text-white transition-all outline-none placeholder:text-slate-500 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
                       />
                     </div>
 
                     <button
                       onClick={searchVehicle}
                       disabled={loading}
-                      className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-8 font-bold text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-cyan-500/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:shadow-cyan-500/40 disabled:opacity-60 lg:w-auto"
                     >
                       {loading ? (
                         <>
-                          <RefreshCw className="h-5 w-5 animate-spin" />
-                          <span>Searching...</span>
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                          Searching...
                         </>
                       ) : (
                         <>
-                          <Search className="h-5 w-5" />
-                          <span>Search Vehicle</span>
+                          <Search className="h-4 w-4" />
+                          Search
                         </>
                       )}
                     </button>
                   </div>
 
+                  {/* Search Result */}
                   {searchMessage && (
                     <div
-                      className={`mt-5 rounded-2xl border p-4 transition-all ${
+                      className={`mt-4 rounded-2xl border p-4 transition-all ${
                         searchType === "success"
-                          ? "border-green-500/20 bg-green-500/10"
+                          ? "border-emerald-500/20 bg-emerald-500/10"
                           : searchType === "error"
                             ? "border-red-500/20 bg-red-500/10"
-                            : "border-yellow-500/20 bg-yellow-500/10"
+                            : "border-amber-500/20 bg-amber-500/10"
                       }`}
                     >
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        {/* Left */}
                         <div className="flex items-start gap-3">
                           <div
-                            className={`mt-0.5 rounded-xl p-2 ${
+                            className={`flex h-10 w-10 items-center justify-center rounded-xl ${
                               searchType === "success"
-                                ? "bg-green-500/20"
+                                ? "bg-emerald-500/15"
                                 : searchType === "error"
-                                  ? "bg-red-500/20"
-                                  : "bg-yellow-500/20"
+                                  ? "bg-red-500/15"
+                                  : "bg-amber-500/15"
                             }`}
                           >
                             {searchType === "success" ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-400" />
+                              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                             ) : searchType === "error" ? (
                               <AlertTriangle className="h-5 w-5 text-red-400" />
                             ) : (
-                              <Clock3 className="h-5 w-5 text-yellow-400" />
+                              <Clock3 className="h-5 w-5 text-amber-400" />
                             )}
                           </div>
 
                           <div>
                             <h3
-                              className={`font-bold ${
+                              className={`text-sm font-bold ${
                                 searchType === "success"
-                                  ? "text-green-300"
+                                  ? "text-emerald-300"
                                   : searchType === "error"
                                     ? "text-red-300"
-                                    : "text-yellow-300"
+                                    : "text-amber-300"
                               }`}
                             >
                               {searchType === "success"
@@ -1495,22 +1508,23 @@ SUBSCRIPTION SERVICES
                                   : "Notice"}
                             </h3>
 
-                            <p className="mt-1 text-sm text-slate-300">
+                            <p className="mt-1 text-sm leading-5 text-slate-300">
                               {searchMessage}
                             </p>
                           </div>
                         </div>
 
+                        {/* Action */}
                         {vehicleNotFound && (
                           <button
                             onClick={() => {
                               setCustomerPlate(plate);
                               setShowCustomerModal(true);
                             }}
-                            className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 px-5 font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-emerald-500/40 active:scale-[0.98] sm:w-auto"
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:shadow-emerald-500/40 sm:w-auto"
                           >
                             <Plus className="h-4 w-4" />
-                            Add Vehicle
+                            Register Vehicle
                           </button>
                         )}
                       </div>
