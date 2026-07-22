@@ -6,6 +6,14 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import CustomerModal from "@/components/customers/CustomerModal";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAppStore, Branch } from "@/stores/app-store";
+import { offlineDB } from "@/lib/offline/db";
+import { isOnline } from "@/lib/offline/network";
+import { queueTransaction } from "@/lib/offline/offlineQueue";
+import { useNetworkStatus } from "@/lib/offline/network";
+import { syncSubscriptions } from "@/lib/offline/syncSubscriptions";
+import { syncRewards } from "@/lib/offline/syncRewards";
+import { syncManager } from "@/lib/offline/syncManager";
 
 import {
   Droplets,
@@ -85,6 +93,8 @@ export default function POSPage() {
 
   const canOperate = !!branchId && !!companyId && !!createdBy;
 
+  const { getCache, setCache, removeCache } = useAppStore();
+
   /* =========================================================
      CORE STATES
   ========================================================= */
@@ -95,7 +105,7 @@ export default function POSPage() {
 
   const [processingPayment, setProcessingPayment] = useState(false);
 
-  const [invoiceId, setInvoiceId] = useState<number | null>(null);
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
 
   const router = useRouter();
   /* =========================================================
@@ -218,13 +228,37 @@ export default function POSPage() {
 
   const [selectedRewardService, setSelectedRewardService] = useState<any>(null);
 
+  const online = useNetworkStatus();
+
   /* =========================================================
-     LOAD BRANCHES
-  ========================================================= */
+   LOAD BRANCHES
+========================================================= */
 
   const loadBranches = async () => {
+    if (!companyId) return;
+
+    const cacheKey = `branches-${companyId}`;
+
     try {
-      if (!companyId) return;
+      // ===============================
+      // 1. Load cached data immediately
+      // ===============================
+
+      const cachedBranches = getCache<Branch[]>(cacheKey);
+
+      if (cachedBranches?.length) {
+        setBranches(cachedBranches);
+
+        const active = cachedBranches.find(
+          (b) => String(b.id) === String(branchId),
+        );
+
+        setCurrentBranchData(active || cachedBranches[0]);
+      }
+
+      // ===============================
+      // 2. Refresh from Supabase
+      // ===============================
 
       const { data, error } = await supabase
         .from("branches")
@@ -234,72 +268,124 @@ export default function POSPage() {
           ascending: true,
         });
 
-      if (error) {
-        return;
+      if (error) throw error;
+
+      const branches = data ?? [];
+
+      // ===============================
+      // 3. Only update if changed
+      // ===============================
+
+      if (JSON.stringify(branches) !== JSON.stringify(cachedBranches)) {
+        setCache(cacheKey, branches);
+
+        setBranches(branches);
+
+        const active = branches.find((b) => String(b.id) === String(branchId));
+
+        setCurrentBranchData(active || branches[0] || null);
+      } else {
       }
-
-      setBranches(data || []);
-
-      const active = data?.find((b: any) => String(b.id) === String(branchId));
-
-      setCurrentBranchData(active || data?.[0] || null);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Failed loading branches", err);
+    }
   };
 
   /* =========================================================
-     LOAD VEHICLE TYPES
-  ========================================================= */
+   LOAD VEHICLE TYPES
+========================================================= */
 
   const loadVehicleTypes = async () => {
+    const cacheKey = "vehicle-types";
+
     try {
+      // ===============================
+      // Load from cache immediately
+      // ===============================
+
+      const cachedVehicleTypes = getCache(cacheKey);
+
+      if (cachedVehicleTypes?.length) {
+        setVehicleTypes(cachedVehicleTypes);
+      }
+
+      // ===============================
+      // Refresh from Supabase
+      // ===============================
+
       const { data, error } = await supabase
         .from("vehicle_types")
         .select("*")
         .order("name");
 
-      if (error) {
-        return;
-      }
+      if (error) throw error;
 
-      setVehicleTypes(data || []);
-    } catch (err) {}
+      const vehicleTypes = data ?? [];
+
+      // ===============================
+      // Update cache only if changed
+      // ===============================
+
+      if (JSON.stringify(vehicleTypes) !== JSON.stringify(cachedVehicleTypes)) {
+        setCache(cacheKey, vehicleTypes);
+
+        setVehicleTypes(vehicleTypes);
+      } else {
+      }
+    } catch (err) {
+      console.error("Failed loading vehicle types:", err);
+    }
   };
 
   /* =========================================================
-     LOAD SERVICES
-  ========================================================= */
+   LOAD SERVICES
+========================================================= */
 
   const loadServices = async () => {
+    if (!companyId) return;
+
+    const cacheKey = `services-${companyId}`;
+
     try {
-      if (!companyId || !branchId) return;
+      // ===============================
+      // Load cached services instantly
+      // ===============================
+
+      const cachedServices = getCache(cacheKey);
+
+      if (cachedServices?.length) {
+        setServices(cachedServices);
+      }
+
+      // ===============================
+      // Refresh from Supabase
+      // ===============================
 
       const { data, error } = await supabase
         .from("services")
         .select(
           `
-  *,
-  service_prices (
-    id,
-    service_id,
-    vehicle_type_id,
-    price,
-    vehicle_type:vehicle_types!service_prices_vehicle_type_id_fkey (
-      id,
-      name
-    )
-  )
-`,
+        *,
+        service_prices (
+          id,
+          service_id,
+          vehicle_type_id,
+          price,
+          vehicle_type:vehicle_types!service_prices_vehicle_type_id_fkey (
+            id,
+            name
+          )
+        )
+      `,
         )
         .eq("carwash_id", companyId)
         .order("created_at", {
           ascending: true,
         });
 
-      if (error) {
-        return;
-      }
+      if (error) throw error;
 
-      const normalized = (data || []).map((service: any) => ({
+      const normalized = (data ?? []).map((service: any) => ({
         ...service,
 
         icon: iconMap[service.icon] || Droplets,
@@ -317,45 +403,230 @@ export default function POSPage() {
           : "15 mins",
       }));
 
-      setServices(normalized);
+      // ===============================
+      // Update cache only if changed
+      // ===============================
+
+      if (JSON.stringify(normalized) !== JSON.stringify(cachedServices)) {
+        setCache(cacheKey, normalized);
+
+        setServices(normalized);
+      } else {
+      }
     } catch (err) {}
   };
 
   /* =========================================================
-     INITIAL LOAD
-  ========================================================= */
+   INITIAL APPLICATION DATA
+========================================================= */
 
   useEffect(() => {
-    if (!branchId || !createdBy) return;
+    if (!companyId || !createdBy || !branchId) return;
 
-    loadBranches();
-    loadVehicleTypes();
-    loadServices();
-  }, [branchId, createdBy]);
+    const initializeApp = async () => {
+      try {
+        // 1. Load static data
+        await Promise.all([
+          loadBranches(),
+          loadVehicleTypes(),
+          loadServices(),
+          syncSubscriptions(companyId, branchId),
+          syncRewards(branchId),
+        ]);
 
-  useEffect(() => {}, [cart, cartOpen]);
+        // 2. Cache all active subscriptions
+        await syncSubscriptions(companyId, branchId);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-  useEffect(() => {
-    console.log("Cart changed:", cart);
-  }, [cart]);
+    initializeApp();
+  }, [companyId, branchId, createdBy]);
 
-  useEffect(() => {
-    console.log("selectedRewardService =", selectedRewardService);
-  }, [selectedRewardService]);
   /* =========================================================
-     SEARCH VEHICLE
-  ========================================================= */
+   ACTIVE BRANCH
+========================================================= */
+
+  useEffect(() => {
+    if (!branches.length) return;
+
+    const active = branches.find((b: any) => String(b.id) === String(branchId));
+
+    setCurrentBranchData(active || branches[0] || null);
+  }, [branchId, branches]);
+
+  /* =========================================================
+   SYNC OFFLINE RECORDS WHEN DATA IS BACK
+========================================================= */
+  useEffect(() => {
+    // Run immediately if already online
+    if (navigator.onLine) {
+      syncManager();
+    }
+
+    // Run whenever internet comes back
+    const handleOnline = () => {
+      console.log("🌍 Internet restored");
+      syncManager();
+    };
+
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
+  /* =========================================================
+   DEBUG
+========================================================= */
+
+  useEffect(() => {}, [cart]);
+
+  useEffect(() => {}, [selectedRewardService]);
+
+  /* =========================================================
+   SEARCH VEHICLE
+========================================================= */
 
   const searchVehicle = async () => {
-    console.log("SEARCH VEHICLE CALLED");
-    console.trace();
-
     if (!plate.trim()) return;
+
+    const cleanPlate = plate.toUpperCase().replace(/\s+/g, "");
+
+    const cacheKey = `vehicle-${cleanPlate}`;
 
     try {
       setLoading(true);
 
-      const cleanPlate = plate.toUpperCase().replace(/\s+/g, "");
+      setVehicleNotFound(false);
+
+      // =====================================
+      // Try cache first
+      // =====================================
+
+      let vehicleData: any = null;
+
+      const cachedVehicle = getCache(cacheKey);
+
+      let baseVehicle = cachedVehicle;
+
+      if (cachedVehicle) {
+        vehicleData = cachedVehicle;
+
+        setVehicle(vehicleData);
+
+        if (vehicleData.vehicle_type_id) {
+          setActiveVehicleType(String(vehicleData.vehicle_type_id));
+        }
+
+        setSearchType("success");
+        setSearchMessage("Vehicle found successfully");
+      }
+
+      // =====================================
+      // Try IndexedDB
+      // =====================================
+
+      const offlineVehicle = await offlineDB.vehicles
+        .where("plate_number")
+        .equals(cleanPlate)
+        .first();
+
+      if (offlineVehicle) {
+        const offlineSubscription = await offlineDB.subscriptions
+          .where("vehicle_id")
+          .equals(offlineVehicle.id)
+          .first();
+
+        const vehicleData = {
+          ...offlineVehicle,
+          subscription: offlineSubscription ?? null,
+        };
+
+        setCache(cacheKey, vehicleData);
+
+        setVehicle(vehicleData);
+
+        setSubscription(offlineSubscription ?? null);
+
+        if (vehicleData.vehicle_type_id) {
+          setActiveVehicleType(String(vehicleData.vehicle_type_id));
+        }
+
+        // ------------------------------------
+        // Rewards
+        // ------------------------------------
+
+        await checkAvailableRewards(vehicleData.customer_id);
+
+        // ------------------------------------
+        // Active subscription
+        // ------------------------------------
+
+        if (offlineSubscription) {
+          const remaining = Math.max(
+            Number(offlineSubscription.limit ?? 0) -
+              Number(offlineSubscription.usage ?? 0),
+            0,
+          );
+          // Build offline
+
+          let subscriptionServices: any[] = [];
+
+          try {
+            subscriptionServices =
+              typeof offlineSubscription.services === "string"
+                ? JSON.parse(offlineSubscription.services)
+                : Array.isArray(offlineSubscription.services)
+                  ? offlineSubscription.services
+                  : [];
+          } catch (err) {
+            console.error("Failed to parse offline subscription services", err);
+          }
+
+          const subscriptionCart = subscriptionServices
+            .map((service: any, index: number) => ({
+              id: `subscription-${index}`,
+              name: typeof service === "string" ? service : service?.name,
+              quantity: 1,
+              resolvedPrice: 0,
+              total: 0,
+              isSubscription: true,
+            }))
+            .filter((item) => item.name);
+
+          setCart(subscriptionCart);
+
+          setCartOpen(subscriptionCart.length > 0);
+
+          toast.success("Active subscription found", {
+            description: `${offlineSubscription.plan} • ${remaining} washes remaining`,
+          });
+
+          setSearchType("success");
+
+          setSearchMessage(
+            `Subscription found (${offlineSubscription.plan}) - ${remaining} washes remaining`,
+          );
+        } else {
+          setSearchType("success");
+
+          setSearchMessage("Vehicle found (Offline)");
+        }
+
+        // If online, continue to refresh latest data from Supabase.
+        if (!navigator.onLine) {
+          return;
+        }
+
+        setSearchMessage("Vehicle found. Refreshing latest subscription...");
+      }
+
+      // =====================================
+      // Supabase
+      // =====================================
 
       const { data, error } = await supabase
         .from("vehicles")
@@ -373,26 +644,19 @@ export default function POSPage() {
         .eq("plate_number", cleanPlate)
         .maybeSingle();
 
-      setVehicleNotFound(true);
-      setVehicleNotFound(false);
-
-      if (error) throw error;
-
       if (error) throw error;
 
       if (!data) {
         setVehicle(null);
-
         setAvailableReward(null);
-
         setCustomerPoints(0);
-
         setSubscription(null);
+        setVehicleNotFound(true);
 
         setSearchType("info");
 
         setSearchMessage(
-          "Vehicle not found. Register a new vehicle. Or proceed as walk in customer",
+          "Vehicle not found. Register a new vehicle or continue as a walk-in customer.",
         );
 
         setCustomerPlate(cleanPlate);
@@ -400,28 +664,95 @@ export default function POSPage() {
         return;
       }
 
-      const { data: subscription, error: subscriptionError } = await supabase
-        .from("subscription_members")
-        .select("*")
-        .eq("vehicle_id", data.id)
-        .eq("customer_id", data.customer_id)
-        .eq("carwash_id", companyId)
-        .eq("branch_id", branchId)
-        .eq("status", "active")
-        .maybeSingle();
+      /* =====================================
+      SAVE TO MEMORY CACHE
+      ===================================== */
 
-      if (data.vehicle_type_id) {
-        setActiveVehicleType(String(data.vehicle_type_id));
+      setCache(cacheKey, {
+        ...data,
+        customers: data.customers,
+      });
+
+      // =====================================
+      // Subscription
+      // =====================================
+
+      const subscriptionCacheKey = `subscription-${data.id}`;
+
+      let subscription = getCache(subscriptionCacheKey);
+
+      // Read all cached subscriptions
+      const allSubs = await offlineDB.subscriptions.toArray();
+
+      // Try matching from cache first
+      if (!subscription) {
+        subscription =
+          allSubs.find(
+            (sub) =>
+              String(sub.vehicle_id) === String(data.id) &&
+              String(sub.customer_id) === String(data.customer_id) &&
+              sub.status === "active",
+          ) || null;
+
+        if (subscription) {
+          setCache(subscriptionCacheKey, subscription);
+        }
+      }
+
+      // Not found offline → Supabase
+      if (!subscription) {
+        const { data: onlineSubscription, error } = await supabase
+          .from("subscription_members")
+          .select("*")
+          .eq("vehicle_id", data.id)
+          .eq("customer_id", data.customer_id)
+          .eq("branch_id", branchId)
+          .eq("status", "active")
+          .maybeSingle();
+
+        if (error) throw error;
+
+        subscription = onlineSubscription;
+
+        if (subscription) {
+          await offlineDB.subscriptions.put({
+            ...subscription,
+            updated_at: new Date().toISOString(),
+          });
+
+          setCache(subscriptionCacheKey, subscription);
+        }
+      }
+
+      vehicleData = {
+        ...data,
+        subscription,
+      };
+
+      /* =====================================
+      SAVE TO OFFLINE DATABASE
+      ===================================== */
+      await offlineDB.vehicles.put({
+        ...vehicleData,
+        customers: data.customers,
+        updated_at: new Date().toISOString(),
+      });
+
+      // =====================================
+      // Save cache
+      // =====================================
+
+      setCache(cacheKey, vehicleData);
+
+      if (vehicleData.vehicle_type_id) {
+        setActiveVehicleType(String(vehicleData.vehicle_type_id));
       }
 
       setSubscription(subscription);
 
-      setVehicle({
-        ...data,
-        subscription,
-      });
+      setVehicle(vehicleData);
 
-      await checkAvailableRewards(data.customer_id);
+      await checkAvailableRewards(vehicleData.customer_id);
 
       setSearchType("success");
 
@@ -432,84 +763,95 @@ export default function POSPage() {
       );
 
       /* ==========================
-SUBSCRIPTION SERVICES
+   SUBSCRIPTION SERVICES
 ========================== */
 
-      if (subscription) {
-        const renewalDate = subscription.renewal
-          ? new Date(subscription.renewal)
-          : null;
+      if (!subscription) return;
 
-        const isExpired = renewalDate && renewalDate < new Date();
+      const renewalDate = subscription.renewal
+        ? new Date(subscription.renewal)
+        : null;
 
-        const remainingWashes =
-          Number(subscription.limit || 0) - Number(subscription.usage || 0);
+      const expired = renewalDate instanceof Date && renewalDate < new Date();
 
-        /* EXPIRED SUBSCRIPTION */
-        if (isExpired) {
-          setSearchType("info");
+      const remainingWashes =
+        Number(subscription.limit ?? 0) - Number(subscription.usage ?? 0);
 
-          setSearchMessage(
-            `Subscription expired on ${subscription.renewal}. Proceed with normal payment.`,
-          );
-          console.log("CLEAR CART -> expired");
-          console.trace("setCart");
-          setCart([]);
-          setCartOpen(false);
-        } else if (remainingWashes > 0) {
-          /* ACTIVE SUBSCRIPTION */
-          let services: any[] = [];
+      // ------------------------------------
+      // Subscription expired
+      // ------------------------------------
 
-          try {
-            if (typeof subscription.services === "string") {
-              services = JSON.parse(subscription.services);
-            } else if (Array.isArray(subscription.services)) {
-              services = subscription.services;
-            }
-          } catch (err) {
-            console.error("Failed to parse subscription services", err);
-            services = [];
-          }
+      if (expired) {
+        setCart([]);
+        setCartOpen(false);
 
-          const cartItems = services
-            .map((service: any, index: number) => ({
-              id: `subscription-${index}`,
-              name: typeof service === "string" ? service : service?.name,
-              quantity: 1,
-              resolvedPrice: 0,
-              total: 0,
-              isSubscription: true,
-            }))
-            .filter((item) => item.name);
-          console.trace("setCart");
-          setCart(cartItems);
+        setSearchType("info");
 
-          if (cartItems.length > 0) {
-            setCartOpen(true);
-          }
+        setSearchMessage(
+          `Subscription expired on ${subscription.renewal}. Proceed with normal payment.`,
+        );
 
-          setSearchType("success");
-
-          setSearchMessage(
-            `Subscription found (${subscription.plan}) - ${remainingWashes} washes remaining`,
-          );
-        } else {
-          /* ACTIVE BUT LIMIT REACHED */
-          setSearchType("info");
-
-          setSearchMessage(
-            "Subscription wash limit reached. Proceed with normal payment.",
-          );
-          console.log("CLEARING CART FROM HERE");
-          console.trace();
-          setCart([]);
-          setCartOpen(false);
-        }
+        return;
       }
 
+      // ------------------------------------
+      // No washes remaining
+      // ------------------------------------
+
+      if (remainingWashes <= 0) {
+        setCart([]);
+        setCartOpen(false);
+
+        setSearchType("info");
+
+        setSearchMessage(
+          "Subscription wash limit reached. Proceed with normal payment.",
+        );
+
+        return;
+      }
+
+      // ------------------------------------
+      // Active subscription
+      // ------------------------------------
+
+      let subscriptionServices: any[] = [];
+
+      try {
+        subscriptionServices =
+          typeof subscription.services === "string"
+            ? JSON.parse(subscription.services)
+            : Array.isArray(subscription.services)
+              ? subscription.services
+              : [];
+      } catch (err) {
+        console.error("Failed to parse subscription services", err);
+      }
+
+      const subscriptionCart = subscriptionServices
+        .map((service: any, index: number) => ({
+          id: `subscription-${index}`,
+          name: typeof service === "string" ? service : service?.name,
+          quantity: 1,
+          resolvedPrice: 0,
+          total: 0,
+          isSubscription: true,
+        }))
+        .filter((item) => item.name);
+
+      setCart(subscriptionCart);
+
+      setCartOpen(subscriptionCart.length > 0);
+
+      setSearchType("success");
+
+      setSearchMessage(
+        `Subscription found (${subscription.plan}) - ${remainingWashes} washes remaining`,
+      );
+
       /* ===========================================================
-   CHECK CUSTOMER REWARD ELIGIBILITY
-=========================================================== */
+      CHECK CUSTOMER REWARD ELIGIBILITY
+      =========================================================== */
       async function checkAvailableRewards(customerId: string) {
         try {
           if (!customerId || !branchId) {
@@ -521,9 +863,65 @@ SUBSCRIPTION SERVICES
             return false;
           }
 
+          const cacheKey = `rewards-${customerId}-${branchId}`;
+
+          const cached = getCache(cacheKey);
+
+          if (cached) {
+            setCustomerPoints(cached.points);
+
+            setAvailableReward(cached.firstReward);
+
+            setAvailableRewards(cached.rewards);
+
+            setSelectedReward(cached.firstReward);
+
+            setShowRewardDialog(cached.showDialog);
+
+            return cached.showDialog;
+          }
+
+          const offlineRewards = (
+            await offlineDB.rewards
+              .where("customer_id")
+              .equals(customerId)
+              .toArray()
+          ).filter((reward) => reward.branch_id === branchId);
+
+          if (offlineRewards.length > 0) {
+            const rewards = offlineRewards
+              .map((item: any) => ({
+                unlock_id: item.id,
+                ...(Array.isArray(item.loyalty_rewards)
+                  ? item.loyalty_rewards[0]
+                  : item.loyalty_rewards),
+              }))
+              .filter(Boolean);
+
+            const points = offlineRewards[0]?.customer_points ?? 0;
+
+            setCache(cacheKey, {
+              points,
+              rewards,
+              firstReward: rewards[0] ?? null,
+              showDialog: rewards.length > 0,
+            });
+
+            setCustomerPoints(points);
+
+            setAvailableReward(rewards[0] ?? null);
+
+            setAvailableRewards(rewards);
+
+            setSelectedReward(rewards[0] ?? null);
+
+            setShowRewardDialog(rewards.length > 0);
+
+            return rewards.length > 0;
+          }
           /* ------------------------------------
-       CUSTOMER POINTS
-    ------------------------------------ */
+          CUSTOMER POINTS
+          ------------------------------------ */
 
           const { data: customer, error: customerError } = await supabase
             .from("customers")
@@ -579,6 +977,13 @@ SUBSCRIPTION SERVICES
           }
 
           if (!data || data.length === 0) {
+            setCache(cacheKey, {
+              points: customer?.loyalty_points ?? 0,
+              rewards: [],
+              firstReward: null,
+              showDialog: false,
+            });
+
             setAvailableReward(null);
             setAvailableRewards([]);
             setSelectedReward(null);
@@ -601,6 +1006,13 @@ SUBSCRIPTION SERVICES
             .filter(Boolean);
 
           if (rewards.length === 0) {
+            setCache(cacheKey, {
+              points: customer?.loyalty_points ?? 0,
+              rewards: [],
+              firstReward: null,
+              showDialog: false,
+            });
+
             setAvailableReward(null);
             setAvailableRewards([]);
             setSelectedReward(null);
@@ -609,9 +1021,38 @@ SUBSCRIPTION SERVICES
             return false;
           }
 
+          // Remove old rewards first
+          await offlineDB.rewards
+            .where("[customer_id+branch_id]")
+            .equals([customerId, branchId])
+            .delete();
+
+          // Save fresh rewards
+          await Promise.all(
+            data.map((reward: any) =>
+              offlineDB.rewards.put({
+                ...reward,
+                customer_id: customerId,
+                branch_id: branchId,
+                customer_points: customer?.loyalty_points ?? 0,
+                updated_at: new Date().toISOString(),
+              }),
+            ),
+          );
+
           /* ------------------------------------
        OPEN DIALOG
     ------------------------------------ */
+
+          setCache(cacheKey, {
+            points: customer?.loyalty_points ?? 0,
+
+            rewards,
+
+            firstReward: rewards[0] ?? null,
+
+            showDialog: rewards.length > 0,
+          });
 
           setAvailableReward(rewards[0]);
           setAvailableRewards(rewards);
@@ -670,28 +1111,51 @@ SUBSCRIPTION SERVICES
 
       if (error) throw error;
 
-      console.log("Reward redeemed:", data);
+      // ==========================================
+      // Invalidate cache
+      // ==========================================
 
-      // Store reward for invoice generation
+      removeCache(`rewards-${vehicle.customer_id}-${branchId}`);
+
+      removeCache(
+        `vehicle-${vehicle.plate_number?.toUpperCase().replace(/\s+/g, "")}`,
+      );
+
+      // Remove offline reward cache
+      await offlineDB.rewards
+        .where("[customer_id+branch_id]")
+        .equals([vehicle.customer_id, branchId])
+        .delete();
+
+      // Remove offline vehicle cache
+      await offlineDB.vehicles.delete(vehicle.id);
+
+      // ==========================================
+      // Update UI
+      // ==========================================
+
       setRedeemReward(true);
 
-      // Save redeemed reward
       setSelectedReward({
         ...selectedReward,
         redeemed: true,
       });
 
-      // Update displayed customer points
       if (data?.points_remaining !== undefined) {
         setCustomerPoints(data.points_remaining);
       }
 
       setShowRewardDialog(false);
 
-      alert(`${data.reward} redeemed successfully.`);
+      toast.success(
+        data?.reward
+          ? `${data.reward} redeemed successfully.`
+          : "Reward redeemed successfully.",
+      );
     } catch (err: any) {
       console.error(err);
-      alert(err.message);
+
+      toast.error(err?.message || "Unable to redeem reward.");
     } finally {
       setLoading(false);
     }
@@ -773,8 +1237,6 @@ SUBSCRIPTION SERVICES
   ========================================================= */
 
   const addToCart = (service: any) => {
-    console.log("INSIDE addToCart");
-
     const resolvedPrice = Number(service.displayPrice || 0);
 
     if (resolvedPrice <= 0) {
@@ -846,8 +1308,9 @@ SUBSCRIPTION SERVICES
   };
 
   /* =========================================================
-   Complete Payment
+   COMPLETE PAYMENT
 ========================================================= */
+
   const completePayment = async () => {
     if (!invoiceId) {
       toast.warning("Generate an invoice first", {
@@ -857,6 +1320,8 @@ SUBSCRIPTION SERVICES
     }
 
     try {
+      setProcessingPayment(true);
+
       const { error } = await supabase
         .from("invoices")
         .update({
@@ -867,12 +1332,23 @@ SUBSCRIPTION SERVICES
 
       if (error) throw error;
 
-      alert("Payment completed successfully");
+      // Invalidate cached invoice(s)
+      removeCache(`invoice-${invoiceId}`);
+      removeCache("invoice-list");
+
+      toast.success("Payment completed successfully", {
+        description: "The invoice has been marked as paid.",
+      });
 
       router.push("/invoices");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to complete payment");
+
+      toast.error("Failed to complete payment", {
+        description: err.message,
+      });
+    } finally {
+      setProcessingPayment(false);
     }
   };
 
@@ -1034,37 +1510,29 @@ SUBSCRIPTION SERVICES
   ========================================================= */
 
   async function generateInvoice(redeem = false, invoiceCart = cart) {
-    console.log("generateInvoice called");
-    console.trace();
-
-    console.log("===== GENERATE INVOICE =====");
-    console.log("redeem:", redeem);
-    console.log("invoiceCart:", invoiceCart);
-    console.log("invoiceCart length:", invoiceCart.length);
-    console.log("availableRewards:", availableRewards.length);
-    console.log("selectedReward:", selectedReward);
-    console.log("pendingInvoice:", pendingInvoice);
-
     if (availableRewards.length > 0 && !selectedReward) {
-      console.log("Opening reward dialog...");
-
       setPendingInvoice(true);
       setShowRewardDialog(true);
       return;
     }
     if (!canOperate) {
-      alert("Branch access invalid");
+      toast.error("Branch access invalid");
       return;
     }
 
     if (invoiceCart.length === 0) {
-      console.log("Invoice cart is empty!");
-      alert("Add services first");
+      toast.warning("Add at least one service before generating an invoice.");
       return;
     }
 
     try {
       setProcessingPayment(true);
+
+      /* =========================================================
+      LOCAL INVOICE ID
+      ========================================================= */
+
+      const localInvoiceId = crypto.randomUUID();
 
       const invoiceNumber = "INV-" + Date.now();
 
@@ -1089,14 +1557,24 @@ SUBSCRIPTION SERVICES
          SUBSCRIPTION STATUS
       ========================================================= */
 
+      const remainingWashes = subscription
+        ? Math.max(
+            Number(subscription.limit ?? 0) - Number(subscription.usage ?? 0),
+            0,
+          )
+        : 0;
+
+      const isSubscribed = remainingWashes > 0;
+
       const subscriptionAvailable = subscription && remainingWashes > 0;
 
-      const isSubscribed = !!subscription && remainingWashes > 0;
       const isReward = redeem;
 
       const finalTotal = isSubscribed || isReward ? 0 : grandTotal;
 
       const payload = {
+        id: localInvoiceId,
+
         invoice_number: invoiceNumber,
 
         carwash_id: companyId,
@@ -1138,53 +1616,119 @@ SUBSCRIPTION SERVICES
         cashier: profile?.full_name || "Staff",
       };
 
-      const { data, error } = await supabase
-        .from("invoices")
-        .insert([payload])
-        .select()
-        .single();
+      /* =========================================================
+   CREATE INVOICE
+========================================================= */
 
-      if (error) {
-        alert(error.message);
-        return;
+      let invoice = payload;
+
+      if (!isOnline()) {
+        await offlineDB.invoices.put({
+          id: localInvoiceId,
+
+          status: "pending",
+
+          payload,
+
+          created_at: new Date().toISOString(),
+        });
+
+        console.log("Offline invoices:", await offlineDB.invoices.toArray());
+
+        console.log(
+          "Pending transactions:",
+          await offlineDB.pendingTransactions.toArray(),
+        );
+
+        console.log("➡️ About to queue invoice");
+        await queueTransaction("invoice", payload);
+        console.log("✅ queueTransaction finished");
+      } else {
+        const { data, error } = await supabase
+          .from("invoices")
+          .insert([payload])
+          .select()
+          .single();
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
+        invoice = data;
       }
 
-      console.log("redeemReward:", redeemReward);
-      console.log("selectedReward:", selectedReward);
-      console.log("vehicle:", vehicle);
-      console.log("customer_id:", vehicle?.customer_id);
+      // =========================================================
+      // REDEEM REWARD
+      // =========================================================
 
       if (redeem && selectedReward && vehicle?.customer_id) {
         const rewardId = selectedReward.reward_id ?? selectedReward.id;
 
-        console.log("Redeeming reward:", rewardId);
+        const rewardPayload = {
+          customer_id: vehicle.customer_id,
+          reward_id: rewardId,
+          branch_id: branchId,
+          carwash_id: companyId,
+          redeemed_at: new Date().toISOString(),
+        };
 
-        const { data: redeemData, error: redeemError } = await supabase.rpc(
-          "redeem_loyalty_reward",
-          {
-            p_customer_id: vehicle.customer_id,
-            p_reward_id: rewardId,
-          },
-        );
+        if (isOnline()) {
+          const { error: redeemError } = await supabase.rpc(
+            "redeem_loyalty_reward",
+            {
+              p_customer_id: vehicle.customer_id,
+              p_reward_id: rewardId,
+            },
+          );
 
-        console.log(redeemData);
-        console.log(redeemError);
+          if (redeemError) {
+            toast.error(redeemError.message);
+            return;
+          }
+        } else {
+          await queueTransaction("reward", rewardPayload);
 
-        if (redeemError) {
-          alert(redeemError.message);
-          return;
+          removeCache(`rewards-${vehicle.customer_id}-${branchId}`);
+
+          toast.success("Reward queued", {
+            description: "Reward redemption will sync automatically.",
+          });
         }
       }
 
       //autodeduct wash
-      if (isSubscribed) {
-        const { data, error } = await supabase
-          .from("subscription_members")
-          .update({
-            usage: subscription.usage + 1,
-          })
-          .eq("id", subscription.id)
-          .select();
+      /* =========================================================
+   AUTO DEDUCT SUBSCRIPTION WASH
+========================================================= */
+
+      if (isSubscribed && subscription) {
+        const subscriptionPayload = {
+          subscription_id: subscription.id,
+          vehicle_id: vehicle?.id,
+          customer_id: vehicle?.customer_id,
+          usage: subscription.usage + 1,
+          updated_at: new Date().toISOString(),
+        };
+
+        if (isOnline()) {
+          const { error } = await supabase
+            .from("subscription_members")
+            .update({
+              usage: subscription.usage + 1,
+            })
+            .eq("id", subscription.id);
+
+          if (error) throw error;
+        } else {
+          await queueTransaction("subscription", subscriptionPayload);
+
+          removeCache(`subscription-${vehicle?.id}`);
+
+          toast.success("Subscription queued", {
+            description: "Wash usage will sync automatically.",
+          });
+        }
       }
 
       if (isSubscribed || isReward) {
@@ -1193,8 +1737,6 @@ SUBSCRIPTION SERVICES
         setVehicle(null);
 
         setPlate("");
-        console.log("CLEAR CART -> subscription");
-        console.trace("setCart");
         setCart([]);
 
         setCartOpen(false);
@@ -1211,56 +1753,107 @@ SUBSCRIPTION SERVICES
       }
 
       /* =========================
-     AUTO SEND TO QUEUE
-  ========================= */
+   AUTO SEND TO QUEUE
+========================= */
 
       const ticket = "Q-" + Date.now().toString().slice(-6);
 
       const serviceNames = invoiceCart.map((item) => item.name).join(", ");
 
-      const { error: queueError } = await supabase
-        .from("queue_vehicles")
-        .insert({
-          ticket,
+      const queuePayload = {
+        ticket,
 
-          plate: vehicle?.plate_number || plate.toUpperCase(),
+        plate: vehicle?.plate_number || plate.toUpperCase(),
 
-          customer: vehicle?.customers?.name || "Walk-in Customer",
+        customer: vehicle?.customers?.name || "Walk-in Customer",
 
-          vehicle: activeVehicle?.name || "Vehicle",
+        vehicle: activeVehicle?.name || "Vehicle",
 
-          service: serviceNames,
+        service: serviceNames,
 
-          bay: "Unassigned",
+        bay: "Unassigned",
 
-          staff: "Unassigned",
+        staff: "Unassigned",
 
-          assigned_staff: null,
+        assigned_staff: null,
 
-          eta: "Pending",
+        eta: "Pending",
 
-          check_in: new Date().toLocaleTimeString(),
+        check_in: new Date().toLocaleTimeString(),
 
-          priority: "Normal",
+        priority: "Normal",
 
-          payment: isSubscribed || isReward ? "Paid" : "Pending",
+        payment: isSubscribed || isReward ? "Paid" : "Pending",
 
-          status: "waiting",
+        status: "waiting",
 
-          invoice_id: data.id,
+        invoice_id: invoice.id,
 
-          branch_id: branchId,
+        branch_id: branchId,
 
-          carwash_id: companyId,
+        carwash_id: companyId,
+      };
+
+      /* =========================================================
+   AUTO SEND TO QUEUE
+========================================================= */
+
+      if (isOnline()) {
+        const { error: queueError } = await supabase
+          .from("queue_vehicles")
+          .insert(queuePayload);
+
+        if (queueError) throw queueError;
+      } else {
+        // Save locally so staff can still see today's queue
+        await offlineDB.queue.put({
+          id: queuePayload.ticket,
+          status: "pending",
+          payload: queuePayload,
+          created_at: new Date().toISOString(),
         });
 
-      if (queueError) {
-        console.error("QUEUE ERROR:", queueError);
+        // Queue for background sync
+        await queueTransaction("queue", queuePayload);
+
+        // Clear cached queue
+        removeCache("queue-list");
+
+        toast.success("Vehicle added to queue", {
+          description: "Queue will sync automatically when internet returns.",
+        });
       }
 
-      setInvoiceId(data.id);
-      console.log("auto send to queue");
-      console.trace("setCart");
+      /* =========================================================
+   CLEAR STALE CACHE
+========================================================= */
+
+      removeCache("invoice-list");
+
+      removeCache("queue-list");
+
+      removeCache("dashboard");
+
+      removeCache("dashboard-kpis");
+
+      if (vehicle?.customer_id) {
+        removeCache(`customer-${vehicle.customer_id}`);
+
+        removeCache(`rewards-${vehicle.customer_id}-${branchId}`);
+      }
+
+      if (vehicle?.id) {
+        removeCache(`subscription-${vehicle.id}`);
+      }
+
+      if (vehicle?.plate_number) {
+        removeCache(
+          `vehicle-${vehicle.plate_number.toUpperCase().replace(/\s+/g, "")}`,
+        );
+      }
+
+      setInvoiceId(invoice.id);
+
       setCart([]);
 
       setNotes("");
@@ -1271,8 +1864,12 @@ SUBSCRIPTION SERVICES
         description:
           "Receipt generated successfully. Vehicle added to the queue.",
       });
-    } catch (err) {
-      alert("Failed to process payment");
+    } catch (err: any) {
+      console.error(err);
+
+      toast.error("Failed to process payment", {
+        description: err?.message,
+      });
     } finally {
       setProcessingPayment(false);
     }
@@ -1317,7 +1914,7 @@ SUBSCRIPTION SERVICES
           <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl" />
           <div className="absolute bottom-0 -left-10 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl" />
 
-          <div className="relative z-10 p-4 sm:p-5">
+          <div className="relative z-10 p-5 sm:p-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               {/* Left */}
 
@@ -1331,10 +1928,6 @@ SUBSCRIPTION SERVICES
                     <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.2em] text-cyan-300 uppercase">
                       POS Terminal
                     </span>
-
-                    <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold tracking-[0.2em] text-emerald-300 uppercase">
-                      Online
-                    </span>
                   </div>
 
                   <h1 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
@@ -1347,46 +1940,76 @@ SUBSCRIPTION SERVICES
                 </div>
               </div>
 
-              {/* Right */}
+              {/* RIGHT SIDE */}
 
-              <div className="grid w-full grid-cols-3 gap-2 lg:w-auto">
-                <div className="rounded-2xl border border-orange-500/15 bg-orange-500/10 p-3">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-orange-400" />
-                    <span className="text-[9px] font-bold tracking-[0.2em] text-orange-300 uppercase">
-                      Branch
-                    </span>
-                  </div>
+              <div className="absolute top-4 right-4 hidden xl:flex xl:flex-col xl:items-end xl:gap-3">
+                {/* CONNECTION STATUS */}
 
-                  <p className="mt-2 truncate text-xs font-bold text-white">
-                    {currentBranchData?.name || "Main Branch"}
-                  </p>
+                <div
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase backdrop-blur-xl ${
+                    online
+                      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
+                      : "border-amber-500/20 bg-amber-500/10 text-amber-300"
+                  }`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      online
+                        ? "bg-emerald-400 shadow-[0_0_10px_rgba(74,222,128,.8)]"
+                        : "bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,.8)]"
+                    }`}
+                  />
+
+                  {online ? "ONLINE MODE" : "OFFLINE MODE"}
                 </div>
 
-                <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/10 p-3">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-emerald-400" />
-                    <span className="text-[9px] font-bold tracking-[0.2em] text-emerald-300 uppercase">
-                      Location
-                    </span>
+                {/* STATS */}
+
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Branch */}
+                  <div className="rounded-2xl border border-orange-500/15 bg-orange-500/10 p-3 backdrop-blur-xl">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-orange-400" />
+
+                      <span className="text-[9px] font-bold tracking-[0.2em] text-orange-300 uppercase">
+                        Branch
+                      </span>
+                    </div>
+
+                    <p className="mt-2 max-w-[110px] truncate text-xs font-bold text-white">
+                      {currentBranchData?.name || "Main Branch"}
+                    </p>
                   </div>
 
-                  <p className="mt-2 truncate text-xs font-bold text-white">
-                    {currentBranchData?.location || "Not Set"}
-                  </p>
-                </div>
+                  {/* Location */}
+                  <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/10 p-3 backdrop-blur-xl">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-emerald-400" />
 
-                <div className="rounded-2xl border border-cyan-500/15 bg-cyan-500/10 p-3">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-cyan-400" />
-                    <span className="text-[9px] font-bold tracking-[0.2em] text-cyan-300 uppercase">
-                      Role
-                    </span>
+                      <span className="text-[9px] font-bold tracking-[0.2em] text-emerald-300 uppercase">
+                        Location
+                      </span>
+                    </div>
+
+                    <p className="mt-2 max-w-[110px] truncate text-xs font-bold text-white">
+                      {currentBranchData?.location || "Not Set"}
+                    </p>
                   </div>
 
-                  <p className="mt-2 truncate text-xs font-bold text-white capitalize">
-                    {profile?.role || "Staff"}
-                  </p>
+                  {/* Role */}
+                  <div className="rounded-2xl border border-cyan-500/15 bg-cyan-500/10 p-3 backdrop-blur-xl">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-cyan-400" />
+
+                      <span className="text-[9px] font-bold tracking-[0.2em] text-cyan-300 uppercase">
+                        Role
+                      </span>
+                    </div>
+
+                    <p className="mt-2 truncate text-xs font-bold text-white capitalize">
+                      {profile?.role || "Staff"}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2248,8 +2871,6 @@ SUBSCRIPTION SERVICES
                   <button
                     key={reward.id}
                     onClick={() => {
-                      console.log("Reward selected", reward);
-
                       setSelectedReward(reward);
 
                       setSelectedRewardService({
@@ -2355,12 +2976,6 @@ SUBSCRIPTION SERVICES
                 <button
                   disabled={!selectedReward}
                   onClick={async () => {
-                    console.log("Redeem clicked");
-                    console.log(
-                      "selectedRewardService:",
-                      selectedRewardService,
-                    );
-
                     setShowRewardDialog(false);
 
                     if (!selectedRewardService) {

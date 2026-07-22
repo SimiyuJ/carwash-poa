@@ -4,15 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
 
-type Profile = {
-  id: string;
-  email?: string;
-  full_name?: string;
-  branch_id?: string | null;
-  company_id?: string | null;
-  role?: string | null;
-  carwash_id?: string | null;
-};
+import type { Profile } from "@/types/profile";
 
 type AuthContextType = {
   user: any;
@@ -41,11 +33,11 @@ export default function AuthProvider({
 }) {
   const [user, setUser] = useState<any>(null);
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-
   const [currentBranch, setCurrentBranch] = useState<string | null>(null);
 
   const [currentCompany, setCurrentCompany] = useState<string | null>(null);
+
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const [role, setRole] = useState<string | null>(null);
 

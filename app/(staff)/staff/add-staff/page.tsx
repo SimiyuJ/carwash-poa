@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 import {
   Card,
@@ -19,6 +20,7 @@ import {
   UserPlus,
   Phone,
   Mail,
+  ShieldCheck,
   Shield,
   ArrowLeft,
   Loader2,
@@ -42,7 +44,9 @@ export default function AddStaffPage() {
       const cleanEmail = email.trim().toLowerCase();
 
       if (!fullName || !cleanEmail || !phone || !password) {
-        alert("Please fill all required fields");
+        toast.warning("Missing information", {
+          description: "Please complete all required fields before continuing.",
+        });
         return;
       }
 
@@ -53,7 +57,9 @@ export default function AddStaffPage() {
       }
 
       // 1. Get manager (stay logged in)
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         alert("Not authenticated");
         return;
@@ -66,12 +72,17 @@ export default function AddStaffPage() {
         .single();
 
       if (error || !managerProfile) {
-        alert("Manager profile not found");
+        toast.error("Profile unavailable", {
+          description:
+            "Your manager profile could not be loaded. Please refresh the page and try again.",
+        });
         return;
       }
 
       if (managerProfile.role !== "manager") {
-        alert("Only managers can create staff");
+        toast.error("Access denied", {
+          description: "Only managers are allowed to create staff accounts.",
+        });
         return;
       }
 
@@ -101,17 +112,15 @@ export default function AddStaffPage() {
       }
 
       // 3. Insert profile manually (IMPORTANT)
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          id: data.user.id,
-          full_name: fullName,
-          email: cleanEmail,
-          phone,
-          role,
-          carwash_id: managerProfile.carwash_id,
-          branch_id: managerProfile.branch_id,
-        });
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: data.user.id,
+        full_name: fullName,
+        email: cleanEmail,
+        phone,
+        role,
+        carwash_id: managerProfile.carwash_id,
+        branch_id: managerProfile.branch_id,
+      });
 
       if (profileError) {
         alert(profileError.message);
@@ -119,7 +128,10 @@ export default function AddStaffPage() {
       }
 
       // 4. ONLY SUCCESS MESSAGE (NO redirect, NO session restore)
-      alert("Staff created successfully");
+      toast.success("Staff account created!", {
+        description:
+          "The new staff member can now sign in and start using the system.",
+      });
 
       // optional: clear form
       setFullName("");
@@ -127,7 +139,6 @@ export default function AddStaffPage() {
       setPhone("");
       setPassword("");
       setRole("washer");
-
     } catch (err) {
       console.error(err);
       alert("Failed to create staff");
@@ -137,33 +148,56 @@ export default function AddStaffPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-6">
+    <div className="min-h-screen bg-slate-950 p-4 text-white md:p-6">
       {/* Background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-[180px]" />
-        <div className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-[180px]" />
+        <div className="absolute right-0 bottom-0 h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-[180px]" />
       </div>
 
       {/* Header */}
-      <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight">
-            Add Staff Member
-          </h1>
+      {/* =========================================================
+    HEADER
+========================================================= */}
 
-          <p className="mt-2 text-slate-400">
-            Create secure staff accounts for your carwash operations.
-          </p>
+      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        {/* Left */}
+        <div className="flex items-start gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/15 to-blue-600/10 shadow-lg shadow-cyan-500/10">
+            <UserPlus className="h-8 w-8 text-cyan-400" />
+          </div>
+
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-cyan-400" />
+
+              <span className="text-[11px] font-semibold tracking-[0.25em] text-cyan-300 uppercase">
+                Staff Management
+              </span>
+            </div>
+
+            <h1 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">
+              Add Staff Member
+            </h1>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+              Create secure employee accounts, assign roles, branches and
+              permissions to manage your carwash operations efficiently.
+            </p>
+          </div>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => router.push("/dashboard")}
-          className="border-slate-700 bg-slate-900"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Button>
+        {/* Right */}
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => router.push("/dashboard")}
+            className="h-12 rounded-2xl border-white/10 bg-slate-900/70 px-6 text-white transition-all hover:border-cyan-500/40 hover:bg-slate-800"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Dashboard
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
@@ -176,13 +210,10 @@ export default function AddStaffPage() {
                 Staff Information
               </CardTitle>
 
-              <CardDescription>
-                Enter employee details below.
-              </CardDescription>
+              <CardDescription>Enter employee details below.</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-5">
-
               {/* Full Name */}
               <div>
                 <label className="mb-2 block text-sm text-slate-400">
@@ -193,18 +224,7 @@ export default function AddStaffPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="John Doe"
-                  className="
-                  h-12
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-700
-                  bg-slate-900
-                  px-4
-                  text-white
-                  outline-none
-                  focus:border-cyan-500
-                "
+                  className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -215,25 +235,13 @@ export default function AddStaffPage() {
                 </label>
 
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Mail className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                   <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="staff@email.com"
-                    className="
-                    h-12
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-700
-                    bg-slate-900
-                    pl-11
-                    pr-4
-                    text-white
-                    outline-none
-                    focus:border-cyan-500
-                  "
+                    className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 pr-4 pl-11 text-white outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -245,25 +253,13 @@ export default function AddStaffPage() {
                 </label>
 
                 <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                  <Phone className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-500" />
 
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+254700000000"
-                    className="
-                    h-12
-                    w-full
-                    rounded-xl
-                    border
-                    border-slate-700
-                    bg-slate-900
-                    pl-11
-                    pr-4
-                    text-white
-                    outline-none
-                    focus:border-cyan-500
-                  "
+                    className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 pr-4 pl-11 text-white outline-none focus:border-cyan-500"
                   />
                 </div>
               </div>
@@ -275,18 +271,16 @@ export default function AddStaffPage() {
                 </label>
 
                 <div className="grid grid-cols-2 gap-3">
-
                   <button
                     type="button"
                     onClick={() => setRole("washer")}
-                    className={`rounded-2xl border p-4 text-left transition ${role === "washer"
-                      ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-700 bg-slate-900"
-                      }`}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                      role === "washer"
+                        ? "border-cyan-500 bg-cyan-500/10"
+                        : "border-slate-700 bg-slate-900"
+                    }`}
                   >
-                    <h3 className="font-semibold text-white">
-                      Washer
-                    </h3>
+                    <h3 className="font-semibold text-white">Washer</h3>
 
                     <p className="mt-1 text-xs text-slate-400">
                       Handles wash operations
@@ -296,20 +290,18 @@ export default function AddStaffPage() {
                   <button
                     type="button"
                     onClick={() => setRole("cashier")}
-                    className={`rounded-2xl border p-4 text-left transition ${role === "cashier"
-                      ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-700 bg-slate-900"
-                      }`}
+                    className={`rounded-2xl border p-4 text-left transition ${
+                      role === "cashier"
+                        ? "border-cyan-500 bg-cyan-500/10"
+                        : "border-slate-700 bg-slate-900"
+                    }`}
                   >
-                    <h3 className="font-semibold text-white">
-                      Cashier
-                    </h3>
+                    <h3 className="font-semibold text-white">Cashier</h3>
 
                     <p className="mt-1 text-xs text-slate-400">
                       Handles billing & payments
                     </p>
                   </button>
-
                 </div>
               </div>
 
@@ -324,57 +316,46 @@ export default function AddStaffPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="********"
-                  className="
-                  h-12
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-700
-                  bg-slate-900
-                  px-4
-                  text-white
-                  outline-none
-                  focus:border-cyan-500
-                "
+                  className="h-12 w-full rounded-xl border border-slate-700 bg-slate-900 px-4 text-white outline-none focus:border-cyan-500"
                 />
               </div>
 
               {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-3">
+              {/* =========================================================
+    ACTIONS
+========================================================= */}
 
-                <Button
-                  variant="outline"
-                  className="flex-1 border-slate-700"
-                  onClick={() => router.back()}
-                >
-                  Cancel
-                </Button>
+              <div className="mt-8 border-t border-white/10 pt-6">
+                <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="h-12 rounded-2xl border-slate-700 bg-slate-900/70 px-6 font-semibold text-slate-300 transition-all hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-300"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Cancel
+                  </Button>
 
-                <Button
-                  onClick={handleCreateStaff}
-                  disabled={loading}
-                  className="
-                  flex-1
-                  bg-cyan-500
-                  hover:bg-cyan-600
-                  text-white
-                "
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Create Staff Account
-                    </>
-                  )}
-                </Button>
-
+                  <Button
+                    onClick={handleCreateStaff}
+                    disabled={loading}
+                    className="h-12 min-w-[220px] rounded-2xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 px-8 font-bold text-white shadow-lg shadow-cyan-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-cyan-500/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Create Staff Account
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
-
             </CardContent>
           </Card>
         </div>
@@ -389,21 +370,17 @@ export default function AddStaffPage() {
           </CardHeader>
 
           <CardContent className="space-y-4">
-
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-              <h3 className="font-semibold text-cyan-400">
-                Washer
-              </h3>
+              <h3 className="font-semibold text-cyan-400">Washer</h3>
 
               <p className="mt-2 text-sm text-slate-400">
-                View queue, start jobs, update wash status and complete services.
+                View queue, start jobs, update wash status and complete
+                services.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-              <h3 className="font-semibold text-green-400">
-                Cashier
-              </h3>
+              <h3 className="font-semibold text-green-400">Cashier</h3>
 
               <p className="mt-2 text-sm text-slate-400">
                 Create invoices, process payments and manage transactions.
@@ -411,17 +388,16 @@ export default function AddStaffPage() {
             </div>
 
             <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-4">
-              <div className="flex items-center gap-2 text-cyan-300 font-semibold">
+              <div className="flex items-center gap-2 font-semibold text-cyan-300">
                 <Users className="h-4 w-4" />
                 Staff Policy
               </div>
 
               <p className="mt-2 text-sm text-slate-300">
-                Managers can only create Washer and Cashier accounts.
-                Manager accounts can only be created during carwash registration.
+                Managers can only create Washer and Cashier accounts. Manager
+                accounts can only be created during carwash registration.
               </p>
             </div>
-
           </CardContent>
         </Card>
       </div>

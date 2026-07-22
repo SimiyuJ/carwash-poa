@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 
 import AuthProvider from "@/components/providers/AuthProvider";
+import DataCacheProvider from "@/components/providers/DataCacheProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
 import IdleLogout from "@/components/IdleLogout";
 import ServiceWorker from "@/components/ServiceWorker";
 
@@ -86,20 +88,24 @@ export default function RootLayout({
         <IdleLogout />
 
         <AuthProvider>
-          {children}
+          <DataCacheProvider>
+            <QueryProvider>
+              {children}
 
-          <Toaster
-            position="top-center"
-            richColors
-            closeButton
-            expand
-            duration={3500}
-            theme="dark"
-            toastOptions={{
-              className:
-                "!bg-[#07142B] !border !border-cyan-500/20 !text-white !rounded-3xl !shadow-[0_20px_60px_rgba(0,0,0,.45)]",
-            }}
-          />
+              <Toaster
+                position="top-center"
+                richColors
+                closeButton
+                expand
+                duration={3500}
+                theme="dark"
+                toastOptions={{
+                  className:
+                    "!bg-[#07142B] !border !border-cyan-500/20 !text-white !rounded-3xl !shadow-[0_20px_60px_rgba(0,0,0,.45)]",
+                }}
+              />
+            </QueryProvider>
+          </DataCacheProvider>
         </AuthProvider>
       </body>
     </html>
